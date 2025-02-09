@@ -1,0 +1,27 @@
+<div class="registrationContainer loginContainer">
+  <div  class="registrationContainer__card">
+    <div class="registrationContainer__card-title">
+      <h2>Reestablece tu contraseña</h2>
+      <p>Escribe el correo de tu cuenta para reestablecer tu contraseña.</p>
+    </div>
+    <div class="registrationContainer__card-form">
+      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="field">
+          <%= f.label :email %><br />
+          <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+        </div>
+
+        <div class="actions">
+          <%= f.submit "Enviar instrucciones de confirmación", class: "button" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="sharedLinks">
+      <%= render "devise/shared/links" %>
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,57 @@
+<%= form_with(model: workout) do |form| %>
+  <% if workout.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(workout.errors.count, "error") %> prohibited this workout from being saved:</h2>
+
+      <ul>
+        <% workout.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :title, style: "display: block" %>
+    <%= form.text_field :title %>
+  </div>
+
+  <div  class="field">
+    <%= form.label :category, style: "display: block" %>
+    <%= form.text_field :category %>
+  </div  class="field">
+
+  <div  class="field">
+    <%= form.label :duration, style: "display: block" %>
+    <%= form.text_field :duration %>
+  </div>
+
+  <div  class="field">
+    <%= form.label :video_url, style: "display: block" %>
+    <%= form.text_field :video_url %>
+  </div>
+
+  <div  class="field">
+    <%= form.label :intensity, style: "display: block" %>
+    <%= form.text_field :intensity %>
+  </div>
+
+  <div  class="field">
+    <%= form.label :material, style: "display: block" %>
+    <%= form.text_field :material %>
+  </div>
+
+  <div  class="field">
+    <%= form.label :day, style: "display: block" %>
+    <%= form.datetime_field :day %>
+  </div>
+
+  <div  class="field">
+    <%= form.label :cover %>
+    <%= form.file_field :cover %>
+  </div>
+
+  <div  class="field">
+    <%= form.submit class: "button" %>
+  </div>
+<% end %>

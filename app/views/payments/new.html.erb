@@ -1,0 +1,81 @@
+<div class="plans">
+    <div class="plans_header">
+        <div class="plans_header-column"><h1>Conoce nuestros planes, seguro tenemos el plan perfecto para ti</h1></div>
+        <div class="plans_header-column"><p>Todos los planes incluyen 7 días gratis al inicio de su contratación, finalizados estos siete dias comenzará el cobro de tu suscripción con la regularidad que tu elijas</p></div>
+    </div>
+    <div class="plans_columns">
+        <div class="plans_columns_card">
+            <h3>Plan Mensual</h3>
+            <br>
+            <p class="plans_columns_card_price">
+                499 mxn / mes
+            </p>
+            <br>
+            <% if current_user %>
+                <%= button_to 'Elegir plan mensual', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+            <% else %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+            <% end %>
+            <br>
+            <p  class="plans_columns_card_features">
+                Acceso a +100 videos<br>
+                Workout del día
+            </p>
+        </div>
+        <div class="plans_columns_card">
+            <h4>Plan Trimestral</h4>
+            <br>
+            <p class="plans_columns_card_price">
+                    499 mxn / mes
+            </p>
+            <br>
+            <% if current_user %>
+                <%= button_to 'Elegir plan trimestral', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+            <% else %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+            <% end %>
+            <br>
+            <p  class="plans_columns_card_features">
+                Acceso a +100 videos<br>
+                Workout del día
+            </p>
+        </div>
+        <div class="plans_columns_card">
+            <h4>Plan Semestral</h4>
+            <br>
+            <p class="plans_columns_card_price">
+                    1300 mxn / semestre
+            </p>
+            <br>
+            <% if current_user %>
+                <%= button_to 'Elegir plan semestral', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+            <% else %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+            <% end %>
+            <br>
+            <p  class="plans_columns_card_features">
+                Acceso a +100 videos<br>
+                Workout del día
+            </p>
+        </div>
+        <div class="plans_columns_card">
+            <h4>Plan Anual</h4>
+            <br>
+            <p class="plans_columns_card_price">
+                    2600 mxn / año
+            </p>
+            <br>
+            <% if current_user %>
+                <%= button_to 'Elegir plan anual', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+            <% else %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+            <% end %>
+            <br>
+            <p  class="plans_columns_card_features">
+                Acceso a +100 videos<br>
+                Workout del día
+            </p>
+        </div>
+    </div>
+
+</div>

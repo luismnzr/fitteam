@@ -1,0 +1,33 @@
+  <div id="<%= dom_id workout %>" class="workoutCard">
+    <div class="workoutCard_cover">
+      <%= link_to workout do %>
+        <% if workout.cover.attached? %>
+          <div class="workoutCard_cover_asset" style="background-image: url('<%= rails_blob_url(workout.cover) %>')">
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="workoutCard_title">
+      <h5>
+        <%= link_to workout do %>
+          <%= workout.title %>
+        <% end %>
+      </h5>
+
+      <p>
+        <span><%= workout.duration %>min</span>
+      </p>
+    </div>
+    <div  class="workoutCard_material">
+      <p>
+        Material:
+        <%= workout.material %>
+      </p>
+    </div>
+    <div  class="workoutCard_categories">
+      <p>
+        <%= workout.category %>
+      </p>
+    </div>
+  </div>
+

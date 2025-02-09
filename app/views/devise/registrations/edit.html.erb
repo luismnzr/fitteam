@@ -1,0 +1,31 @@
+
+
+<div class="registrationContainer registrationEdit">
+  <div  class="registrationContainer__card">
+    <div class="registrationContainer__card-title">
+      <h2>Mi cuenta</h2>
+      <p>Tu cuenta en Fitteam.</p>
+    </div>
+    <div class="registrationContainer__card-form">
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+
+        <div class="field">
+          <%= f.label :email %><br />
+          <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+        </div>
+        <br>
+        <hr>
+        <br>
+        <%= button_to 'Portal de pagos', stripe_billing_portal_path, data: { turbo: "false" }, class: "button" %>
+        <br>
+        <hr>
+        <br>
+        <%= link_to "Cerrar Sesión", destroy_user_session_path, data: { turbo_method: :delete }, class: "button button-red" %>
+
+
+      <% end %>
+    </div>
+
+  </div>
+</div>

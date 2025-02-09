@@ -1,0 +1,106 @@
+<% content_for :title, "Workouts" %>
+<div class="workouts_banner">
+  <h1>Upper Body 91</h1>
+  <p>45min</p>
+  <br>
+  <a href="/workouts/1" class="button">Ir a Workout</a>
+</div>
+<div class="filterBox">
+  <div class="filterBox-header">
+    <div>
+      <h2>Estas viendo todas las rutinas</h2>
+      <p>Usa los filtros para comenzar a buscar, los filtros que actives se mostrarán abajo</p>
+    </div>
+    <div>
+      <a class="button button-clear">Ver Favoritas</a>
+    </div>
+  </div>
+  <div  class="filterBox-search">
+    <div class="filterBox-search_columns">
+      <select>
+        <option>Intensidad</option>
+        <option>Alta</option>
+      </select>
+      <select>
+        <option>Rutinas</option>
+        <option>Upper Body</option>
+      </select>
+    </div>
+    <div  class="filterBox-search_field">
+      <input type="text" placeholder="Buscar por texto...">
+    </div>
+  </div>
+</div>
+
+<div class="calendarBlock">
+  <div class="calendarBlock-header">
+    <div class="calendarBlock-header-info">
+      <h2>¡Entrenamiento con rutinas diarias!</h2>
+      <p>Entrena diferentes grupos musculares cada dia de la semana, esto te proporciona un entrenamiento completo de todos los músculos de tu cuerpo, no tienes que hacer más ¡Ya esta todo organizado!</p>
+    </div>
+    <div>
+      <a href="#" class="button button-green">Calendario Completo</a>
+    </div>
+  </div>
+  <div class="calendarBlock-grid">
+    <div class="calendarBlock-grid-item"><%= image_tag("lunes.png") %></div>
+    <div class="calendarBlock-grid-item"><%= image_tag("martes.png") %></div>
+    <div class="calendarBlock-grid-item"><%= image_tag("miercoles.png") %></div>
+    <div class="calendarBlock-grid-item"><%= image_tag("jueves.png") %></div>
+    <div class="calendarBlock-grid-item"><%= image_tag("viernes.png") %></div>
+  </div>
+</div>
+
+<div class="workoutRow">
+
+  <div class="workoutRow-header">
+  <%= link_to "New workout", new_workout_path, class: "button" %><br>
+  <h1>Agregados Recientemente</h1></div>
+  <br>
+  <div class="workoutSwiper">
+      <div class="swiper swiper1">
+        <div class="swiper-wrapper">
+          <% @workouts.each do |workout| %>
+            <div  class="swiper-slide">
+              <%= render workout %>
+
+            </div>
+          <% end %>
+        </div>
+        <div class="swiper-pagination swiper-pagination1"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+  </div>
+</div>
+
+<script>
+var swiper1 = new Swiper('.swiper1', {
+      direction: 'horizontal',
+      loop: true,
+      pagination: {
+        el: '.swiper-pagination1',
+        clickable: true,
+      },
+      slidesPerView: 3,
+      spaceBetween: 10,
+      breakpoints: {
+        360: {
+          slidesPerView: 1,
+          spaceBetween: 20
+        },
+        750: {
+          slidesPerView: 2,
+          spaceBetween: 30
+        },
+        990: {
+          slidesPerView: 3,
+          spaceBetween: 40
+        }
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+  });
+</script>

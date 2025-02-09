@@ -1,0 +1,33 @@
+<div class="registrationContainer loginContainer">
+  <div  class="registrationContainer__card">
+    <div class="registrationContainer__card-title">
+      <h2>Actualiza tu contraseña</h2>
+      <p>Escribe una nueva contraseña.</p>
+    </div>
+    <div class="registrationContainer__card-form">
+      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+        <%= render "devise/shared/error_messages", resource: resource %>
+        <%= f.hidden_field :reset_password_token %>
+
+        <div class="field">
+          <%= f.label :password, "Nueva contraseña" %><br />
+          <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %>
+        </div>
+
+        <div class="field">
+          <%= f.label :password_confirmation, "Confirmar password" %><br />
+          <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+        </div>
+
+        <div class="actions">
+          <%= f.submit "Change my password" %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="sharedLinks">
+      <%= render "devise/shared/links" %>
+    </div>
+
+  </div>
+</div>
