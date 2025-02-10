@@ -15,25 +15,39 @@
     <%= form.label :title, style: "display: block" %>
     <%= form.text_field :title %>
   </div>
+  <div  class="field">
+      <%= form.label "Categoría", style: "display: block" %>
+        <%= form.select :category, [
+        ["-", "-"],
+        ["Lower Body", "Lower Body"],
+        ["ABS and Core", "ABS and Core"],
+        ["Full Body", "Full Body"],
+        ["Glutes and Hips", "Glutes and Hips"],
+        ["Upper Body", "Upper Body"]], {}, { class: 'input' } %>
+    </div>
 
   <div  class="field">
-    <%= form.label :category, style: "display: block" %>
-    <%= form.text_field :category %>
-  </div  class="field">
-
-  <div  class="field">
-    <%= form.label :duration, style: "display: block" %>
-    <%= form.text_field :duration %>
+    <%= form.label "Duración", style: "display: block" %>
+    <%= form.select :duration, [
+      ["-", "-"],
+      ["15min", "15min"],
+      ["30min", "30min"],
+      ["45min", "45min"],
+      ["1 hora", "1 hora"]], {}, { class: 'input' } %>
   </div>
 
   <div  class="field">
-    <%= form.label :video_url, style: "display: block" %>
+    <%= form.label "Video", style: "display: block" %>
     <%= form.text_field :video_url %>
   </div>
 
   <div  class="field">
     <%= form.label :intensity, style: "display: block" %>
-    <%= form.text_field :intensity %>
+    <%= form.select :intensity, [
+      ["-", "-"],
+      ["Baja", "Baja"],
+      ["Media", "Media"],
+      ["Alta", "Alta"]], {}, { class: 'input' } %>
   </div>
 
   <div  class="field">
