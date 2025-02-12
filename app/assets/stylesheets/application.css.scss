@@ -214,7 +214,7 @@ h5 {
 }
 
 .registrationEdit {
-  background: #71717a;
+  background: #016048;
   .registrationContainer__card-form {
     min-width: 300px;
     text-align: center;
@@ -635,6 +635,10 @@ h5 {
     }
   }
 }
+.workoutGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
 .workoutRow {
   margin-bottom: 100px;
 }
@@ -650,7 +654,16 @@ h5 {
   width: 100%;
   height: 600px;
 }
-
+.categoryHeader {
+  background: #016047;
+  text-align: center;
+  height: 200px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  color: #fff;
+  margin-bottom: 70px;
+}
 .swiper1,
 .swiper2,
 .swiper3,
@@ -682,10 +695,11 @@ h5 {
 
 .home_video {
   width: 100%;
-  height: 95%;
+  height: 90%;
   object-fit: cover;
   z-index: -2;
   position: absolute;
+  top: 70px;
   &-text {
     position: relative;
     width: 33%;

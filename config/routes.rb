@@ -19,10 +19,15 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "pages#index"
-
+  
   post 'stripe/webhooks', to: 'stripe/webhooks#create'
   post 'stripe/checkout', to: 'stripe/checkout#checkout'
   get 'stripe/checkout/success', to: 'stripe/checkout#success'
   get 'stripe/checkout/cancel', to: 'stripe/checkout#cancel'
   post 'stripe/billing_portal', to: 'stripe/billing_portal#create'
+  get '/upperbody', to: 'workouts#upperbody', as: 'upperbody'
+  get '/lowerbody', to: 'workouts#lowerbody', as: 'lowerbody'
+  get '/fullbody', to: 'workouts#fullbody', as: 'fullbody'
+  get '/gluteships', to: 'workouts#gluteships', as: 'gluteships'
+  get '/abscore', to: 'workouts#abscore', as: 'abscore'
 end

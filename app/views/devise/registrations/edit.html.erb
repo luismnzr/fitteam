@@ -12,6 +12,7 @@
           <%= f.label :email %><br />
           <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
         </div>
+      <% end %>
         <br>
         <hr>
         <br>
@@ -22,8 +23,7 @@
         <%= link_to "Cerrar Sesión", destroy_user_session_path, data: { turbo_method: :delete }, class: "button button-red" %>
 
 
-      <% end %>
-    </div>
 
+    </div>
   </div>
 </div>

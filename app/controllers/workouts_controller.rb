@@ -4,13 +4,33 @@ class WorkoutsController < ApplicationController
 
   # GET /workouts or /workouts.json
   def index
-    @workouts = Workout.all
+    @workouts = Workout.last(10)
     @workoutsLast = Workout.order('created_at DESC').where(recent: true)
-    @workoutLowerBody = Workout.order('created_at DESC').where(category: "Lower Body")
-    @workoutAbsCore = Workout.order('created_at DESC').where(category: "ABS and Core")
-    @workoutFullBody = Workout.order('created_at DESC').where(category: "Full Body")
-    @workoutGlutesHips = Workout.order('created_at DESC').where(category: "Glutes and Hips")
-    @workoutUpperBody = Workout.order('created_at DESC').where(category: "Upper Body")
+    @workoutLowerBody = Workout.limit(10).order('created_at DESC').where(category: "Lower Body")
+    @workoutAbsCore = Workout.limit(10).order('created_at DESC').where(category: "ABS and Core")
+    @workoutFullBody = Workout.limit(10).order('created_at DESC').where(category: "Full Body")
+    @workoutGlutesHips = Workout.limit(10).order('created_at DESC').where(category: "Glutes and Hips")
+    @workoutUpperBody = Workout.limit(10).order('created_at DESC').where(category: "Upper Body")
+  end
+
+  def upperbody
+    @workoutUpperBody = Workout.all.order('created_at DESC').where(category: "Upper Body")
+  end
+
+  def lowerbody
+    @workoutLowerBody = Workout.all.order('created_at DESC').where(category: "Lower Body")
+  end
+
+  def abscore
+    @workoutAbsCore = Workout.all.order('created_at DESC').where(category: "Abs Core")
+  end
+
+  def fullbody
+    @workoutFullBody = Workout.all.order('created_at DESC').where(category: "Full Body")
+  end
+
+  def gluteships
+    @workoutGlutesHips = Workout.all.order('created_at DESC').where(category: "Glutes and Hips")
   end
 
   # GET /workouts/1 or /workouts/1.json
