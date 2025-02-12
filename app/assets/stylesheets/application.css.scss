@@ -317,11 +317,14 @@ h5 {
   align-items: center;
   height: 550px;
   width: 100%;
+  width: 80%;
+  margin: auto;
+  border-radius: 6px;
 }
 .workoutCard {
   max-width: 360px;
   margin: auto;
-  padding: 1rem;
+  padding: 1rem 1rem 1.5rem 1rem;
   width: 100%;
 }
 
@@ -396,6 +399,9 @@ h5 {
     margin-bottom: 1.5rem;
     letter-spacing: -2px;
   }
+  .workoutCard_categories {
+    justify-content: center;
+  }
 }
 
 .workoutView-info {
@@ -413,7 +419,6 @@ h5 {
   appearance: none;
   border: none;
   cursor: pointer;
-  background: #016048;
   color: #fff;
   font-family: "Lato", sans-serif;
   padding: 1rem 2rem;
@@ -646,6 +651,9 @@ h5 {
   width: 90%;
   max-width: 1320px;
   margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
   .button {
     display: inline-block;
   }
@@ -721,7 +729,12 @@ h5 {
     color: #fff;
   }
 }
-
+.video-card__cover {
+  justify-content: center;
+  .button {
+    margin: auto;
+  }
+}
 .container {
   max-width: 1320px;
   width: 90%;
@@ -872,4 +885,9 @@ footer {
       line-height: 150%;
     }
   }
+}
+
+.categoryHeader {
+  display: flex;
+  justify-content: space-between;
 }
