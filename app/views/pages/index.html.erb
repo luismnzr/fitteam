@@ -1,3 +1,175 @@
-<h1>Welcome to the Subscription Platform</h1>
-<p>Choose a plan and get started today!</p>
-<%= link_to 'View Plans', payments_new_path, class: 'btn btn-primary' %>
+<div class="home_video-wrapper">
+    <%= video_tag "video.mp4", type: 'video/mp4', autoplay: true, loop: true, muted: true, controlls: false, playsinline: true, class: "home_video" %>
+    <h1>WORKOUT</h1>
+    <br>
+    <p>Para mente, cuerpo y corazón</p>
+    <br>
+    <a href="#" class="button">Comenzar un workout</a>
+</div>
+<div class="container embassador-container">
+    <div class="columns">
+        <div class="columnThirdLow">
+            <%= image_tag("embassador_cover.jpg") %>
+        </div>
+        <div class="columnThirdHigh">
+            <div class="embassador-info">
+                <h1>Ana Gaby Ornelas</h1>
+                <br>
+                <p>
+                    Entrenadora personal y grupal, en línea o presencial, todas mis clases te llevan un mismo nivel de exigencia personal. Apasionada y entregada a esto que llamo trabajo, ayudarte a construir tu mejor versión y trabajar diario en ello es mi objetivo principal.
+                    <br><br>
+                    Con certificaciones en diferentes disciplinas he creado mi propio método de entrenamiento que te ayuda a fortalecer y tonificar de una forma muy dinámica y divertida. Te invito a conocerme un poquito más probando lo que prepare especialmente para ti en esta plataforma.
+                </p>
+                <br>
+                <br>
+                <%= image_tag("lululemon.png") %>
+                <p><strong>City Embassador</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="columns wotdContainer">
+    <div class="columnHalf">
+        <div class="wotdContainer-info">
+            <p>Workout del día</p>
+            <h2>LOWER BODY 73</h2>
+            <br>
+            <p>Rutina del dia de hoy, realiza tu ejercicio en el horario que mas quieras.</p>
+            <br>
+            <%= link_to "Ver workout", workouts_path, class: "button button-white" %>
+        </div>
+    </div>
+    <div class="columnHalf">
+        <div class="wotdContainer-cover"></div>
+    </div>
+</div>
+<div class="columns homeTripleColumn">
+    <div class="columnThirdLow">
+        <div class="homeTripleColumn-info">
+            <h4>¡Entrenamiento con rutinas diarias que te ayudarán a lograr tus objetivos!</h4>
+            <br>
+            <p>Inscríbete a mi programa de entrenamiento y podrás entrenar conmigo donde quiera que te encuentres, ya sea en un gimnasio o desde tu casa. Todos los días subo contenido nuevo que te ayudará a mantenerte en forma.</p>
+        </div>
+    </div>
+    <div class="columnThirdLow">
+        <div class="homeTripleColumn-numbers">
+            <div>
+                <h4>+450</h4>
+                <p>Videos</p>
+            </div>
+            <div>
+                <h4>+300</h4>
+                <p>Usuarios</p>
+            </div>
+            <div>
+                <h4>7</h4>
+                <p>Estilos diferentes</p>
+            </div>
+        </div>
+    </div>
+    <div class="columnThirdLow">
+        <div class="homeTripleColumn-cover"></div>
+    </div>
+</div>
+<div class="plans">
+    <div class="plans_header">
+        <div class="plans_header-column"><h1>Conoce nuestros planes, seguro tenemos el plan perfecto para ti</h1></div>
+        <div class="plans_header-column"><p>Todos los planes incluyen 7 días gratis al inicio de su contratación, finalizados estos siete dias comenzará el cobro de tu suscripción con la regularidad que tu elijas</p></div>
+    </div>
+    <div class="plans_columns">
+        <div class="plans_columns_card">
+            <h3>Plan Mensual</h3>
+            <br>
+            <p class="plans_columns_card_price">
+                499 mxn / mes
+            </p>
+            <br>
+            <% if current_user %>
+                <%= button_to 'Elegir plan mensual', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+            <% else %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+            <% end %>
+            <br>
+            <p  class="plans_columns_card_features">
+                Acceso a +100 videos<br>
+                Workout del día
+            </p>
+        </div>
+        <div class="plans_columns_card">
+            <h4>Plan Trimestral</h4>
+            <br>
+            <p class="plans_columns_card_price">
+                    499 mxn / mes
+            </p>
+            <br>
+            <% if current_user %>
+                <%= button_to 'Elegir plan trimestral', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+            <% else %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+            <% end %>
+            <br>
+            <p  class="plans_columns_card_features">
+                Acceso a +100 videos<br>
+                Workout del día
+            </p>
+        </div>
+        <div class="plans_columns_card">
+            <h4>Plan Semestral</h4>
+            <br>
+            <p class="plans_columns_card_price">
+                    1300 mxn / semestre
+            </p>
+            <br>
+            <% if current_user %>
+                <%= button_to 'Elegir plan semestral', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+            <% else %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+            <% end %>
+            <br>
+            <p  class="plans_columns_card_features">
+                Acceso a +100 videos<br>
+                Workout del día
+            </p>
+        </div>
+        <div class="plans_columns_card">
+            <h4>Plan Anual</h4>
+            <br>
+            <p class="plans_columns_card_price">
+                    2600 mxn / año
+            </p>
+            <br>
+            <% if current_user %>
+                <%= button_to 'Elegir plan anual', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+            <% else %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+            <% end %>
+            <br>
+            <p  class="plans_columns_card_features">
+                Acceso a +100 videos<br>
+                Workout del día
+            </p>
+        </div>
+    </div>
+
+</div>
+<div class="prefooter">
+    <div class="prefooter-container">
+        <div  class="prefooter-column">
+            <h2>
+                Workouts para mente, cuerpo y corazón
+            </h2>
+        </div>
+        <div  class="prefooter-column prefooter-actions">
+            <% if current_user %>
+            <% unless current_user.active? %>
+              <%= link_to "Planes", payments_new_path %>
+            <% end %>
+                <%= link_to 'Ir a clases', workouts_path, class: 'button button-white' %>
+                <%= link_to 'Mi cuenta', edit_user_registration_path, class: 'button button-white' %>
+            <% else %>
+            <%= link_to 'Inicia sesión', new_user_session_path, class: 'button button-white' %>
+            <%= link_to 'Crear cuenta', new_user_registration_path, class: 'button button-white' %>
+          <% end %>
+        </div>
+    </div>
+</div>

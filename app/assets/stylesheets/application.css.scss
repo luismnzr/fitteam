@@ -92,6 +92,14 @@ h5 {
   }
 }
 
+.button-white {
+  background: #fff;
+  color: #111;
+  &:hover {
+    background: #f9f8f3;
+  }
+}
+
 .header {
   height: 70px;
   width: 100%;
@@ -643,7 +651,12 @@ h5 {
   height: 600px;
 }
 
-.swiper1 {
+.swiper1,
+.swiper2,
+.swiper3,
+.swiper4,
+.swiper5,
+.swiper6 {
   width: 100%;
   max-width: 1320px;
   margin: auto;
@@ -653,6 +666,7 @@ h5 {
 .swiper-button-next:after,
 .swiper-button-prev:after {
   font-size: 1.5rem !important;
+  color: #860847;
 }
 
 .swiper-pagination {
@@ -664,5 +678,184 @@ h5 {
 
 .swiper-button-next,
 .swiper-button-prev {
-  display: none !important;
+}
+
+.home_video {
+  width: 100%;
+  height: 95%;
+  object-fit: cover;
+  z-index: -2;
+  position: absolute;
+  &-text {
+    position: relative;
+    width: 33%;
+  }
+}
+.home_video-wrapper {
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  min-height: 800px;
+  h1 {
+    color: #fff;
+    font-size: 4rem;
+  }
+  p {
+    color: #fff;
+  }
+}
+
+.container {
+  max-width: 1320px;
+  width: 90%;
+  margin: auto;
+}
+.columns {
+  width: 100%;
+  display: flex;
+  gap: 30px;
+}
+.columnHalf {
+  width: 50%;
+}
+.columnThirdLow {
+  width: 33.33%;
+}
+.columnThirdHigh {
+  width: 66.66%;
+}
+
+.embassador-container {
+  padding: 50px 2rem;
+  img {
+    width: 100%;
+  }
+  .columns {
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.embassador-info {
+  img {
+    height: 36px;
+    width: auto;
+  }
+}
+
+.wotdContainer {
+  background: #860847;
+  color: #fff;
+  height: 420px;
+  &-info {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+  }
+  &-cover {
+    background: url("dayworkout.jpg");
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+  }
+  .button {
+    max-width: 200px;
+    text-align: center;
+  }
+}
+
+.homeTripleColumn {
+  height: 500px;
+  gap: 0;
+  &-info {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+  }
+  &-numbers {
+    text-align: center;
+    background: #e5e5e5;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 50px;
+    h4 {
+      font-size: 2.5rem;
+    }
+  }
+  &-cover {
+    background: url("tripleCover.jpg");
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.prefooter {
+  background: #860847;
+  padding: 50px 2rem;
+  color: #fff;
+  &-container {
+    max-width: 1320px;
+    width: 90%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  &-column {
+    width: 50%;
+    h2 {
+      line-height: 150%;
+    }
+  }
+  &-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: end;
+    a {
+      min-width: 180px;
+      text-align: center;
+    }
+  }
+}
+
+footer {
+  background: #1c1b17;
+  color: #fff;
+  padding: 100px 1rem;
+  a {
+    color: #fff;
+  }
+  h5 {
+    font-size: 1.125rem;
+  }
+  .footer-container {
+    max-width: 1320px;
+    width: 90%;
+    margin: auto;
+    display: flex;
+  }
+  .footer-column {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    width: 50%;
+    &_list {
+      display: flex;
+      flex-direction: column;
+      line-height: 150%;
+    }
+  }
 }

@@ -55,6 +55,36 @@
       </div>
     </header>
     <%= yield %>
+    <footer>
+      <div  class="footer-container">
+        <div class="footer-column">
+          <%= link_to root_path do %>
+            <%= image_tag("fitteam_logo.svg", class: "footer_icon") %>
+          <% end %>
+        </div>
+        <div class="footer-column">
+          <div class="footer-column_list">
+            <h5>Clases</h5>
+            <%= link_to "Ver workouts", root_path %>
+            <%= link_to "Calendario", root_path %>
+            <%= link_to "Categorías", root_path %>
+          </div>
+          <div class="footer-column_list">
+            <h5>Acerca</h5>
+            <%= link_to "Acerca de", root_path %>
+            <%= link_to "Preguntas Frecuentes", root_path %>
+            <% if current_user %>
+            <% else %>
+            <%= link_to "Planes", payments_new_path %>
+            <% end %>
+          </div>
+          <div class="footer-column_list">
+            <h5>Legal</h5>
+            <%= link_to "Términos y Condiciones", root_path %>
+          </div>
+        </div>
+      </div>
+    </footer>
     <script>
       function openMenu() {
         var x = document.getElementById("header_actions");

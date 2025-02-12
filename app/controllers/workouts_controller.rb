@@ -5,6 +5,12 @@ class WorkoutsController < ApplicationController
   # GET /workouts or /workouts.json
   def index
     @workouts = Workout.all
+    @workoutsLast = Workout.order('created_at DESC').where(recent: true)
+    @workoutLowerBody = Workout.order('created_at DESC').where(category: "Lower Body")
+    @workoutAbsCore = Workout.order('created_at DESC').where(category: "ABS and Core")
+    @workoutFullBody = Workout.order('created_at DESC').where(category: "Full Body")
+    @workoutGlutesHips = Workout.order('created_at DESC').where(category: "Glutes and Hips")
+    @workoutUpperBody = Workout.order('created_at DESC').where(category: "Upper Body")
   end
 
   # GET /workouts/1 or /workouts/1.json
