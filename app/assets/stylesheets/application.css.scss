@@ -891,3 +891,90 @@ footer {
   display: flex;
   justify-content: space-between;
 }
+
+@media only screen and (max-width: 749px) {
+  .container {
+    width: 100%;
+  }
+  .columns,
+  .plans_header,
+  .prefooter-container,
+  .footer-container {
+    flex-direction: column;
+  }
+  .column,
+  .columnThirdLow,
+  .columnThirdHigh,
+  .columnHalf,
+  .prefooter-column,
+  .footer-column {
+    width: 100%;
+  }
+  .plans_header-column {
+    width: 100%;
+    h1 {
+      margin-bottom: 25px;
+    }
+  }
+  .plans_columns {
+    flex-direction: column;
+    gap: 25px;
+    &_card {
+      width: 100%;
+    }
+  }
+  .wotdContainer-cover {
+    height: 200px;
+  }
+  .homeTripleColumn {
+    height: auto;
+  }
+  .plans {
+    height: auto;
+  }
+  .homeTripleColumn-cover {
+    height: 500px;
+  }
+  .homeTripleColumn-numbers {
+    padding: 2rem;
+  }
+  .wotdContainer {
+    height: auto;
+  }
+  .prefooter-actions {
+    flex-direction: column;
+    margin-top: 25px;
+  }
+  footer {
+    padding: 50px 1rem;
+  }
+  .footer_icon {
+    margin-bottom: 25px;
+  }
+  .filterBox-header {
+    flex-direction: column-reverse;
+    gap: 25px;
+    h2 {
+      margin-bottom: 15px;
+    }
+    .button {
+      text-align: center;
+    }
+  }
+  .calendarBlock-header {
+    flex-direction: column;
+    .button {
+      text-align: center;
+    }
+  }
+  .calendarBlock {
+    margin: 35px auto;
+  }
+  .calendarBlock-header-info {
+    width: 100%;
+    margin-bottom: 25px;
+    h2 {
+      margin-bottom: 15px;
+    }
+  }
+}
