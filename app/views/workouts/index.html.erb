@@ -5,37 +5,13 @@
   <br>
   <a href="/workouts/1" class="button">Ir a Workout</a>
 </div>
-<div class="filterBox">
-  <div class="filterBox-header">
-    <div>
-      <h2>Estas viendo todas las rutinas</h2>
-      <p>Usa los filtros para comenzar a buscar, los filtros que actives se mostrarán abajo</p>
-    </div>
-    <div>
-      <%= link_to "Mis favoritas", favorites_path, class: 'button button-clear' %>
-    </div>
-  </div>
-  <div  class="filterBox-search">
-    <div class="filterBox-search_columns">
-      <select>
-        <option>Intensidad</option>
-        <option>Alta</option>
-      </select>
-      <select>
-        <option>Rutinas</option>
-        <option>Upper Body</option>
-      </select>
-    </div>
-    <div  class="filterBox-search_field">
-      <input type="text" placeholder="Buscar por texto...">
-    </div>
-  </div>
-</div>
+
 
 <div class="calendarBlock">
   <div class="calendarBlock-header">
     <div class="calendarBlock-header-info">
       <h2>¡Entrenamiento con rutinas diarias!</h2>
+      <br>
       <p>Entrena diferentes grupos musculares cada dia de la semana, esto te proporciona un entrenamiento completo de todos los músculos de tu cuerpo, no tienes que hacer más ¡Ya esta todo organizado!</p>
     </div>
     <div>
@@ -55,7 +31,11 @@
 
   <div class="workoutRow-header">
     <h1>Recientes</h1>
-    <%= link_to "Agregar", new_workout_path, class: "button" %>
+    <% if current_user %>
+      <% if current_user.admin? %>
+        <%= link_to "Agregar clase", new_workout_path, class: "button button-clear" %>
+      <% end %>
+    <% end %>
   </div>
   <br>
   <div class="workoutSwiper">
@@ -129,7 +109,7 @@
 
   <div class="workoutRow-header">
     <h1>Full Body</h1>
-    <%= link_to "Full Body", fullbody_path, class: "button" %>
+    <%= link_to "Ver todas", fullbody_path, class: "button" %>
 
   </div>
   <br>
@@ -198,6 +178,26 @@
         <div class="swiper-button-next"></div>
       </div>
   </div>
+</div>
+
+<div class="prefooter">
+    <div class="prefooter-container">
+        <div  class="prefooter-column">
+            <h2>
+                ¿Aún no encuentras tu workout?
+            </h2>
+        </div>
+        <div  class="prefooter-column prefooter-actions">
+            <% if current_user %>
+            <% unless current_user.active? %>
+            <% end %>
+                <%= link_to 'Ver todas las clases', all_path, class: 'button button-white' %>
+            <% else %>
+            <%= link_to 'Inicia sesión', new_user_session_path, class: 'button button-white' %>
+            <%= link_to 'Crear cuenta', new_user_registration_path, class: 'button button-white' %>
+          <% end %>
+        </div>
+    </div>
 </div>
 
 <script>

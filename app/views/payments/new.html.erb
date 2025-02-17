@@ -12,9 +12,9 @@
             </p>
             <br>
             <% if current_user %>
-                <%= button_to 'Elegir plan mensual', stripe_checkout_path(price_id: "price_1IzXpjCQy9Hvq1vmGc0LWqMD"), data: { turbo: 'false' }, class: 'button button-plan' %>
+                <%= button_to 'Elegir plan mensual', stripe_checkout_path(price_id: "price_1IzXpjCQy9Hvq1vmGc0LWqMD"), data: { turbo: 'false' }, class: 'button button-clear' %>
             <% else %>
-                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-clear' %>
             <% end %>
             <br>
             <p  class="plans_columns_card_features">
@@ -30,9 +30,9 @@
             </p>
             <br>
             <% if current_user %>
-                <%= button_to 'Elegir plan trimestral', stripe_checkout_path(price_id: "plan_KqlGFwlFG9zwrT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+                <%= button_to 'Elegir plan trimestral', stripe_checkout_path(price_id: "plan_KqlGFwlFG9zwrT"), data: { turbo: 'false' }, class: 'button button-clear' %>
             <% else %>
-                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-clear' %>
             <% end %>
             <br>
             <p  class="plans_columns_card_features">
@@ -48,9 +48,9 @@
             </p>
             <br>
             <% if current_user %>
-                <%= button_to 'Elegir plan semestral', stripe_checkout_path(price_id: "plan_KqlUEfvr2JArdI"), data: { turbo: 'false' }, class: 'button button-plan' %>
+                <%= button_to 'Elegir plan semestral', stripe_checkout_path(price_id: "plan_KqlUEfvr2JArdI"), data: { turbo: 'false' }, class: 'button button-clear' %>
             <% else %>
-                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-clear' %>
             <% end %>
             <br>
             <p  class="plans_columns_card_features">
@@ -66,9 +66,9 @@
             </p>
             <br>
             <% if current_user %>
-                <%= button_to 'Elegir plan anual', stripe_checkout_path(price_id: "plan_L55kFu5JdL8uc4"), data: { turbo: 'false' }, class: 'button button-plan' %>
+                <%= button_to 'Elegir plan anual', stripe_checkout_path(price_id: "plan_L55kFu5JdL8uc4"), data: { turbo: 'false' }, class: 'button button-clear' %>
             <% else %>
-                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
+                <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-clear' %>
             <% end %>
             <br>
             <p  class="plans_columns_card_features">

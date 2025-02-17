@@ -3,11 +3,16 @@
         <h1>Mis Favoritas</h1>
     </div>
 </div>
-<div></div>
-<div  class="workoutGrid workoutRow">
-  <% @workouts.each do |workout| %>
-      <div>
-        <%= render workout %>
-      </div>
-    <% end %>
-</div>
+<% if @workouts.blank? %>
+    <div class="emptyFavorites">
+        <h2>Explora clases, agregarlas a 'Favoritas' y aparecerán aquí.</h2>
+    </div>
+<% else %>
+    <div  class="workoutGrid workoutRow">
+        <% @workouts.each do |workout| %>
+        <div>
+            <%= render workout %>
+        </div>
+        <% end %>
+    </div>
+<% end %>

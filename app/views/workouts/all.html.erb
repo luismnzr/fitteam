@@ -1,0 +1,31 @@
+<div class="filterBox">
+  <div class="filterBox-header">
+    <div>
+      <h2>Estas viendo todas las rutinas</h2>
+      <p>Usa los filtros para comenzar a buscar, los filtros que actives se mostrarán abajo</p>
+    </div>
+    <div>
+      <%= link_to "Mis favoritas", favorites_path, class: 'button button-clear' %>
+    </div>
+  </div>
+  <div  class="filterBox-search">
+    <div class="filterBox-search_columns">
+      <select>
+        <option>Intensidad</option>
+        <option>Alta</option>
+      </select>
+      <select>
+        <option>Rutinas</option>
+        <option>Upper Body</option>
+      </select>
+    </div>
+    <div  class="filterBox-search_field">
+      <input type="text" placeholder="Buscar por texto...">
+    </div>
+  </div>
+</div>
+<div  class="workoutGrid workoutRow">
+  <% @workouts.each do |workout| %>
+    <%= render workout %>
+  <% end %>
+</div>

@@ -36,6 +36,10 @@ class WorkoutsController < ApplicationController
     @workouts = current_user.favorite_workouts
   end
 
+  def all
+    @workouts = Workout.all.order('created_at ASC')
+  end
+
   # GET /workouts/1 or /workouts/1.json
   def show
     @comment = @workout.comments.build

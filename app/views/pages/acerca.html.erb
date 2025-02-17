@@ -61,7 +61,6 @@
         <div  class="prefooter-column prefooter-actions">
             <% if current_user %>
             <% unless current_user.active? %>
-              <%= link_to "Planes", payments_new_path %>
             <% end %>
                 <%= link_to 'Ir a clases', workouts_path, class: 'button button-white' %>
                 <%= link_to 'Mi cuenta', edit_user_registration_path, class: 'button button-white' %>
