@@ -12,7 +12,7 @@
             </p>
             <br>
             <% if current_user %>
-                <%= button_to 'Elegir plan mensual', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+                <%= button_to 'Elegir plan mensual', stripe_checkout_path(price_id: "price_1IzXpjCQy9Hvq1vmGc0LWqMD"), data: { turbo: 'false' }, class: 'button button-plan' %>
             <% else %>
                 <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
             <% end %>
@@ -26,11 +26,11 @@
             <h4>Plan Trimestral</h4>
             <br>
             <p class="plans_columns_card_price">
-                    499 mxn / mes
+                    1300 mxn / trimestre
             </p>
             <br>
             <% if current_user %>
-                <%= button_to 'Elegir plan trimestral', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+                <%= button_to 'Elegir plan trimestral', stripe_checkout_path(price_id: "plan_KqlGFwlFG9zwrT"), data: { turbo: 'false' }, class: 'button button-plan' %>
             <% else %>
                 <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
             <% end %>
@@ -44,11 +44,11 @@
             <h4>Plan Semestral</h4>
             <br>
             <p class="plans_columns_card_price">
-                    1300 mxn / semestre
+                    2300 mxn / semestre
             </p>
             <br>
             <% if current_user %>
-                <%= button_to 'Elegir plan semestral', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+                <%= button_to 'Elegir plan semestral', stripe_checkout_path(price_id: "plan_KqlUEfvr2JArdI"), data: { turbo: 'false' }, class: 'button button-plan' %>
             <% else %>
                 <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
             <% end %>
@@ -62,11 +62,11 @@
             <h4>Plan Anual</h4>
             <br>
             <p class="plans_columns_card_price">
-                    2600 mxn / año
+                    4400 mxn / año
             </p>
             <br>
             <% if current_user %>
-                <%= button_to 'Elegir plan anual', stripe_checkout_path(price_id: "price_1QpYTYCQy9Hvq1vmfTJGMHhT"), data: { turbo: 'false' }, class: 'button button-plan' %>
+                <%= button_to 'Elegir plan anual', stripe_checkout_path(price_id: "plan_L55kFu5JdL8uc4"), data: { turbo: 'false' }, class: 'button button-plan' %>
             <% else %>
                 <%= link_to 'Suscribirme', new_user_session_path, class: 'button button-plan' %>
             <% end %>

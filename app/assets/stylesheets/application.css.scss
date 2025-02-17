@@ -532,16 +532,23 @@ h5 {
   background: #f9f8f3;
   background-size: cover;
   display: flex;
-  padding: 6rem 0;
   height: 600px;
+}
+
+.workouts_cover_image {
+  background: url("freeCover.jpg");
+  background-size: cover;
+  background-position: center;
+  width: 40%;
+  height: 100%;
 }
 
 .workouts_cover-container {
   color: #111;
   margin: auto;
   max-width: 1320px;
-  padding: 0 2rem;
-  width: 100%;
+  padding: 6rem 2rem;
+  width: 60%;
 }
 
 .workouts_cover-container_info {
@@ -552,6 +559,7 @@ h5 {
 .workouts_cover-container_infoFree {
   max-width: 400px;
   color: #111 !important;
+  margin: auto;
 }
 
 .workouts_cover-container_info h3 {
@@ -988,6 +996,9 @@ footer {
   .wotdContainer {
     height: auto;
   }
+  .columnFull {
+    padding: 2rem;
+  }
   .prefooter-actions {
     flex-direction: column;
     margin-top: 25px;
@@ -1029,5 +1040,21 @@ footer {
   }
   .calendarBlock-grid {
     grid-template-columns: 1fr 1fr;
+  }
+  .workouts_cover {
+    background: url("freeCover.jpg");
+    background-position: center;
+    background-size: cover;
+    flex-direction: column;
+  }
+  .workouts_cover-container {
+    width: 100%;
+  }
+  .workouts_cover_image {
+    display: none;
+  }
+  .workouts_cover-container_infoFree {
+    padding: 2rem;
+    background-color: #f9f8f3;
   }
 }

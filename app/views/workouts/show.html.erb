@@ -27,6 +27,8 @@
           <%= link_to "Contrata un plan", payments_new_path, class: "button" %>
         </div>
       </div>  
+      <div class="workouts_cover_image">
+      </div>
     </div>
   <% end %>
 <% else %>
@@ -41,7 +43,9 @@
         <br>
         <%= link_to "Contrata un plan", payments_new_path, class: "button" %>
       </div>
-    </div>  
+    </div> 
+    <div class="workouts_cover_image">
+      </div> 
   </div>
 <% end %>
 
@@ -54,11 +58,13 @@
     <br>
     <p>Duración: <span><%= @workout.duration %>min</span></p>
     <br>
-    <%- unless current_user.favorite_workouts.exists?(id: @workout.id) -%>
-      <%= button_to 'Agregar a favoritas', favorite_workouts_path(workout_id: @workout), data: { turbo_method: :post }, class: 'button' %>
-    <%- else -%>
-      <%= button_to 'Quitar de favoritas', favorite_workout_path(@workout), method: :delete, class: 'button button-red' %>
-    <%- end -%>
+    <% if current_user %>
+      <% unless current_user.favorite_workouts.exists?(id: @workout.id) %>
+        <%= button_to 'Agregar a favoritas', favorite_workouts_path(workout_id: @workout), data: { turbo_method: :post }, class: 'button' %>
+      <% else %>
+        <%= button_to 'Quitar de favoritas', favorite_workout_path(@workout), method: :delete, class: 'button button-red' %>
+      <% end %>
+    <% end %>
   </div>
 </div>
 
@@ -72,7 +78,9 @@
           <br>
           <p><%= comment.text%></p>
         <% end %>
-        <%= render "comments/form", comment: @comment%>
+        <% if current_user %>
+          <%= render "comments/form", comment: @comment%>
+        <% end %>
       </div>
     </div>
 </div>
