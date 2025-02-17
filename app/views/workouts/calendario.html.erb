@@ -1,0 +1,30 @@
+<div class="categoryHeader">
+    <div class="categoryHeader-title">
+        <h1>Calendario</h1>
+    </div>
+</div>
+<div class="container">
+    <div class="columns">
+        <div class="columnCalendar">
+            <div id="calendar"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+function eventCalendar() {
+  return $("#calendar").fullCalendar({});
+}
+function clearCalendar() {
+  $("#calendar").fullCalendar("delete");
+  $("#calendar").html("");
+}
+$(document).on("turbolinks:load", function () {
+  eventCalendar();
+});
+$(document).on("turbolinks:before-cache", clearCalendar);
+$("#calendar").fullCalendar({
+  events: "/workouts.json",
+});
+
+</script>

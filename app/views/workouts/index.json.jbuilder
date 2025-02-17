@@ -1,1 +1,5 @@
-json.array! @workouts, partial: "workouts/workout", as: :workout
+json.array!(@workouts) do |workout|   
+  json.extract! workout, :id, :title
+  json.start workout.day   
+  json.url workout_url(workout, format: :html) 
+end

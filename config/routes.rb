@@ -41,6 +41,7 @@ Rails.application.routes.draw do
   get '/gluteships', to: 'workouts#gluteships', as: 'gluteships'
   get '/abscore', to: 'workouts#abscore', as: 'abscore'
   get '/all', to: 'workouts#all', as: 'all'
+  get '/calendario', to: 'workouts#calendario', as: 'calendario'
 
   get '/pages/acerca', to: 'pages#acerca', as: 'acerca'
   get '/pages/preguntasfrecuentes', to: 'pages#preguntasfrecuentes', as: 'preguntasfrecuentes'
