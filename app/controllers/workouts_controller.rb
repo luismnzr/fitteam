@@ -32,8 +32,13 @@ class WorkoutsController < ApplicationController
     @workoutGlutesHips = Workout.all.order('created_at DESC').where(category: "Glutes and Hips")
   end
 
+  def favorites
+    @workouts = current_user.favorite_workouts
+  end
+
   # GET /workouts/1 or /workouts/1.json
   def show
+    @comment = @workout.comments.build
   end
 
   # GET /workouts/new

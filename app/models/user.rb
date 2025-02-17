@@ -15,4 +15,9 @@ class User < ApplicationRecord
   def admin?
     admin == true
   end
+
+  has_many :comments
+
+  has_many :favorites
+  has_many :favorite_workouts, through: :favorites, source: :favorited, source_type: 'Workout'
 end

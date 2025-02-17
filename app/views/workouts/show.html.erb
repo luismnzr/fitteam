@@ -54,8 +54,29 @@
     <br>
     <p>Duración: <span><%= @workout.duration %>min</span></p>
     <br>
+    <%- unless current_user.favorite_workouts.exists?(id: @workout.id) -%>
+      <%= button_to 'Agregar a favoritas', favorite_workouts_path(workout_id: @workout), data: { turbo_method: :post }, class: 'button' %>
+    <%- else -%>
+      <%= button_to 'Quitar de favoritas', favorite_workout_path(@workout), method: :delete, class: 'button button-red' %>
+    <%- end -%>
   </div>
 </div>
+
+<div class="container commentContainer">
+    <div class="columns">
+      <div class="columnFull">
+        <h3>Comentarios</h3>
+        <%- @workout.comments.each do |comment|%>
+          <br>
+          <hr>
+          <br>
+          <p><%= comment.text%></p>
+        <% end %>
+        <%= render "comments/form", comment: @comment%>
+      </div>
+    </div>
+</div>
+
 
 <script type="text/javascript">
   $('body')

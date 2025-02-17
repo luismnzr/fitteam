@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :comments
   namespace :admin do
       resources :users
       resources :workouts
@@ -8,6 +9,9 @@ Rails.application.routes.draw do
   get "pages/index"
   resources :workouts
   devise_for :users
+
+  resources :favorite_workouts, only: [:create, :destroy]
+  get '/favorites', to: 'workouts#favorites', as: 'favorites'
 
   get '/payments/new', to: 'payments#new'
   get '/payments/success', to: 'payments#success'

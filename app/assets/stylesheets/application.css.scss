@@ -30,7 +30,7 @@ a:hover {
 
 body {
   color: #111;
-
+  background: #f9f8f3;
   font-family: "Lato", sans-serif;
   font-size: 1.125rem;
 }
@@ -101,6 +101,8 @@ h5 {
 }
 
 .header {
+  background-color: #fff;
+
   height: 70px;
   width: 100%;
 }
@@ -337,7 +339,7 @@ h5 {
   border-radius: 5px;
   background-position: center;
   background-size: cover;
-  height: 240px;
+  height: 200px;
   width: 100%;
 }
 
@@ -401,6 +403,10 @@ h5 {
   }
   .workoutCard_categories {
     justify-content: center;
+  }
+  .button {
+    max-width: 150px;
+    margin: auto;
   }
 }
 
@@ -561,7 +567,7 @@ h5 {
   background-position: center;
   background-size: cover;
   padding: 2rem;
-  height: 420px;
+  height: 550px;
   display: flex;
   align-items: start;
   justify-content: center;
@@ -745,6 +751,11 @@ h5 {
   display: flex;
   gap: 30px;
 }
+.columnFull {
+  width: 100%;
+  max-width: 600px;
+  margin: auto;
+}
 .columnHalf {
   width: 50%;
   img {
@@ -892,7 +903,7 @@ footer {
 
 .categoryHeader {
   display: flex;
-  justify-content: space-between;
+  // justify-content: space-between;
 }
 
 .aboutHeader {
@@ -924,6 +935,10 @@ footer {
   text-align: center;
   padding: 100px 2rem;
 }
+.commentContainer {
+  margin-bottom: 100px;
+}
+
 @media only screen and (max-width: 749px) {
   .container {
     width: 100%;

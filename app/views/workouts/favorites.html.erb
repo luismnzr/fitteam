@@ -1,0 +1,13 @@
+<div class="categoryHeader">
+    <div class="categoryHeader-title">
+        <h1>Mis Favoritas</h1>
+    </div>
+</div>
+<div></div>
+<div  class="workoutGrid workoutRow">
+  <% @workouts.each do |workout| %>
+      <div>
+        <%= render workout %>
+      </div>
+    <% end %>
+</div>
