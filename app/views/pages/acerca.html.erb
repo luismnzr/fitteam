@@ -1,0 +1,74 @@
+<div class="aboutHeader">
+    <div class="aboutHeader-title">
+        <h4>Conoce más sobre</h4>
+        <h1>Ana Gaby Ornelas</h1>
+    </div>
+</div>
+<div class="quote">
+    <div class="quote-container">
+        <p>"El verdadero ejercicio no solo fortalece el cuerpo, sino que libera la mente y enciende el alma. Cada paso que das te acerca más a tu mejor versión."</p>
+        <br>
+        <p><strong>– ANA GABY ORNELAS</strong></p>
+    </div>
+</div>
+<div class="container embassador-container">
+    <div class="columns">
+        <div class="columnThirdHigh">
+            <div class="embassador-info">
+                <h1>¡Hola, soy Ana Gaby Ornelas!</h1>
+                <br>
+                <p>
+                    Entrenadora personal y grupal, en línea o presencial, todas mis clases te llevan un mismo nivel de exigencia personal. Apasionada y entregada a esto que llamo trabajo, ayudarte a construir tu mejor versión y trabajar diario en ello es mi objetivo principal.
+                    <br><br>
+                    Con certificaciones en diferentes disciplinas he creado mi propio método de entrenamiento que te ayuda a fortalecer y tonificar de una forma muy dinámica y divertida. Te invito a conocerme un poquito más probando lo que prepare especialmente para ti en esta plataforma.
+                </p>
+                <br>
+                <br>
+                <%= image_tag("lululemon.png") %>
+                <p><strong>City Embassador</strong></p>
+            </div>
+        </div>
+        <div class="columnThirdLow">
+            <%= image_tag("aboutPic.jpg") %>
+        </div>
+    </div>
+</div>
+<div class="container trayectory_container">
+    <div class="columns">
+        <div class="columnThirdLow">
+            <div class="trayectory_cover"><%= image_tag("trayectory.jpg") %></div>
+        </div>
+        <div class="columnThirdHigh">
+            <div>
+                <h1>Mi Trayectoria</h1>
+                <br>
+                <p> 
+                    Probando de todo un poco y mezclando diferentes metodologías he creado un metodo que te ayuda a ganar masa muscular y movilidad a la vez, creando mvimientos dinamicos y divertidos en clases al ritmo de la musica.
+                    <br><br>
+                    Con mas de 10 años de experiencia diseñe este metodo que combina lo mejor de cada disciplina. 
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="prefooter">
+    <div class="prefooter-container">
+        <div  class="prefooter-column">
+            <h2>
+                Workouts para mente, cuerpo y corazón
+            </h2>
+        </div>
+        <div  class="prefooter-column prefooter-actions">
+            <% if current_user %>
+            <% unless current_user.active? %>
+              <%= link_to "Planes", payments_new_path %>
+            <% end %>
+                <%= link_to 'Ir a clases', workouts_path, class: 'button button-white' %>
+                <%= link_to 'Mi cuenta', edit_user_registration_path, class: 'button button-white' %>
+            <% else %>
+            <%= link_to 'Inicia sesión', new_user_session_path, class: 'button button-white' %>
+            <%= link_to 'Crear cuenta', new_user_registration_path, class: 'button button-white' %>
+          <% end %>
+        </div>
+    </div>
+</div>

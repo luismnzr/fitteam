@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  namespace :admin do
+      resources :users
+      resources :workouts
+
+      root to: "users#index"
+    end
   get "pages/index"
   resources :workouts
   devise_for :users
@@ -30,4 +36,9 @@ Rails.application.routes.draw do
   get '/fullbody', to: 'workouts#fullbody', as: 'fullbody'
   get '/gluteships', to: 'workouts#gluteships', as: 'gluteships'
   get '/abscore', to: 'workouts#abscore', as: 'abscore'
+
+  get '/pages/acerca', to: 'pages#acerca', as: 'acerca'
+  get '/pages/preguntasfrecuentes', to: 'pages#preguntasfrecuentes', as: 'preguntasfrecuentes'
+  get '/pages/terminos', to: 'pages#terminos', as: 'terminos'
+
 end

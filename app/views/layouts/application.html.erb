@@ -39,6 +39,7 @@
         </div>
         <div class="header-container_actions" id="header_actions">
           <%= link_to "Explorar clases", workouts_path %>
+          <%= link_to "Acerca", acerca_path %>
           <% if current_user %>
             <% unless current_user.active? %>
               <%= link_to "Planes", payments_new_path %>
@@ -71,7 +72,7 @@
           </div>
           <div class="footer-column_list">
             <h5>Acerca</h5>
-            <%= link_to "Acerca de", root_path %>
+            <%= link_to "Acerca de", acerca_path %>
             <%= link_to "Preguntas Frecuentes", root_path %>
             <% if current_user %>
             <% else %>

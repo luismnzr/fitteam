@@ -747,6 +747,9 @@ h5 {
 }
 .columnHalf {
   width: 50%;
+  img {
+    width: 100%;
+  }
 }
 .columnThirdLow {
   width: 33.33%;
@@ -892,6 +895,35 @@ footer {
   justify-content: space-between;
 }
 
+.aboutHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: url("aboutCover.jpg");
+  background-position: center;
+  background-size: cover;
+  width: 100%;
+  height: 420px;
+  &-title {
+    color: #fff;
+    text-align: center;
+    width: 100%;
+  }
+}
+.trayectory_container {
+  margin: 100px auto;
+  padding: 2rem;
+}
+.trayectory_cover {
+  img {
+    width: 100%;
+  }
+}
+.quote {
+  background: #f9f8f3;
+  text-align: center;
+  padding: 100px 2rem;
+}
 @media only screen and (max-width: 749px) {
   .container {
     width: 100%;
