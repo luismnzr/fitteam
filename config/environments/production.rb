@@ -22,6 +22,10 @@ Rails.application.configure do
 
   # Disable serving static files from `public/`, relying on NGINX/Apache to do so instead.
   # config.public_file_server.enabled = false
+  Rails.application.routes.default_url_options = {
+  host: "safe-savannah-67494-d249f5ebd4d7.herokuapp.com",
+    protocol: "https"
+  }
 
   # Compress CSS using a preprocessor.
   # config.assets.css_compressor = :sass
