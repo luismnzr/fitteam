@@ -32,7 +32,8 @@
         var calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: 'dayGridMonth',
           events: "/workouts.json",
-          weekends: false
+          weekends: false,
+          allDay: true
         });
         calendar.render();
 
