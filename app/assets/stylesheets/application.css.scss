@@ -68,6 +68,13 @@ h5 {
 .fc-event-dot {
   background-color: #004a37 !important;
   border-color: #004a37 !important;
+  padding: 1rem;
+}
+.fc-daygrid-event-dot {
+  display: none;
+}
+.fc-event-time {
+  display: none !important;
 }
 
 .button {
@@ -207,6 +214,7 @@ h5 {
     border-radius: 15px;
     padding: 1.5rem;
     max-width: 420px;
+    width: 80%;
     &-title {
       margin-bottom: 0.75rem;
       p {
@@ -223,7 +231,7 @@ h5 {
 .loginContainer {
   background: url("signup_cover.jpg");
   background-size: cover;
-  background-position: center;
+  background-position: bottom;
 }
 
 .registrationEdit {
