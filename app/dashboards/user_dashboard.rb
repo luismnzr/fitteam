@@ -32,7 +32,10 @@ class UserDashboard < Administrate::BaseDashboard
     id
     admin
     email
-    encrypted_password
+    name
+    subscription_status
+    subscription_ends_at
+    stripe_customer_id
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
