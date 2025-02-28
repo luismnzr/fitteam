@@ -69,6 +69,11 @@
             <%= link_to "Planes", payments_new_path %>
             <%= link_to "Inicia Sesión", new_user_session_path, class: "button button-header_alpha" %>
           <% end %>
+          <% if current_user %>
+            <% if current_user.admin? %>
+              <%= link_to "Agregar clase", new_workout_path, class: "button button-header_alpha" %>
+            <% end %>
+          <% end %>
           <a href="javascript:void(0);" class="menu_icon" onclick="openMenu()">
               <%= image_tag("menu_icon.svg") %>
           </a>

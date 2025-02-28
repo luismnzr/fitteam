@@ -1,29 +1,45 @@
 <div class="filterBox">
   <div class="filterBox-header">
     <div>
-      <h2>Estas viendo todas las rutinas</h2>
+      <h2>Busca un workout a tu medida</h2>
       <p>Usa los filtros para comenzar a buscar, los filtros que actives se mostrarán abajo</p>
     </div>
     <div>
-      <%= link_to "Mis favoritas", favorites_path, class: 'button button-clear' %>
+      <%= link_to "Ver Mis favoritas", favorites_path, class: 'button button-clear' %>
     </div>
   </div>
-  <div  class="filterBox-search">
-    <div class="filterBox-search_columns">
-      <select>
-        <option>Intensidad</option>
-        <option>Alta</option>
-      </select>
-      <select>
-        <option>Rutinas</option>
-        <option>Upper Body</option>
-      </select>
+  <form action="/all" method="GET">
+    <div  class="filterBox-search">
+      <div class="filterBox-search_columns">
+          <select name="intensidad">
+            <option value="">Intensidad</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+          <select name="categoria">
+            <option value="">Grupo Muscular</option>
+            <option value="Lower Body">Lower Body</option>
+            <option value="ABS and Core">ABS and Core</option>
+            <option value="Full Body">Full Body</option>
+            <option value="Glutes and Hips">Glutes and Hips</option>
+            <option value="Upper Body">Upper Body</option>
+          </select>
+          <select  name="duracion">
+            <option value="">Duración</option>
+            <option value="15min">15min</option>
+            <option value="30min">30min</option>
+            <option value="45min">45min</option>
+            <option value="1 hora">1 hora</option>
+          </select>
+      </div>
+      <div  class="filterBox-search_field">
+        <input type="submit" value="Buscar workout" class="button button-white">
+      </div>
     </div>
-    <div  class="filterBox-search_field">
-      <input type="text" placeholder="Buscar por texto...">
-    </div>
-  </div>
+  </form>
 </div>
+<br><br>
 <div  class="workoutGrid workoutRow">
   <% @workouts.each do |workout| %>
     <%= render workout %>

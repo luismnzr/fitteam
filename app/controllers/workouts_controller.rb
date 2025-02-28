@@ -1,9 +1,11 @@
 class WorkoutsController < ApplicationController
   before_action :set_workout, only: %i[ show edit update destroy ]
+  before_action :initialize_search, only: %i[ all index ]
 
   # GET /workouts or /workouts.json
   def index
     @workouts = Workout.all
+    @workoutsFeatured = Workout.last(4)
     @workoutsRecent = Workout.last(10)
     @workoutsLast = Workout.order('created_at DESC').where(recent: true)
     @workoutLowerBody = Workout.limit(10).order('created_at DESC').where(category: "Lower Body")
@@ -38,7 +40,7 @@ class WorkoutsController < ApplicationController
   end
 
   def all
-    @workouts = Workout.all.order('created_at ASC')
+    handle_filters
   end
 
   # GET /workouts/1 or /workouts/1.json
@@ -94,6 +96,46 @@ class WorkoutsController < ApplicationController
   end
 
   private
+
+    def initialize_search
+
+      # session[:filter] = params[:filter]
+      params[:intensidad] = nil if params[:intensidad] == ""
+      session[:intensidad] = params[:intensidad]
+      params[:categoria] = nil if params[:categoria] == ""
+      session[:categoria] = params[:categoria]
+      params[:duracion] = nil if params[:duracion] == ""
+      session[:duracion] = params[:duracion]
+    end
+    
+    def handle_search_name
+      if session[:search_name]
+        @workouts = Workout.where("name LIKE ?", "%#{session[:search_name].titleize}%")
+      else
+        @workouts = Workout.all
+      end
+    end
+
+    def handle_filters
+      if session[:intensidad]
+        @workouts = Workout.where(intensity: session[:intensidad])
+      elsif session[:categoria]
+        @workouts = Workout.where(category: session[:categoria])
+      elsif session[:duracion]
+        @workouts = Workout.where(duration: session[:duracion])
+      elsif session[:intensidad] && session[:categoria] 
+        @workouts = Workout.where(intensity: session[:intensidad], category: session[:categoria])
+      elsif session[:intensidad] && session[:duracion] 
+        @workouts = Workout.where(intensity: session[:intensidad], duration: session[:duracion])
+      elsif session[:categoria] && session[:duracion] 
+        @workouts = Workout.where(category: session[:categoria], duration: session[:duracion])
+      elsif session[:intensidad] && session[:categoria] && session[:duracion] 
+        @workouts = Workout.where(intensity: session[:intensidad], category: session[:categoria], duration: session[:duracion])
+      else
+        @workouts = Workout.last(9)
+      end
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_workout
       @workout = Workout.find(params[:id])

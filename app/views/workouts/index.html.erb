@@ -1,9 +1,29 @@
 <% content_for :title, "Workouts" %>
-<div class="workouts_banner">
-  <h1>Upper Body 91</h1>
-  <p>45min</p>
-  <br>
-  <a href="/workouts/1" class="button">Ir a Workout</a>
+
+<div class="workoutBanner">
+  <div class="swiper swiper7">
+    <div class="swiper-wrapper">
+      <% @workoutsRecent.each do |workout| %>
+        <div class="swiper-slide">
+          <div class="workouts_banner" style="background-image: url('<%= rails_blob_url(workout.cover) %>')">
+            <div class="workouts_banner_container">
+              <h1><%= workout.title %></h1>
+              <br>
+              <p><%= workout.duration %></p>
+              <br>
+              <p>Intensidad: <%= workout.intensity %></p>
+              <br>
+              <%= link_to "Ir a workout", workout, class: "button" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+    </div>
+    <div class="swiper-pagination swiper-pagination7"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+  </div>
 </div>
 
 
@@ -24,34 +44,6 @@
     <div class="calendarBlock-grid-item"><%= link_to abscore_path do %><%= image_tag("miercoles.png") %><% end %></div>
     <div class="calendarBlock-grid-item"><%= link_to gluteships_path do %><%= image_tag("jueves.png") %><% end %></div>
     <div class="calendarBlock-grid-item"><%= link_to fullbody_path do %><%= image_tag("viernes.png") %><% end %></div>
-  </div>
-</div>
-
-<div class="workoutRow">
-
-  <div class="workoutRow-header">
-    <h1>Recientes</h1>
-    <% if current_user %>
-      <% if current_user.admin? %>
-        <%= link_to "Agregar clase", new_workout_path, class: "button button-clear" %>
-      <% end %>
-    <% end %>
-  </div>
-  <br>
-  <div class="workoutSwiper">
-      <div class="swiper swiper1">
-        <div class="swiper-wrapper">
-          <% @workoutsRecent.each do |workout| %>
-            <div  class="swiper-slide">
-              <%= render workout %>
-
-            </div>
-          <% end %>
-        </div>
-        <div class="swiper-pagination swiper-pagination1"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-      </div>
   </div>
 </div>
 
@@ -180,24 +172,46 @@
   </div>
 </div>
 
-<div class="prefooter">
-    <div class="prefooter-container">
-        <div  class="prefooter-column">
-            <h2>
-                ¿Aún no encuentras tu workout?
-            </h2>
-        </div>
-        <div  class="prefooter-column prefooter-actions">
-            <% if current_user %>
-            <% unless current_user.active? %>
-            <% end %>
-                <%= link_to 'Ver todas las clases', all_path, class: 'button button-white' %>
-            <% else %>
-            <%= link_to 'Inicia sesión', new_user_session_path, class: 'button button-white' %>
-            <%= link_to 'Crear cuenta', new_user_registration_path, class: 'button button-white' %>
-          <% end %>
-        </div>
+<div class="filterBox">
+  <div class="filterBox-header">
+    <div>
+      <h2>Busca un workout a tu medida</h2>
+      <p>Usa los filtros para comenzar a buscar, los filtros que actives se mostrarán abajo</p>
     </div>
+    <div>
+      <%= link_to "Ver Mis favoritas", favorites_path, class: 'button button-clear' %>
+    </div>
+  </div>
+  <form action="/all" method="GET">
+    <div  class="filterBox-search">
+      <div class="filterBox-search_columns">
+          <select name="intensidad">
+            <option value="">Intensidad</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+          <select name="categoria">
+            <option value="">Grupo Muscular</option>
+            <option value="Lower Body">Lower Body</option>
+            <option value="ABS and Core">ABS and Core</option>
+            <option value="Full Body">Full Body</option>
+            <option value="Glutes and Hips">Glutes and Hips</option>
+            <option value="Upper Body">Upper Body</option>
+          </select>
+          <select  name="duracion">
+            <option value="">Duración</option>
+            <option value="15min">15min</option>
+            <option value="30min">30min</option>
+            <option value="45min">45min</option>
+            <option value="1 hora">1 hora</option>
+          </select>
+      </div>
+      <div  class="filterBox-search_field">
+        <input type="submit" value="Buscar workout" class="button button-white">
+      </div>
+    </div>
+  </form>
 </div>
 
 <script>
@@ -369,6 +383,20 @@
           spaceBetween: 40
         }
       },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+  });
+
+  var swiper7 = new Swiper('.swiper7', {
+      direction: 'horizontal',
+      loop: true,
+      pagination: {
+        el: '.swiper-pagination7',
+        clickable: true,
+      },
+      slidesPerView: 1,
       navigation: {
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',

@@ -45,7 +45,7 @@ textarea {
   padding: 1rem;
   width: 100%;
   max-width: 420px;
-  border-radius: 15px;
+  border-radius: 6px;
   margin-top: 10px;
   border: 1px solid #111;
   color: #111;
@@ -72,6 +72,10 @@ h5 {
 }
 .fc-event-time {
   display: none !important;
+}
+
+.fc .fc-button {
+  padding: 0 0.5rem;
 }
 
 .button {
@@ -590,24 +594,35 @@ h5 {
 }
 
 .workouts_banner {
-  background: url("banner.png");
   background-position: center;
   background-size: cover;
   padding: 2rem;
-  height: 550px;
+  height: 700px;
+  width: 100%;
   display: flex;
   align-items: start;
   justify-content: center;
   flex-direction: column;
   h1,
   p {
-    color: #fff;
+    color: #111;
+  }
+  &_container {
+    background: rgba(255, 255, 255, 0.7);
+    max-width: 420px;
+    width: 90%;
+    margin-left: 50px;
+    padding: 1rem;
+    color: #111;
+    border-radius: 6px;
+    .button {
+      display: inline-block;
+    }
   }
 }
 .filterBox {
   background: #860847;
   padding: 100px 2rem;
-  margin-bottom: 50px;
   &-header {
     color: #fff;
     display: flex;
@@ -623,8 +638,9 @@ h5 {
   }
   &-search_field {
     display: flex;
-    gap: 2rem;
+    gap: 1rem;
     width: 100%;
+    margin-top: 1rem;
     input {
       width: 100%;
       max-width: none;
@@ -647,7 +663,7 @@ h5 {
 }
 .filterBox-search_columns {
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   select {
     width: 50%;
     max-width: none;
@@ -719,6 +735,7 @@ h5 {
     }
   }
 }
+
 .swiper1,
 .swiper2,
 .swiper3,
@@ -730,7 +747,11 @@ h5 {
   margin: auto;
   height: auto;
 }
-
+.swiper7 {
+  width: 100%;
+  margin: auto;
+  height: 700px;
+}
 .swiper-button-next:after,
 .swiper-button-prev:after {
   font-size: 1.5rem !important;
@@ -739,6 +760,10 @@ h5 {
 
 .swiper-pagination {
   bottom: -4px !important;
+}
+
+.swiper-pagination7 {
+  bottom: 10px !important;
 }
 .swiper-pagination-bullet-active {
   background: #860847 !important;
@@ -1092,5 +1117,8 @@ footer {
   .workouts_cover-container_infoFree {
     padding: 2rem;
     background-color: #f9f8f3;
+  }
+  .workouts_banner_container {
+    margin: auto;
   }
 }
