@@ -33,6 +33,17 @@ Rails.application.configure do
   # Do not fall back to assets pipeline if a precompiled asset is missed.
   config.assets.compile = false
 
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    user_name: 'api',
+    password: 'fc87f042c8e33703cc31fed9307cf964',
+    address: 'live.smtp.mailtrap.io',
+    host: 'live.smtp.mailtrap.io',
+    port: '587',
+    authentication: :login
+  }
+  # config.action_mailer.default_url_options ={:host => 'udbhayoga.com', :protocol => 'https'}
+
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
