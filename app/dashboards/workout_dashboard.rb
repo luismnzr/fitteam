@@ -31,6 +31,7 @@ class WorkoutDashboard < Administrate::BaseDashboard
     title
     category
     cover
+    day
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES

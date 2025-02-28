@@ -26,6 +26,13 @@
         ["Upper Body", "Upper Body"]], {}, { class: 'input' } %>
     </div>
 
+    <div  class="field">
+      <%= form.label "Normal/Estreno", style: "display: block" %>
+        <%= form.select :color, [
+        ["Normal", "#004a37"],
+        ["Estreno", "#111111"]], {}, { class: 'input' } %>
+    </div>
+
   <div  class="field">
     <%= form.label "Duración", style: "display: block" %>
     <%= form.select :duration, [

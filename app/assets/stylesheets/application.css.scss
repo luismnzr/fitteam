@@ -64,10 +64,7 @@ h5 {
   background-color: #860847;
   border-color: #860847;
 }
-.fc-event,
-.fc-event-dot {
-  background-color: #004a37 !important;
-  border-color: #004a37 !important;
+.fc-event {
   padding: 1rem;
 }
 .fc-daygrid-event-dot {
@@ -309,7 +306,6 @@ h5 {
 .newWorkout {
   background: #860847;
   width: 100%;
-  height: 100vh;
   min-height: 800px;
   display: flex;
   align-items: center;
@@ -709,6 +705,19 @@ h5 {
   display: flex;
   color: #fff;
   margin-bottom: 70px;
+  &-title {
+    .dot {
+      display: inline-flex;
+      margin-right: 10px;
+    }
+    .dot::after {
+      content: "";
+      background: #111;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+  }
 }
 .swiper1,
 .swiper2,

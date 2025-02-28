@@ -51,12 +51,17 @@
 
 <div class="workoutView-info" >
   <div class="workoutView-info_container" >
+    <% if current_user %>
+      <% if current_user.admin? %>
+        <%= link_to "Editar clase", edit_workout_path(@workout) %>
+      <% end %>
+    <% end %>
     <h2><%= @workout.title %></h2>
     <div class="workoutCard_categories">
      <p><%= @workout.category %></p>
     </div>
     <br>
-    <p>Duración: <span><%= @workout.duration %>min</span></p>
+    <p>Duración: <span><%= @workout.duration %></span></p>
     <br>
     <% if current_user %>
       <% unless current_user.favorite_workouts.exists?(id: @workout.id) %>
