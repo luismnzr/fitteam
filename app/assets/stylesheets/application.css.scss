@@ -1121,4 +1121,13 @@ footer {
   .workouts_banner_container {
     margin: auto;
   }
+  .workoutGrid {
+    grid-template-columns: 1fr;
+  }
+  .filterBox-search_columns {
+    flex-direction: column;
+    select {
+      width: 100%;
+    }
+  }
 }
