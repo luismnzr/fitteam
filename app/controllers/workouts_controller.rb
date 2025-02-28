@@ -8,11 +8,11 @@ class WorkoutsController < ApplicationController
     @workoutsFeatured = Workout.limit(4).order('created_at DESC')
     @workoutsRecent = Workout.last(10)
     @workoutsLast = Workout.order('created_at DESC').where(recent: true)
-    @workoutLowerBody = Workout.limit(10).order('created_at DESC').where(category: "Lower Body")
-    @workoutAbsCore = Workout.limit(10).order('created_at DESC').where(category: "ABS and Core")
-    @workoutFullBody = Workout.limit(10).order('created_at DESC').where(category: "Full Body")
-    @workoutGlutesHips = Workout.limit(10).order('created_at DESC').where(category: "Glutes and Hips")
-    @workoutUpperBody = Workout.limit(10).order('created_at DESC').where(category: "Upper Body")
+    @workoutLowerBody = Workout.limit(10).where(category: "Lower Body")
+    @workoutAbsCore = Workout.limit(10).where(category: "ABS and Core")
+    @workoutFullBody = Workout.limit(10).where(category: "Full Body")
+    @workoutGlutesHips = Workout.limit(10).where(category: "Glutes and Hips")
+    @workoutUpperBody = Workout.limit(10).where(category: "Upper Body")
   end
 
   def upperbody
