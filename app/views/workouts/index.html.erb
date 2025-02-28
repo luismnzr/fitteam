@@ -3,7 +3,7 @@
 <div class="workoutBanner">
   <div class="swiper swiper7">
     <div class="swiper-wrapper">
-      <% @workoutsRecent.each do |workout| %>
+      <% @workoutsFeatured.each do |workout| %>
         <div class="swiper-slide">
           <div class="workouts_banner" style="background-image: url('<%= rails_blob_url(workout.cover) %>')">
             <div class="workouts_banner_container">
