@@ -115,25 +115,6 @@ class WorkoutsController < ApplicationController
     #   end
     # end
 
-    # def handle_filters
-    #   if session[:intensidad]
-    #     @workouts = Workout.where(intensity: session[:intensidad])
-    #   elsif session[:categoria]
-    #     @workouts = Workout.where(category: session[:categoria])
-    #   elsif session[:duracion]
-    #     @workouts = Workout.where(duration: session[:duracion])
-    #   elsif session[:intensidad] && session[:categoria] 
-    #     @workouts = Workout.where(intensity: session[:intensidad], category: session[:categoria])
-    #   elsif session[:intensidad] && session[:duracion] 
-    #     @workouts = Workout.where(intensity: session[:intensidad], duration: session[:duracion])
-    #   elsif session[:categoria] && session[:duracion] 
-    #     @workouts = Workout.where(category: session[:categoria], duration: session[:duracion])
-    #   elsif session[:intensidad] && session[:categoria] && session[:duracion] 
-    #     @workouts = Workout.where(intensity: session[:intensidad], category: session[:categoria], duration: session[:duracion])
-    #   else
-    #     @workouts = Workout.last(9)
-    #   end
-    # end
     def handle_filters
       filters = {}
       filters[:intensity] = session[:intensidad] if session[:intensidad].present?

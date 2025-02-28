@@ -1,7 +1,7 @@
 <div class="registrationContainer registrationEdit">
   <div  class="registrationContainer__card">
     <div class="registrationContainer__card-title">
-      <h2>Mi cuenta</h2>
+      <h2>¡Hola <%= current_user.name %>!</h2>
       <p>Tu cuenta en Fitteam.</p>
     </div>
     <div class="registrationContainer__card-form">
@@ -10,7 +10,7 @@
 
         <div class="field">
           <%= f.label :email %><br />
-          <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", disabled: true %>
         </div>
       <% end %>
         <br>
