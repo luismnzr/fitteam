@@ -58,14 +58,15 @@
         </div>
         <div class="header-container_actions" id="header_actions">
           <%= link_to "Explorar clases", workouts_path %>
-          <%= link_to "Acerca", acerca_path %>
           <% if current_user %>
             <% unless current_user.active? %>
               <%= link_to "Planes", payments_new_path %>
             <% end %>
+            <%= link_to "Calendario", calendario_path %>
             <%= link_to "Favoritas", favorites_path %>
             <%= link_to "Mi Cuenta", edit_user_registration_path %>
           <% else %>
+            <%= link_to "Acerca", acerca_path %>
             <%= link_to "Planes", payments_new_path %>
             <%= link_to "Inicia Sesión", new_user_session_path, class: "button button-header_alpha" %>
           <% end %>

@@ -132,6 +132,8 @@ class WorkoutsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def workout_params
+      params[:workout][:material] = params[:workout][:material].reject(&:blank?).join(", ") if params[:workout][:material].is_a?(Array)
       params.require(:workout).permit(:title, :category, :duration, :video_url, :intensity, :material, :day, :cover, :color)
     end
+
 end

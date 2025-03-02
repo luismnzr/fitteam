@@ -57,10 +57,29 @@
       ["Alta", "Alta"]], {}, { class: 'input' } %>
   </div>
 
-  <div  class="field">
-    <%= form.label :material, style: "display: block" %>
-    <%= form.text_field :material %>
-  </div>
+  <div class="field">
+  <%= form.label :material %><br>
+  
+  <% [
+    "Mancuernas Medianas",
+      "Polainas", 
+      "Banco",
+      "Band",
+      "Bicicleta Estatica",
+      "Mancuernas Ligeras", 
+      "Mancuernas Pesadas",
+      "Pelota",
+      "Silla",
+      "Sin Material", 
+      "Sliders",
+      "Tapete",
+      "Tubo"].each do |mat| %>
+    <label>
+      <%= check_box_tag "workout[material][]", mat, @workout.material.to_s.split(", ").include?(mat) %>
+      <%= mat %>
+    </label><br>
+  <% end %>
+</div>
 
   <div  class="field">
     <%= form.label :day, style: "display: block" %>
