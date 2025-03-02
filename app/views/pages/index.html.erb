@@ -28,21 +28,27 @@
         </div>
     </div>
 </div>
-<div class="columns wotdContainer">
-    <div class="columnHalf">
-        <div class="wotdContainer-info">
-            <p>Workout del día</p>
-            <h2>LOWER BODY 73</h2>
-            <br>
-            <p>Rutina del dia de hoy, realiza tu ejercicio en el horario que mas quieras.</p>
-            <br>
-            <%= link_to "Ver workout", workouts_path, class: "button button-white" %>
+<% @workouts.each do |workout| %>
+    <div class="columns wotdContainer">
+        <div class="columnHalf">
+            <div class="wotdContainer-info">
+                <p>Workout del día</p>
+                <h2><%= workout.title %></h2>
+                <br>
+                <p>Rutina del dia de hoy, realiza tu ejercicio en el horario que mas quieras.</p>
+                <br>
+                <%= link_to "Ir a workout", workout, class: "button" %>
+                <%= link_to "Ver workout", workouts_path, class: "button button-white" %>
+            </div>
+        </div>
+        <div class="columnHalf">
+            <% if workout.cover.attached? %>
+                <div class="wotdContainer-cover" style="background-image: url('<%= rails_blob_url(workout.cover) %>')">
+                </div>
+            <% end %>
         </div>
     </div>
-    <div class="columnHalf">
-        <div class="wotdContainer-cover"></div>
-    </div>
-</div>
+<% end %>
 <div class="columns homeTripleColumn">
     <div class="columnThirdLow">
         <div class="homeTripleColumn-info">

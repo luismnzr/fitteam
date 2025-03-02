@@ -1,5 +1,6 @@
 class PagesController < ApplicationController
   def index
+    @workouts = Workout.where(day: Date.today.all_day)
   end
 
   def acerca

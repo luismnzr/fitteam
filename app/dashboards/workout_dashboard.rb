@@ -33,6 +33,7 @@ class WorkoutDashboard < Administrate::BaseDashboard
     category
     cover
     day
+    video_url
   ].freeze
 
   # SHOW_PAGE_ATTRIBUTES
