@@ -5,7 +5,7 @@ class WorkoutsController < ApplicationController
   # GET /workouts or /workouts.json
   def index
     @workouts = Workout.all
-    @workoutsFeatured = Workout.limit(4).order('created_at DESC')
+    @workoutsFeatured = Workout.where("day < ?", Date.today).order(day: :desc).limit(4)
     @workoutsRecent = Workout.last(10)
     @workoutsLast = Workout.order('created_at DESC').where(recent: true)
     @workoutLowerBody = Workout.limit(10).where(category: "Lower Body")
