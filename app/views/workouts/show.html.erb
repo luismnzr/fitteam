@@ -63,6 +63,8 @@
     <br>
     <p>Duración: <span><%= @workout.duration %></span></p>
     <br>
+    <br>
+    <p>Material: <span><%= @workout.material %></span></p>
     <% if current_user %>
       <% unless current_user.favorite_workouts.exists?(id: @workout.id) %>
         <%= button_to 'Agregar a favoritas', favorite_workouts_path(workout_id: @workout), data: { turbo_method: :post }, class: 'button' %>
