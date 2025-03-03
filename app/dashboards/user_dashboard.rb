@@ -13,6 +13,8 @@ class UserDashboard < Administrate::BaseDashboard
     email: Field::String,
     encrypted_password: Field::String,
     name: Field::String,
+    password: Field::String.with_options(searchable: false),
+    password_confirmation: Field::String.with_options(searchable: false),
     remember_created_at: Field::DateTime,
     reset_password_sent_at: Field::DateTime,
     reset_password_token: Field::String,
@@ -64,6 +66,8 @@ class UserDashboard < Administrate::BaseDashboard
     email
     encrypted_password
     name
+    password
+    password_confirmation
     remember_created_at
     reset_password_sent_at
     reset_password_token

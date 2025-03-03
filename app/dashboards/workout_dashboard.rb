@@ -12,7 +12,7 @@ class WorkoutDashboard < Administrate::BaseDashboard
     category: Field::String,
     color: Field::String,
     cover: Field::ActiveStorage,
-    day: Field::DateTime,
+    day: Field::Date,
     duration: Field::String,
     intensity: Field::String,
     material: Field::String,
