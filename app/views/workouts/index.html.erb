@@ -91,6 +91,31 @@
 <div class="workoutRow">
 
   <div class="workoutRow-header">
+    <h1>Upper Body</h1>
+    <%= link_to "Ver todas", upperbody_path, class: "button" %>
+
+  </div>
+  <br>
+  <div class="workoutSwiper">
+      <div class="swiper swiper6">
+        <div class="swiper-wrapper">
+          <% @workoutUpperBody.each do |workout| %>
+            <div  class="swiper-slide">
+              <%= render workout %>
+
+            </div>
+          <% end %>
+        </div>
+        <div class="swiper-pagination swiper-pagination6"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+  </div>
+</div>
+
+<div class="workoutRow">
+
+  <div class="workoutRow-header">
     <h1>ABS and Core</h1>
     <%= link_to "Ver todas", abscore_path, class: "button" %>
 
@@ -107,31 +132,6 @@
           <% end %>
         </div>
         <div class="swiper-pagination swiper-pagination3"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-      </div>
-  </div>
-</div>
-
-<div class="workoutRow">
-
-  <div class="workoutRow-header">
-    <h1>Full Body</h1>
-    <%= link_to "Ver todas", fullbody_path, class: "button" %>
-
-  </div>
-  <br>
-  <div class="workoutSwiper">
-      <div class="swiper swiper4">
-        <div class="swiper-wrapper">
-          <% @workoutFullBody.each do |workout| %>
-            <div  class="swiper-slide">
-              <%= render workout %>
-
-            </div>
-          <% end %>
-        </div>
-        <div class="swiper-pagination swiper-pagination4"></div>
         <div class="swiper-button-prev"></div>
         <div class="swiper-button-next"></div>
       </div>
@@ -166,22 +166,22 @@
 <div class="workoutRow">
 
   <div class="workoutRow-header">
-    <h1>Upper Body</h1>
-    <%= link_to "Ver todas", upperbody_path, class: "button" %>
+    <h1>Full Body</h1>
+    <%= link_to "Ver todas", fullbody_path, class: "button" %>
 
   </div>
   <br>
   <div class="workoutSwiper">
-      <div class="swiper swiper6">
+      <div class="swiper swiper4">
         <div class="swiper-wrapper">
-          <% @workoutUpperBody.each do |workout| %>
+          <% @workoutFullBody.each do |workout| %>
             <div  class="swiper-slide">
               <%= render workout %>
 
             </div>
           <% end %>
         </div>
-        <div class="swiper-pagination swiper-pagination6"></div>
+        <div class="swiper-pagination swiper-pagination4"></div>
         <div class="swiper-button-prev"></div>
         <div class="swiper-button-next"></div>
       </div>
