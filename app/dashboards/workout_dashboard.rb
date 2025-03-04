@@ -10,7 +10,7 @@ class WorkoutDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     category: Field::String,
-    category: Field::Boolean,
+    strength: Field::Boolean,
     color: Field::String,
     cover: Field::ActiveStorage,
     day: Field::Date,
