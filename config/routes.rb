@@ -40,6 +40,8 @@ Rails.application.routes.draw do
   get '/fullbody', to: 'workouts#fullbody', as: 'fullbody'
   get '/gluteships', to: 'workouts#gluteships', as: 'gluteships'
   get '/abscore', to: 'workouts#abscore', as: 'abscore'
+  get '/short_1530', to: 'workouts#short_1530', as: 'short_1530'
+  get '/strength', to: 'workouts#strength', as: 'strength'
   get '/all', to: 'workouts#all', as: 'all'
   get '/calendario', to: 'workouts#calendario', as: 'calendario'
 

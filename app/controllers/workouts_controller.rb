@@ -38,6 +38,14 @@ class WorkoutsController < ApplicationController
     @workoutGlutesHips = Workout.all.order('created_at DESC').where(category: "Glutes and Hips")
   end
 
+  def short_1530
+    @workout1530 = Workout.where(duration: ['15min', '30min'])
+  end
+
+  def strength
+    @workoutStrength = Workout.limit(10).where(category: "Strength")
+  end
+
   def favorites
     @workouts = current_user.favorite_workouts
   end
