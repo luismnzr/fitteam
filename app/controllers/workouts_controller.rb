@@ -13,6 +13,9 @@ class WorkoutsController < ApplicationController
     @workoutFullBody = Workout.limit(10).where(category: "Full Body")
     @workoutGlutesHips = Workout.limit(10).where(category: "Glutes and Hips")
     @workoutUpperBody = Workout.limit(10).where(category: "Upper Body")
+    @workout1530 = Workout.limit(10).where(duration: "Glutes and Hips")
+    @workout1530 = Workout.where(duration: ['15min', '30min'])
+    @workoutStrength = Workout.limit(10).where(category: "Strength")
   end
 
   def upperbody
