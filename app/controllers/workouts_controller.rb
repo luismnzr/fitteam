@@ -15,7 +15,7 @@ class WorkoutsController < ApplicationController
     @workoutUpperBody = Workout.limit(10).where(category: "Upper Body")
     @workout1530 = Workout.limit(10).where(duration: "Glutes and Hips")
     @workout1530 = Workout.where(duration: ['15min', '30min'])
-    @workoutStrength = Workout.limit(10).where(category: "Strength")
+    @workoutStrength = Workout.limit(10).where(strength: true)
   end
 
   def upperbody
@@ -43,7 +43,7 @@ class WorkoutsController < ApplicationController
   end
 
   def strength
-    @workoutStrength = Workout.limit(10).where(category: "Strength")
+    @workoutStrength = Workout.limit(10).where(strength: true)
   end
 
   def favorites
@@ -144,7 +144,7 @@ class WorkoutsController < ApplicationController
     # Only allow a list of trusted parameters through.
     def workout_params
       params[:workout][:material] = params[:workout][:material].reject(&:blank?).join(", ") if params[:workout][:material].is_a?(Array)
-      params.require(:workout).permit(:title, :category, :duration, :video_url, :intensity, :material, :day, :cover, :color)
+      params.require(:workout).permit(:title, :category, :duration, :video_url, :intensity, :material, :day, :cover, :color, :strength)
     end
 
 end

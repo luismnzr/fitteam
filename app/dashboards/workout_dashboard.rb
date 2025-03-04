@@ -10,6 +10,7 @@ class WorkoutDashboard < Administrate::BaseDashboard
   ATTRIBUTE_TYPES = {
     id: Field::Number,
     category: Field::String,
+    category: Field::Boolean,
     color: Field::String,
     cover: Field::ActiveStorage,
     day: Field::Date,
@@ -42,6 +43,7 @@ class WorkoutDashboard < Administrate::BaseDashboard
     id
     title
     category
+    strength
     color
     cover
     day
@@ -59,6 +61,7 @@ class WorkoutDashboard < Administrate::BaseDashboard
   FORM_ATTRIBUTES = %i[
     title
     category
+    strength
     color
     cover
     day
