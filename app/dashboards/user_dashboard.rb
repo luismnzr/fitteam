@@ -88,6 +88,10 @@ class UserDashboard < Administrate::BaseDashboard
   #   }.freeze
   COLLECTION_FILTERS = {}.freeze
 
+  def self.default_order
+    { id: :desc } # Orders workouts by ID in descending order
+  end
+
   # Overwrite this method to customize how users are displayed
   # across all pages of the admin dashboard.
   #
