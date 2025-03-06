@@ -16,6 +16,11 @@ class User < ApplicationRecord
     admin == true
   end
 
+  def update_without_password(params)
+    params.delete(:password) if params[:password].blank?
+    update(params)
+  end
+
   # Only require password if it's a new record or the password is explicitly set
   validates :password, presence: true, if: -> { new_record? || password.present? }
 

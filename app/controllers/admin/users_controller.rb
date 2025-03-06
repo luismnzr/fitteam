@@ -20,7 +20,7 @@ module Admin
     private
 
     def user_params
-      params.require(:user).permit(:name, :email, :password, :password_confirmation)
+      params.require(:user).permit(:name, :email, :password, :password_confirmation, :subscription_status, :subscription_ends_at, :stripe_customer_id, :admin)
     end
 
     # Override this method to specify custom lookup behavior.
