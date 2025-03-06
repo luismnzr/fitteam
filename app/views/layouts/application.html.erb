@@ -122,18 +122,19 @@
         <div class="footer-column">
           <div class="footer-column_list">
             <h5>Clases</h5>
-            <%= link_to "Ver workouts", root_path %>
-            <%= link_to "Calendario", root_path %>
-            <%= link_to "Categorías", root_path %>
+            <%= link_to "Ver workouts", workouts_path %>
+            <%= link_to "Calendario", calendario_path %>
+            <%= link_to "Filtros", all_path %>
           </div>
           <div class="footer-column_list">
             <h5>Acerca</h5>
             <%= link_to "Acerca de", acerca_path %>
-            <%= link_to "Preguntas Frecuentes", root_path %>
             <% if current_user %>
             <% else %>
             <%= link_to "Planes", payments_new_path %>
             <% end %>
+            <h5>Contacto</h5>
+            <p>anagaby.fitteam@gmail.com</p>
           </div>
           <div class="footer-column_list">
             <h5>Legal</h5>
