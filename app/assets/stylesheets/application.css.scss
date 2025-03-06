@@ -119,6 +119,21 @@ h5 {
   }
 }
 
+.notification {
+  padding: 10px;
+  position: absolute;
+  top: 80px;
+  transform: translateX(-60%);
+  left: 90%;
+  background: #fff;
+  z-index: 9;
+  border-radius: 4px;
+  width: 90%;
+  max-width: 330px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
 .header {
   background-color: #fff;
 

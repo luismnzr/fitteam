@@ -74,6 +74,12 @@
     </script>
   </head>
   <body>
+    <% if notice.present? %>
+      <p class="notification"><%= notice %></p>
+    <% end %>
+    <% if alert.present? %>
+      <p class="notification"><%= alert %></p>
+    <% end %>
     <script
       src="https://code.jquery.com/jquery-3.4.1.min.js"
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
