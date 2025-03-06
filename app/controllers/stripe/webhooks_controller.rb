@@ -37,10 +37,10 @@ class Stripe::WebhooksController < ApplicationController
         data_object = data['object']
 
         case event.type
-        when 'customer.created'
-            customer = event.data.object
-            user = User.find_by(email: customer.email)
-            user.update(stripe_customer_id: customer.id)
+        # when 'customer.created'
+        #     customer = event.data.object
+        #     user = User.find_by(email: customer.email)
+        #     user.update(stripe_customer_id: customer.id)
         when event.type == 'customer.subscription.deleted', 'customer.subscription.updated', 'customer.subscription.created'
             subscription = event.data.object
             # debugger
