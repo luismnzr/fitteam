@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "hola@demomailtrap.co"
+  default from: "hola@anagabyfitteam.com"
   layout "mailer"
 end

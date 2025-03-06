@@ -23,7 +23,7 @@ Rails.application.configure do
   # Disable serving static files from `public/`, relying on NGINX/Apache to do so instead.
   # config.public_file_server.enabled = false
   Rails.application.routes.default_url_options = {
-  host: "safe-savannah-67494-d249f5ebd4d7.herokuapp.com",
+  host: "anagabyfitteam.com",
     protocol: "https"
   }
 
@@ -36,7 +36,7 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     user_name: 'api',
-    password: 'fc87f042c8e33703cc31fed9307cf964',
+    password: '376e26cdc1b0c876078e4fb76ac80c30',
     address: 'live.smtp.mailtrap.io',
     host: 'live.smtp.mailtrap.io',
     port: '587',
