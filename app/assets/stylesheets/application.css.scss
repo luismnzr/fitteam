@@ -1085,6 +1085,10 @@ footer {
   footer {
     padding: 50px 1rem;
   }
+  footer .footer-column {
+    width: 100%;
+    flex-direction: column;
+  }
   .footer_icon {
     margin-bottom: 25px;
   }
