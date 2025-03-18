@@ -20,7 +20,7 @@ class UserDashboard < Administrate::BaseDashboard
     reset_password_token: Field::String,
     stripe_customer_id: Field::String,
     subscription_ends_at: Field::String,
-    subscription_status: Field::String,
+    subscription_status: Field::Select.with_options(collection: ['active', 'inactive']),
     created_at: Field::DateTime,
     updated_at: Field::DateTime,
   }.freeze
