@@ -349,6 +349,8 @@ h5 {
 .workoutView-cover {
   background-size: cover !important;
   background-position: center !important;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url("videoCoverAlt.jpg");
   display: flex;
   align-items: center;
   height: 550px;
@@ -379,6 +381,7 @@ h5 {
   background-size: cover;
   height: 200px;
   width: 100%;
+  background-image: url("videoCoverAlt.jpg");
 }
 
 .workoutCard_title {
