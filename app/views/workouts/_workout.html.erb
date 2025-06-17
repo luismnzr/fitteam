@@ -4,6 +4,9 @@
         <% if workout.cover.attached? %>
           <div class="workoutCard_cover_asset" style="background-image: url('<%= rails_blob_url(workout.cover) %>')">
           </div>
+        <% else %>
+          <div class="workoutCard_cover_asset">
+          </div>
         <% end %>
       <% end %>
     </div>

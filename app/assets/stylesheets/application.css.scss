@@ -613,6 +613,7 @@ h5 {
 
 .workouts_banner {
   background: #edb2d3;
+  background: url("videoCoverAlt.jpg");
   background-position: center;
   background-size: cover;
   padding: 2rem;
@@ -1024,6 +1025,11 @@ footer {
   background: #f9f8f3;
   text-align: center;
   padding: 100px 2rem;
+}
+.terms-container {
+  text-align: left;
+  max-width: 900px;
+  margin: auto;
 }
 .commentContainer {
   margin-bottom: 100px;
