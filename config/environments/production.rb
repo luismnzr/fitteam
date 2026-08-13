@@ -35,12 +35,13 @@ Rails.application.configure do
 
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    user_name: 'api',
-    password: '376e26cdc1b0c876078e4fb76ac80c30',
-    address: 'live.smtp.mailtrap.io',
-    host: 'live.smtp.mailtrap.io',
-    port: '587',
-    authentication: :login
+    user_name: ENV.fetch("SMTP_USER_NAME", "api"),
+    password: ENV.fetch("SMTP_PASSWORD", "376e26cdc1b0c876078e4fb76ac80c30"),
+    address: ENV.fetch("SMTP_ADDRESS", "live.smtp.mailtrap.io"),
+    port: ENV.fetch("SMTP_PORT", "587"),
+    authentication: :login,
+    open_timeout: 10,
+    read_timeout: 10
   }
   # config.action_mailer.default_url_options ={:host => 'udbhayoga.com', :protocol => 'https'}
 

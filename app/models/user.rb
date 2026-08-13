@@ -16,6 +16,13 @@ class User < ApplicationRecord
     admin == true
   end
 
+  # Devise emails (reset de contraseña, etc.) se envían en segundo plano:
+  # si el servidor SMTP rechaza el envío, el error queda en el log en vez
+  # de romper el request del usuario con una pantalla de error.
+  def send_devise_notification(notification, *args)
+    devise_mailer.send(notification, self, *args).deliver_later
+  end
+
   # Only require password if it's a new record or the password is explicitly set
   validates :password, presence: true, if: -> { new_record? || password.present? }
 
