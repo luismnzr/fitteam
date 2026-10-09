@@ -31,7 +31,8 @@
     <% @days.each do |day| %>
       <% in_month = day.month == @month.month %>
       <% workouts = @workouts[day] || [] %>
-      <div class="<%= class_names('min-h-[7.5rem] p-2 border-b md:border-r border-[var(--color-border)] flex flex-col gap-1.5',
+      <%# En el celular los días van en lista: un día sin workouts es un solo renglón. %>
+      <div class="<%= class_names('md:min-h-[7.5rem] px-3 py-2 md:p-2 border-b md:border-r border-[var(--color-border)] flex flex-col gap-1.5',
                                   'hidden md:flex' => !in_month,
                                   'bg-[var(--color-muted)]/30' => !in_month,
                                   'bg-[var(--color-primary)]/5' => day == @today) %>">
@@ -43,9 +44,9 @@
             <span class="hidden md:inline"><%= day.day %></span>
             <% if day == @today %> · Hoy<% end %>
           </span>
-          <%= link_to new_admin_workout_path(day: day), class: "p-1 rounded-md text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-primary)]",
+          <%= link_to new_admin_workout_path(day: day), class: "p-2 -m-1.5 md:p-1 md:m-0 rounded-md text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-primary)]",
                 title: "Programar un workout el #{admin_date(day)}", "aria-label": "Programar un workout el #{admin_date(day)}" do %>
-            <%= admin_icon("plus", "h-3.5 w-3.5") %>
+            <%= admin_icon("plus", "h-4 w-4 md:h-3.5 md:w-3.5") %>
           <% end %>
         </div>
         <% workouts.each do |workout| %>

@@ -1,7 +1,7 @@
 <% content_for(:page_title) { "Workouts" } %>
 
 <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-  <div class="flex items-center gap-1 overflow-x-auto -mx-1 px-1">
+  <div class="flex flex-wrap items-center gap-1">
     <%= link_to "Todos", admin_workouts_path(q: params[:q], category: params[:category]), class: class_names("chip", "is-active" => params[:filter].blank?) %>
     <% Admin::WorkoutsController::FILTERS.each do |key, label| %>
       <%= link_to label, admin_workouts_path(filter: key, q: params[:q], category: params[:category]), class: class_names("chip", "is-active" => params[:filter] == key) %>
@@ -33,36 +33,42 @@
   <div class="card overflow-hidden">
     <div class="overflow-x-auto">
       <table class="table">
-        <thead>
+        <thead class="hidden sm:table-header-group">
           <tr>
             <th>Workout</th>
-            <th>Duración</th>
-            <th>Intensidad</th>
-            <th>En calendario</th>
-            <th title="En favoritas / Comentarios">Actividad</th>
-            <th>Alta</th>
-            <th><span class="sr-only">Acciones</span></th>
+            <th class="hidden sm:table-cell">Duración</th>
+            <th class="hidden sm:table-cell">Intensidad</th>
+            <th class="hidden sm:table-cell">En calendario</th>
+            <th class="hidden sm:table-cell" title="En favoritas / Comentarios">Actividad</th>
+            <th class="hidden sm:table-cell">Alta</th>
+            <th class="hidden sm:table-cell"><span class="sr-only">Acciones</span></th>
           </tr>
         </thead>
         <tbody>
           <% @workouts.each do |workout| %>
             <tr>
-              <td>
-                <div class="flex items-center gap-3 min-w-[16rem]">
+              <%# En el celular solo queda esta columna: toda la fila abre el workout. %>
+              <td class="relative sm:static">
+                <div class="flex items-center gap-3 sm:min-w-[16rem]">
                   <%= admin_workout_thumb(workout, css: "h-12 w-20") %>
-                  <div class="min-w-0">
-                    <%= link_to workout.title, edit_admin_workout_path(workout), class: "font-medium hover:text-[var(--color-primary)]" %>
+                  <div class="min-w-0 flex-1">
+                    <%= link_to workout.title, edit_admin_workout_path(workout), class: "font-medium hover:text-[var(--color-primary)] after:absolute after:inset-0 sm:after:hidden" %>
                     <div class="flex flex-wrap items-center gap-1 mt-0.5">
                       <span class="text-xs text-[var(--color-muted-foreground)]"><%= admin_value(workout.category, "Sin categoría") %></span>
                       <% if workout.premiere? %><span class="badge badge-primary">Estreno</span><% end %>
                       <% if workout.strength? %><span class="badge badge-info">Strength</span><% end %>
                     </div>
+                    <p class="sm:hidden text-xs text-[var(--color-muted-foreground)] mt-1">
+                      <%= [ workout.duration.presence, workout.intensity.presence,
+                            (workout.day == admin_today ? "Hoy" : admin_day_label(workout.day) if workout.day) ].compact.join(" · ").presence || "Sin duración" %>
+                    </p>
                   </div>
+                  <span class="sm:hidden text-[var(--color-muted-foreground)]"><%= admin_icon("chevron-right", "h-4 w-4") %></span>
                 </div>
               </td>
-              <td class="whitespace-nowrap"><%= admin_value(workout.duration) %></td>
-              <td class="whitespace-nowrap text-[var(--color-muted-foreground)]"><%= admin_value(workout.intensity) %></td>
-              <td class="whitespace-nowrap">
+              <td class="hidden sm:table-cell whitespace-nowrap"><%= admin_value(workout.duration) %></td>
+              <td class="hidden sm:table-cell whitespace-nowrap text-[var(--color-muted-foreground)]"><%= admin_value(workout.intensity) %></td>
+              <td class="hidden sm:table-cell whitespace-nowrap">
                 <% if workout.day %>
                   <span class="<%= 'font-medium text-[var(--color-primary)]' if workout.day == admin_today %>"><%= workout.day == admin_today ? "Hoy" : admin_day_label(workout.day) %></span>
                   <% if workout.day.year != admin_today.year %><span class="text-xs text-[var(--color-muted-foreground)]"><%= workout.day.year %></span><% end %>
@@ -70,14 +76,14 @@
                   <span class="text-[var(--color-muted-foreground)]">—</span>
                 <% end %>
               </td>
-              <td class="whitespace-nowrap text-[var(--color-muted-foreground)]">
+              <td class="hidden sm:table-cell whitespace-nowrap text-[var(--color-muted-foreground)]">
                 <span class="inline-flex items-center gap-1" title="En favoritas"><%= admin_icon("heart", "h-3.5 w-3.5") %><%= @favorites[workout.id] || 0 %></span>
                 <%= link_to admin_comments_path(status: "all", workout_id: workout.id), class: "inline-flex items-center gap-1 ml-2 hover:text-[var(--color-primary)]", title: "Comentarios" do %>
                   <%= admin_icon("comments", "h-3.5 w-3.5") %><%= @comments[workout.id] || 0 %>
                 <% end %>
               </td>
-              <td class="whitespace-nowrap text-[var(--color-muted-foreground)]"><%= admin_date(workout.created_at) %></td>
-              <td class="whitespace-nowrap text-right">
+              <td class="hidden sm:table-cell whitespace-nowrap text-[var(--color-muted-foreground)]"><%= admin_date(workout.created_at) %></td>
+              <td class="hidden sm:table-cell whitespace-nowrap text-right">
                 <%= link_to "Editar", edit_admin_workout_path(workout), class: "link text-sm" %>
                 <%= link_to "Ver", workout_path(workout), class: "link text-sm ml-3", target: "_blank", rel: "noopener" %>
               </td>

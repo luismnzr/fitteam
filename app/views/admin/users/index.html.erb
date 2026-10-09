@@ -1,7 +1,7 @@
 <% content_for(:page_title) { "Usuarios" } %>
 
 <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-  <div class="flex items-center gap-1 overflow-x-auto -mx-1 px-1">
+  <div class="flex flex-wrap items-center gap-1">
     <%= link_to "Todos", admin_users_path(q: params[:q], sort: params[:sort]), class: class_names("chip", "is-active" => params[:filter].blank?) %>
     <% Admin::UsersController::FILTERS.each do |key, label| %>
       <%= link_to label, admin_users_path(filter: key, q: params[:q], sort: params[:sort]), class: class_names("chip", "is-active" => params[:filter] == key) %>
@@ -25,38 +25,44 @@
   <div class="card overflow-hidden">
     <div class="overflow-x-auto">
       <table class="table">
-        <thead>
+        <thead class="hidden sm:table-header-group">
           <tr>
             <th>Usuario</th>
-            <th>Acceso</th>
-            <th>Acceso hasta</th>
-            <th>Suscripción (Stripe)</th>
-            <th>Favoritas</th>
-            <th>Registro</th>
+            <th class="hidden sm:table-cell">Acceso</th>
+            <th class="hidden sm:table-cell">Acceso hasta</th>
+            <th class="hidden md:table-cell">Suscripción (Stripe)</th>
+            <th class="hidden md:table-cell">Favoritas</th>
+            <th class="hidden md:table-cell">Registro</th>
           </tr>
         </thead>
         <tbody>
           <% @users.each do |user| %>
             <tr>
-              <td>
-                <div class="flex items-center gap-3 min-w-[15rem]">
+              <%# En el celular solo queda esta columna: toda la fila abre a la usuaria. %>
+              <td class="relative sm:static">
+                <div class="flex items-center gap-3 sm:min-w-[15rem]">
                   <div class="h-8 w-8 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] flex items-center justify-center flex-shrink-0 text-xs font-semibold">
                     <%= admin_initials(user) %>
                   </div>
-                  <div class="min-w-0">
+                  <div class="min-w-0 flex-1">
                     <div class="flex items-center gap-2">
-                      <%= link_to (user.name.presence || "Sin nombre"), admin_user_path(user), class: "font-medium hover:text-[var(--color-primary)]" %>
+                      <%= link_to (user.name.presence || "Sin nombre"), admin_user_path(user), class: "font-medium hover:text-[var(--color-primary)] truncate after:absolute after:inset-0 sm:after:hidden" %>
                       <% if user.admin? %><span class="badge badge-info">Admin</span><% end %>
                     </div>
-                    <p class="text-xs text-[var(--color-muted-foreground)]"><%= user.email %></p>
+                    <p class="text-xs text-[var(--color-muted-foreground)] truncate"><%= user.email %></p>
+                    <p class="sm:hidden flex items-center gap-2 mt-1 text-xs text-[var(--color-muted-foreground)]">
+                      <%= admin_access_badge(user) %>
+                      <% if user.active? %>hasta el <%= admin_date(user.subscription_ends_at) %><% end %>
+                    </p>
                   </div>
+                  <span class="sm:hidden text-[var(--color-muted-foreground)]"><%= admin_icon("chevron-right", "h-4 w-4") %></span>
                 </div>
               </td>
-              <td><%= admin_access_badge(user) %></td>
-              <td class="text-[var(--color-muted-foreground)] whitespace-nowrap"><%= admin_date(user.subscription_ends_at) %></td>
-              <td class="text-[var(--color-muted-foreground)] whitespace-nowrap"><%= admin_subscription_status(user) %></td>
-              <td class="text-[var(--color-muted-foreground)]"><%= @favorites[user.id] || 0 %></td>
-              <td class="text-[var(--color-muted-foreground)] whitespace-nowrap"><%= admin_date(user.created_at) %></td>
+              <td class="hidden sm:table-cell"><%= admin_access_badge(user) %></td>
+              <td class="hidden sm:table-cell text-[var(--color-muted-foreground)] whitespace-nowrap"><%= admin_date(user.subscription_ends_at) %></td>
+              <td class="hidden md:table-cell text-[var(--color-muted-foreground)] whitespace-nowrap"><%= admin_subscription_status(user) %></td>
+              <td class="hidden md:table-cell text-[var(--color-muted-foreground)]"><%= @favorites[user.id] || 0 %></td>
+              <td class="hidden md:table-cell text-[var(--color-muted-foreground)] whitespace-nowrap"><%= admin_date(user.created_at) %></td>
             </tr>
           <% end %>
         </tbody>
