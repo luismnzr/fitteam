@@ -40,8 +40,6 @@ gem "dotenv-rails", groups: [ :development, :test ]
 gem "devise"
 gem "stripe"
 gem "sass-rails"
-gem "fullcalendar-rails"
-gem "momentjs-rails"
 # Correo transaccional (Devise y ApplicationMailer), igual que en Eclipse.
 gem "postmark-rails"
 # Paginación del admin (/admin).

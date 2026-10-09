@@ -7,14 +7,15 @@ class WorkoutsController < ApplicationController
 
   # GET /workouts (y /workouts.json para el calendario)
   def index
-    @workouts = Workout.all
+    return render_calendar_events if request.format.json?
+
     @workoutsFeatured = Workout.where("day < ?", Date.current).order(day: :desc).limit(4)
     @workoutLowerBody = Workout.limit(10).where(category: "Lower Body")
     @workoutAbsCore = Workout.limit(10).where(category: "ABS and Core")
     @workoutFullBody = Workout.limit(10).where(category: "Full Body")
     @workoutGlutesHips = Workout.limit(10).where(category: "Glutes and Hips")
     @workoutUpperBody = Workout.limit(10).where(category: "Upper Body")
-    @workout1530 = Workout.where(duration: [ "15min", "30min" ])
+    @workout1530 = Workout.limit(10).where(duration: [ "15min", "30min" ])
     @workoutStrength = Workout.limit(10).where(strength: true)
   end
 
@@ -39,11 +40,11 @@ class WorkoutsController < ApplicationController
   end
 
   def short_1530
-    @workout1530 = Workout.where(duration: [ "15min", "30min" ])
+    @workout1530 = Workout.order(created_at: :desc).where(duration: [ "15min", "30min" ])
   end
 
   def strength
-    @workoutStrength = Workout.limit(10).where(strength: true)
+    @workoutStrength = Workout.order(created_at: :desc).where(strength: true)
   end
 
   def favorites
@@ -59,6 +60,16 @@ class WorkoutsController < ApplicationController
   end
 
   private
+
+    # Eventos del calendario público: solo workouts con fecha y, si FullCalendar
+    # manda el rango visible (start/end), solo los de ese rango.
+    def render_calendar_events
+      @workouts = Workout.where.not(day: nil)
+      range_start = Date.parse(params[:start].to_s) rescue nil
+      range_end = Date.parse(params[:end].to_s) rescue nil
+      @workouts = @workouts.where(day: range_start..range_end) if range_start && range_end
+      render :index
+    end
 
     def initialize_search
       params[:intensidad] = nil if params[:intensidad] == ""

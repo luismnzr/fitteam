@@ -3,7 +3,7 @@ class FavoriteWorkoutsController < ApplicationController
   before_action :set_workout
 
   def create
-    current_user.favorites.find_or_create_by!(favorited: @workout)
+    current_user.favorites.create_or_find_by!(favorited: @workout)
     redirect_to @workout, notice: "Workout agregado a favoritos", status: :see_other
   end
 

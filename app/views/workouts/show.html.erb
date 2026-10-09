@@ -88,22 +88,39 @@
 </div>
 
 
-<script type="text/javascript">
-  $('body')
-    .on('click', '.vimeo-launch', function () {
-      var videoID = $(this).data('vimeo-id'),
-          $video = '<div id="vimeo-pop-container"><div><span class="vimeo-close"></span><iframe src="https://www.youtube.com/embed/' + videoID + '?autoplay=1&rel=0" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></div>';
-      $('body').append($video);
-    } )
+<script>
+  // Abre el video de YouTube en un popup y lo cierra con la animación del botón.
+  document.addEventListener("click", function (event) {
+    var launch = event.target.closest(".vimeo-launch");
+    if (launch) {
+      var container = document.createElement("div");
+      container.id = "vimeo-pop-container";
+      var inner = document.createElement("div");
+      var close = document.createElement("span");
+      close.className = "vimeo-close";
+      var iframe = document.createElement("iframe");
+      iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(launch.dataset.vimeoId) + "?autoplay=1&rel=0";
+      iframe.width = 500;
+      iframe.height = 281;
+      iframe.setAttribute("frameborder", "0");
+      iframe.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
+      iframe.setAttribute("allowfullscreen", "");
+      inner.append(close, iframe);
+      container.appendChild(inner);
+      document.body.appendChild(container);
+      return;
+    }
 
-    .on('click', '.vimeo-close', function () {
-      $(this).addClass('closing');
-
-      $('#vimeo-pop-container').delay(700).animate({
-        height: 0,
-        top: '50%'
-      }, 'fast', function () {
-        $('#vimeo-pop-container').remove();
-      });
-    } );
+    var closeButton = event.target.closest(".vimeo-close");
+    if (closeButton) {
+      closeButton.classList.add("closing");
+      var popup = document.getElementById("vimeo-pop-container");
+      setTimeout(function () {
+        popup.style.transition = "height 200ms, top 200ms";
+        popup.style.height = "0";
+        popup.style.top = "50%";
+        setTimeout(function () { popup.remove(); }, 200);
+      }, 700);
+    }
+  });
 </script>

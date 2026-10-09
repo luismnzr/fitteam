@@ -1,3 +1,6 @@
+<% content_for :head do %>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<% end %>
 <div class="categoryHeader">
     <div class="categoryHeader-title">
         <h1>Calendario</h1>
@@ -14,4 +17,24 @@
 </div>
 
 <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var calendar = new FullCalendar.Calendar(document.getElementById("calendar"), {
+      initialView: "dayGridMonth",
+      events: "<%= workouts_path(format: :json) %>",
+      eventColor: "<%= Workout::NORMAL_COLOR %>",
+      eventDisplay: "block",
+      eventDidMount: function (info) {
+        // Los estrenos van en negro y con la etiqueta "Estreno".
+        if (info.event.backgroundColor === "<%= Workout::PREMIERE_COLOR %>") {
+          var subtitle = document.createElement("div");
+          subtitle.innerText = "Estreno";
+          subtitle.style.fontSize = "0.8em";
+          subtitle.style.fontWeight = "bold";
+          subtitle.style.color = "white";
+          info.el.appendChild(subtitle);
+        }
+      }
+    });
+    calendar.render();
+  });
 </script>

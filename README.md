@@ -65,9 +65,11 @@ borrar y las confirmaciones.
   * `unpaid`, `canceled`, `paused`, etc. quitan el acceso.
   * Cancelar una suscripción vieja no le quita el acceso a la actual
     (`users.subscription_id`).
-* Los planes que se venden están en `app/models/plan.rb` (ID del precio de
-  Stripe por plan). El checkout solo acepta esos precios; para cambiar un
-  precio, crea el nuevo en Stripe y cambia su ID ahí.
+* Los planes que se venden están en `app/models/plan.rb`: nombre, precio que
+  se muestra e ID del precio de Stripe. La página de planes y la home los
+  pintan desde ahí (`payments/_plans`). El checkout solo acepta esos precios;
+  para cambiar un precio, crea el nuevo en Stripe y cambia su ID y su texto
+  ahí.
 * Un acceso de cortesía se da en **Admin → Usuarios → Editar → Acceso hasta**.
 
 ## Portadas de workouts (YouTube)
@@ -107,6 +109,28 @@ Bucketeer se puede quitar).
 ## Deploy
 
 Las migraciones corren solas en cada deploy (release phase del `Procfile`).
+
+## Sitio público: assets y JavaScript
+
+* Las librerías externas se cargan solo en la página que las usa: Swiper
+  (carruseles) en `/workouts` y FullCalendar en `/calendario`, con versión
+  fija. El sitio ya no usa jQuery.
+* El calendario pide a `/workouts.json` solo los workouts con fecha del mes
+  visible.
+* Las tarjetas del catálogo usan la miniatura de YouTube de 480px
+  (`Workout#card_image_url`); la de mejor calidad se reserva para banners y
+  la página de cada workout.
+* Las imágenes de `app/assets/images` están comprimidas (fondos a 2000px
+  máximo, días de la semana en WebP). Si agregas una nueva, comprímela antes
+  de subirla.
+
+## CI
+
+GitHub Actions corre RuboCop, Brakeman, `importmap audit` y los tests.
+`config/brakeman.ignore` silencia tres avisos con su nota: el permiso de
+admin en el admin (intencional) y el fin de soporte de Ruby 3.1 y Rails 7.2,
+que se quitan al actualizar (`bin/brakeman` vuelve a llevar
+`--ensure-latest` entonces).
 
 ## Desarrollo y tests
 

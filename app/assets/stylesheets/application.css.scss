@@ -12,7 +12,6 @@
  *
  *= require_tree .
  *= require_self
- *= require fullcalendar
  */
 * {
   margin: 0;
@@ -75,7 +74,7 @@ h5 {
 }
 
 .fc .fc-button {
-  padding: 0 0.5rem;
+  padding: 0.3rem 0.6rem;
 }
 
 .button {

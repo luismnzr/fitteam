@@ -1,4 +1,8 @@
 <% content_for :title, "Workouts" %>
+<% content_for :head do %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.js"></script>
+<% end %>
 
 <div class="workoutBanner">
   <div class="swiper swiper7">
@@ -43,11 +47,11 @@
     </div>
   </div>
   <div class="calendarBlock-grid">
-    <div class="calendarBlock-grid-item"><%= link_to lowerbody_path do %><%= image_tag("lunes.png") %><% end %></div>
-    <div class="calendarBlock-grid-item"><%= link_to upperbody_path do %><%= image_tag("martes.png") %><% end %></div>
-    <div class="calendarBlock-grid-item"><%= link_to abscore_path do %><%= image_tag("miercoles.png") %><% end %></div>
-    <div class="calendarBlock-grid-item"><%= link_to gluteships_path do %><%= image_tag("jueves.png") %><% end %></div>
-    <div class="calendarBlock-grid-item"><%= link_to fullbody_path do %><%= image_tag("viernes.png") %><% end %></div>
+    <div class="calendarBlock-grid-item"><%= link_to lowerbody_path do %><%= image_tag("lunes.webp", alt: "Lunes: Lower Body", loading: "lazy") %><% end %></div>
+    <div class="calendarBlock-grid-item"><%= link_to upperbody_path do %><%= image_tag("martes.webp", alt: "Martes: Upper Body", loading: "lazy") %><% end %></div>
+    <div class="calendarBlock-grid-item"><%= link_to abscore_path do %><%= image_tag("miercoles.webp", alt: "Miércoles: Abs and Core", loading: "lazy") %><% end %></div>
+    <div class="calendarBlock-grid-item"><%= link_to gluteships_path do %><%= image_tag("jueves.webp", alt: "Jueves: Glutes and Hips", loading: "lazy") %><% end %></div>
+    <div class="calendarBlock-grid-item"><%= link_to fullbody_path do %><%= image_tag("viernes.webp", alt: "Viernes: Full Body", loading: "lazy") %><% end %></div>
   </div>
 </div>
 

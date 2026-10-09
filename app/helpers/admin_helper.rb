@@ -159,7 +159,7 @@ module AdminHelper
 
   # Miniatura de un workout: la imagen de su video en YouTube.
   def admin_workout_thumb(workout, css: "h-12 w-20")
-    url = workout_cover_url(workout)
+    url = workout.small_thumbnail_url
     content_tag(:div, class: "thumb #{css}") do
       image_tag(url, alt: "", loading: "lazy") if url
     end

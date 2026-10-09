@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
   <head>
     <title><%= content_for(:title) || "Fitteam" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -19,59 +19,28 @@
     <meta property="og:url" content="https://anagabyfitteam.com/" />
     <meta property="og:title" content="Fitteam - Entrena desde casa » Ana Gaby Fit Team" />
     <meta property="og:description" content="Entrenadora personal y grupal, en línea o presencial, todas mis clases te llevan un mismo nivel de exigencia personal. " />
+    <meta property="og:image" content="<%= root_url %>og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_MX" />
 
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://anagabyfitteam.com/" />
     <meta property="twitter:title" content="Fitteam - Entrena desde casa » Ana Gaby Fit Team" />
     <meta property="twitter:description" content="Entrenadora personal y grupal, en línea o presencial, todas mis clases te llevan un mismo nivel de exigencia personal. " />
+    <meta property="twitter:image" content="<%= root_url %>og-image.jpg" />
 
     <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,900;1,400&display=swap" rel="stylesheet">
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
-    <script>
-
-      document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          events: "/workouts.json",
-          eventColor: '#004a37',
-          eventDisplay: 'block',
-          description: "Estreno",
-          eventDidMount: function(info) {
-          // Check if the color is #111111
-          if (info.event.backgroundColor === "#111111") {
-            // Create a subtitle element
-            let subtitle = document.createElement("div");
-            subtitle.innerText = "Estreno"; // Customize subtitle text
-            subtitle.style.fontSize = "0.8em";
-            subtitle.style.fontWeight = "bold";
-            subtitle.style.color = "white"; // Adjust color if needed
-
-            // Append subtitle inside the event element
-            info.el.appendChild(subtitle);
-          }
-        }
-        });
-        calendar.render();
-
-      });
-
-    </script>
   </head>
   <body>
     <% if notice.present? %>
@@ -80,10 +49,6 @@
     <% if alert.present? %>
       <p class="notification"><%= alert %></p>
     <% end %>
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.min.js"
-      integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-      crossorigin="anonymous"></script>
     <header class="header">
       <div class="header-container">
         <div class="header-container_logo">

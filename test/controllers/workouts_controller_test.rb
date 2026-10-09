@@ -69,4 +69,35 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     get favorites_url
     assert_response :success
   end
+
+  test "el calendario solo recibe workouts con fecha y del rango visible" do
+    get workouts_url(format: :json)
+    ids = response.parsed_body.map { |e| e["id"] }
+    assert_includes ids, @workout.id
+    assert_not_includes ids, workouts(:two).id
+
+    day = @workout.day
+    get workouts_url(format: :json, start: (day + 10).iso8601, end: (day + 40).iso8601)
+    assert_empty response.parsed_body
+
+    get workouts_url(format: :json, start: "#{(day - 3).iso8601}T00:00:00-06:00", end: "#{(day + 3).iso8601}T00:00:00-06:00")
+    assert_equal [ @workout.id ], response.parsed_body.map { |e| e["id"] }
+  end
+
+  test "las tarjetas usan la miniatura ligera y la página del workout la grande" do
+    @workout.update_column(:thumbnail_url, "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg")
+    get lowerbody_url
+    assert_includes response.body, "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+    assert_not_includes response.body, "maxresdefault"
+
+    sign_in users(:member)
+    get workout_url(@workout)
+    assert_includes response.body, "maxresdefault"
+  end
+
+  test "la página de Strength muestra todos, no solo 10" do
+    12.times { |i| Workout.create!(title: "Strength #{i}", video_url: "dQw4w9WgXcQ", strength: true) }
+    get strength_url
+    assert_select ".workoutCard", Workout.where(strength: true).count
+  end
 end

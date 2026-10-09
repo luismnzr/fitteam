@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_09_000004) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_09_000005) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -51,6 +51,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_09_000004) do
     t.bigint "parent_id"
     t.index ["parent_id"], name: "index_comments_on_parent_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+    t.index ["workout_id"], name: "index_comments_on_workout_id"
   end
 
   create_table "favorites", force: :cascade do |t|
@@ -60,7 +61,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_09_000004) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["favorited_type", "favorited_id"], name: "index_favorites_on_favorited"
-    t.index ["user_id"], name: "index_favorites_on_user_id"
+    t.index ["user_id", "favorited_type", "favorited_id"], name: "index_favorites_uniqueness", unique: true
   end
 
   create_table "users", force: :cascade do |t|
@@ -95,6 +96,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_09_000004) do
     t.string "color", default: "#004a37"
     t.boolean "strength", default: false
     t.string "thumbnail_url"
+    t.index ["day"], name: "index_workouts_on_day"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
