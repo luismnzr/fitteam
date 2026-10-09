@@ -1,0 +1,105 @@
+<%= form_with model: [:admin, workout], local: true do |f| %>
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+    <div class="xl:col-span-2 space-y-5">
+      <%= admin_error_messages(workout) %>
+
+      <div class="card p-5 sm:p-6 space-y-5">
+        <div>
+          <%= f.label :title, "Título", class: "label" %>
+          <%= f.text_field :title, class: "input", required: true %>
+        </div>
+
+        <div>
+          <%= f.label :video_url, "Video de YouTube", class: "label" %>
+          <%= f.text_field :video_url, class: "input font-mono", required: true, placeholder: "dQw4w9WgXcQ o https://youtu.be/dQw4w9WgXcQ",
+                data: { youtube_input: "youtube-preview" } %>
+          <p class="hint">Pega el link del video (o solo su ID); se guarda solo el ID.</p>
+          <div id="youtube-preview" class="embed-frame mt-3 <%= 'hidden' unless workout.youtube_id %>">
+            <% if workout.youtube_id %>
+              <iframe src="https://www.youtube.com/embed/<%= workout.youtube_id %>?rel=0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Vista previa del video"></iframe>
+            <% end %>
+          </div>
+        </div>
+
+        <div>
+          <span class="label">Material</span>
+          <% selected = workout.materials %>
+          <%= hidden_field_tag "workout[material][]", "" %>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 mt-2">
+            <% (Workout::MATERIALS | selected).each do |material| %>
+              <label class="flex items-center gap-2 text-sm cursor-pointer">
+                <%= check_box_tag "workout[material][]", material, selected.include?(material), class: "checkbox", id: "material_#{material.parameterize}" %>
+                <%= material %>
+              </label>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="space-y-5">
+      <div class="card p-5 sm:p-6 space-y-4">
+        <h3 class="card-title">Calendario</h3>
+        <div>
+          <%= f.label :day, "Día", class: "label" %>
+          <%= f.date_field :day, class: "input" %>
+          <p class="hint">Sale en el calendario y, ese día, en la home como "Workout del día". Déjalo vacío si no va en el calendario.</p>
+        </div>
+        <label class="flex items-start gap-3 cursor-pointer">
+          <%= f.check_box :premiere, { checked: workout.premiere?, class: "checkbox mt-0.5" }, "1", "0" %>
+          <span>
+            <span class="text-sm font-medium block">Estreno</span>
+            <span class="hint block mt-0">Se marca en negro con la etiqueta "Estreno" en el calendario.</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="card p-5 sm:p-6 space-y-4">
+        <h3 class="card-title">Dónde aparece en el catálogo</h3>
+        <div>
+          <%= f.label :category, "Grupo muscular", class: "label" %>
+          <%= f.select :category, [["Sin categoría", "-"]] + Workout.options_for(Workout::CATEGORIES, :category), {}, class: "input" %>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <%= f.label :duration, "Duración", class: "label" %>
+            <%= f.select :duration, [["—", "-"]] + Workout.options_for(Workout::DURATIONS, :duration), {}, class: "input" %>
+          </div>
+          <div>
+            <%= f.label :intensity, "Intensidad", class: "label" %>
+            <%= f.select :intensity, [["—", "-"]] + Workout.options_for(Workout::INTENSITIES, :intensity), {}, class: "input" %>
+          </div>
+        </div>
+        <label class="flex items-start gap-3 cursor-pointer">
+          <%= f.check_box :strength, class: "checkbox mt-0.5" %>
+          <span>
+            <span class="text-sm font-medium block">Strength</span>
+            <span class="hint block mt-0">Aparece en la fila y la página de Strength.</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="card p-5 sm:p-6 space-y-3">
+        <span class="label">Portada</span>
+        <% cover_url = workout.cover.attached? && workout.cover.blob.persisted? ? workout_cover_url(workout) : workout.youtube_thumbnail_url %>
+        <div id="cover-preview" class="thumb aspect-video w-full" <%= "data-youtube-cover" unless workout.cover.attached? %>>
+          <%= image_tag(cover_url, alt: "") if cover_url %>
+        </div>
+        <%= f.file_field :cover, accept: "image/*", class: "input-file", data: { preview: "cover-preview" } %>
+        <% if workout.persisted? && workout.cover.attached? %>
+          <label class="flex items-center gap-2 text-sm cursor-pointer">
+            <%= check_box_tag "workout[remove_cover]", "1", false, class: "checkbox" %>
+            Quitar portada y usar la miniatura de YouTube
+          </label>
+        <% end %>
+        <p class="hint">Opcional. Si no subes una, se usa la miniatura del video de YouTube.</p>
+        <%= admin_ephemeral_upload_warning %>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3 mt-6">
+    <%= f.submit workout.new_record? ? "Crear workout" : "Guardar cambios", class: "btn btn-primary" %>
+    <%= link_to "Cancelar", admin_workouts_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

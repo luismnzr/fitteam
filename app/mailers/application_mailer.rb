@@ -1,4 +1,6 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: "hola@anagabyfitteam.com"
+  default from: "Ana Gaby de Fit Team <hola@anagabyfitteam.com>"
   layout "mailer"
+
+  helper :mailer
 end

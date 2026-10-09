@@ -1,0 +1,9 @@
+{
+  "name": "fitteam-admin-css",
+  "private": true,
+  "description": "Herramienta de desarrollo: compila el CSS del admin (Tailwind 4). Heroku no la instala; el resultado se commitea en app/assets/builds/admin.css.",
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
+    "tailwindcss": "4.3.3"
+  }
+}

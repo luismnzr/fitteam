@@ -6,13 +6,14 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-# Use bin/rails credentials:edit to set the AWS secrets (as aws:access_key_id|secret_access_key)
+# Las variables del add-on Bucketeer tienen prioridad sobre las AWS_*. El
+# nombre "amazon" se queda: los blobs existentes lo guardan en service_name.
 amazon:
   service: S3
-  access_key_id: <%= ENV['BUCKETEER_AWS_ACCESS_KEY_ID'] %>
-  secret_access_key: <%= ENV['BUCKETEER_AWS_SECRET_ACCESS_KEY'] %>
-  region: <%= ENV['BUCKETEER_AWS_REGION'] %>
-  bucket: <%= ENV['BUCKETEER_BUCKET_NAME'] %>
+  access_key_id: <%= ENV["BUCKETEER_AWS_ACCESS_KEY_ID"].presence || ENV["AWS_ACCESS_KEY_ID"] %>
+  secret_access_key: <%= ENV["BUCKETEER_AWS_SECRET_ACCESS_KEY"].presence || ENV["AWS_SECRET_ACCESS_KEY"] %>
+  region: <%= ENV["BUCKETEER_AWS_REGION"].presence || ENV.fetch("AWS_REGION", "us-east-1") %>
+  bucket: <%= ENV["BUCKETEER_BUCKET_NAME"].presence || ENV["AWS_BUCKET"] %>
 # Remember not to checkin your GCS keyfile to a repository
 # google:
 #   service: GCS

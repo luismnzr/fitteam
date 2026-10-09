@@ -1,7 +1,8 @@
-<p>Hello <%= @email %>!</p>
-
+<h1 style="margin: 0 0 8px 0; font-size: 22px; font-weight: 700; color: #0f172a;">Tu correo cambió</h1>
 <% if @resource.try(:unconfirmed_email?) %>
-  <p>We're contacting you to notify you that your email is being changed to <%= @resource.unconfirmed_email %>.</p>
+  <p style="margin: 0 0 24px 0; font-size: 15px; color: #64748b; line-height: 1.5;">Hola, te avisamos que el correo de tu cuenta se está cambiando a <strong><%= @resource.unconfirmed_email %></strong>.</p>
 <% else %>
-  <p>We're contacting you to notify you that your email has been changed to <%= @resource.email %>.</p>
+  <p style="margin: 0 0 24px 0; font-size: 15px; color: #64748b; line-height: 1.5;">Hola, te avisamos que el correo de tu cuenta se cambió a <strong><%= @resource.email %></strong>.</p>
 <% end %>
+
+<p style="margin: 24px 0 0 0; font-size: 13px; color: #94a3b8; line-height: 1.5;">Si no fuiste tú, escríbenos a <a href="mailto:<%= contact_email %>" style="color: <%= brand_color %>;"><%= contact_email %></a>.</p>

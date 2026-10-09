@@ -5,44 +5,68 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     @workout = workouts(:one)
   end
 
-  test "should get index" do
+  test "catálogo y páginas de categoría" do
     get workouts_url
     assert_response :success
-  end
 
-  test "should get new" do
-    get new_workout_url
+    get abscore_url
     assert_response :success
+    assert_includes response.body, workouts(:two).title
   end
 
-  test "should create workout" do
-    assert_difference("Workout.count") do
-      post workouts_url, params: { workout: { category: @workout.category, day: @workout.day, duration: @workout.duration, intensity: @workout.intensity, material: @workout.material, title: @workout.title, video_url: @workout.video_url } }
-    end
-
-    assert_redirected_to workout_url(Workout.last)
+  test "el JSON del calendario no expone el video" do
+    get workouts_url(format: :json)
+    assert_response :success
+    event = response.parsed_body.find { |e| e["id"] == @workout.id }
+    assert_equal @workout.title, event["title"]
+    assert_nil event["video_url"]
+    assert_not_includes response.body, @workout.video_url
   end
 
-  test "should show workout" do
+  test "sin plan se ve el aviso y no el video" do
+    sign_in users(:guest)
     get workout_url(@workout)
     assert_response :success
+    assert_includes response.body, "Necesitas un plan"
+    assert_not_includes response.body, @workout.video_url
   end
 
-  test "should get edit" do
-    get edit_workout_url(@workout)
+  test "con acceso se ve el video y los comentarios con su autor" do
+    sign_in users(:member)
+    get workout_url(@workout)
     assert_response :success
+    assert_includes response.body, %(data-vimeo-id="#{@workout.video_url}")
+    assert_includes response.body, "Member Activa"
+    assert_includes response.body, "Ana Gaby respondió"
   end
 
-  test "should update workout" do
-    patch workout_url(@workout), params: { workout: { category: @workout.category, day: @workout.day, duration: @workout.duration, intensity: @workout.intensity, material: @workout.material, title: @workout.title, video_url: @workout.video_url } }
-    assert_redirected_to workout_url(@workout)
+  test "las admins ven el video aunque no tengan suscripción" do
+    sign_in users(:admin)
+    get workout_url(@workout)
+    assert_includes response.body, %(data-vimeo-id="#{@workout.video_url}")
+    assert_includes response.body, edit_admin_workout_path(@workout)
   end
 
-  test "should destroy workout" do
-    assert_difference("Workout.count", -1) do
-      delete workout_url(@workout)
+  test "el sitio público no permite crear, editar ni borrar workouts" do
+    sign_in users(:member)
+    assert_no_difference("Workout.count") do
+      post "/workouts", params: { workout: { title: "Hack" } }
     end
+    assert_response :not_found
 
-    assert_redirected_to workouts_url
+    patch "/workouts/#{@workout.id}", params: { workout: { title: "Hack" } }
+    assert_response :not_found
+    delete "/workouts/#{@workout.id}"
+    assert_response :not_found
+    assert_equal "Pierna y glúteo", @workout.reload.title
+  end
+
+  test "favoritas pide sesión" do
+    get favorites_url
+    assert_redirected_to new_user_session_url
+
+    sign_in users(:member)
+    get favorites_url
+    assert_response :success
   end
 end

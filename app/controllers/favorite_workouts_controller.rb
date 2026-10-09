@@ -1,27 +1,20 @@
 class FavoriteWorkoutsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_workout
 
-    def index
-        @workouts = current_user.favorite_workouts
-    end
-  
   def create
-    if Favorite.create(favorited: @workout, user: current_user)
-      redirect_to @workout, notice: 'Workout agregado a favoritos'
-    else
-      redirect_to @workout, alert: 'Oh no, algo salió mal'
-    end
+    current_user.favorites.find_or_create_by!(favorited: @workout)
+    redirect_to @workout, notice: "Workout agregado a favoritos", status: :see_other
   end
-  
+
   def destroy
-    Favorite.where(favorited_id: @workout.id, user_id: current_user.id).first.destroy
-    redirect_to @workout, notice: 'Workout removido de favoritos'
+    current_user.favorites.where(favorited: @workout).destroy_all
+    redirect_to @workout, notice: "Workout removido de favoritos", status: :see_other
   end
-  
+
   private
-  
+
   def set_workout
     @workout = Workout.find(params[:workout_id] || params[:id])
   end
-
 end

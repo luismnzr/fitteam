@@ -1,0 +1,459 @@
+/*
+ * CSS del admin de Fitteam — Tailwind 4, mismo lenguaje visual que el admin
+ * de Eclipse (tokens en variables CSS, tarjetas blancas, sidebar fija) con la
+ * marca de Fitteam.
+ *
+ * Fuente:   tools/admin-css/admin.css (este archivo)
+ * Salida:   app/assets/builds/admin.css (se commitea; Heroku no compila nada)
+ * Compilar: bin/admin_css            (o bin/admin_css --watch mientras editas)
+ *
+ * Solo se escanean las vistas y helpers del admin: el sitio público tiene su
+ * propio CSS (application.css.scss) y no carga este archivo.
+ */
+@import "tailwindcss" source(none);
+
+@source "../../app/views/admin";
+@source "../../app/views/layouts/admin.html.erb";
+@source "../../app/views/kaminari/admin";
+@source "../../app/helpers/admin_helper.rb";
+@source "../../app/assets/javascripts/admin.js";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── Tokens ─────────────────────────────────────────────────────────── */
+
+:root {
+  --color-primary: #860847;
+  --color-primary-hover: #6f063b;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f4f2ec;
+  --color-secondary-foreground: #111111;
+  --color-background: #fbfaf6;
+  --color-foreground: #111111;
+  --color-card: #ffffff;
+  --color-muted: #f1eee7;
+  --color-muted-foreground: #5f5c55;
+  --color-border: #e6e2d9;
+  --color-input: #d6d1c6;
+  --color-destructive: #b42318;
+  --color-destructive-foreground: #ffffff;
+  --color-success: #1f7a4d;
+  --color-warning: #9a5b00;
+  --color-info: #1d5c96;
+  --color-sidebar: #ffffff;
+
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Lato", "Inter", system-ui, sans-serif;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+
+  color-scheme: light;
+}
+
+.dark {
+  --color-primary: #e58cbc;
+  --color-primary-hover: #eda7cc;
+  --color-primary-foreground: #2a0617;
+  --color-secondary: #120f11;
+  --color-secondary-foreground: #f1ecef;
+  --color-background: #171416;
+  --color-foreground: #f1ecef;
+  --color-card: #1f1a1d;
+  --color-muted: #2a2327;
+  --color-muted-foreground: #b2a7ad;
+  --color-border: #362e33;
+  --color-input: #453b41;
+  --color-destructive: #f0857a;
+  --color-destructive-foreground: #1a0705;
+  --color-success: #6fcf9b;
+  --color-warning: #f0b45a;
+  --color-info: #8ab9ea;
+  --color-sidebar: #1f1a1d;
+
+  color-scheme: dark;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────── */
+
+@layer base {
+  html, body {
+    font-family: var(--font-sans);
+    background-color: var(--color-secondary);
+    color: var(--color-foreground);
+  }
+
+  a { color: inherit; }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* ── Componentes ────────────────────────────────────────────────────── */
+
+@layer components {
+  /* Sidebar: fija; fuera de pantalla en móvil, siempre visible en ≥1024px. */
+  .admin-sidebar {
+    position: fixed;
+    inset-block: 0;
+    left: 0;
+    height: 100vh;
+    background-color: var(--color-sidebar);
+    transform: translateX(-100%);
+    transition: transform 200ms ease-out;
+  }
+  .admin-sidebar.open { transform: translateX(0); }
+  @media (min-width: 1024px) {
+    .admin-sidebar {
+      transform: translateX(0);
+      transition: none;
+    }
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-muted-foreground);
+    transition: background-color 150ms, color 150ms;
+  }
+  .nav-link:hover {
+    background-color: var(--color-muted);
+    color: var(--color-foreground);
+  }
+  .nav-link.is-active {
+    background-color: color-mix(in oklab, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+  }
+  .nav-section {
+    padding: 0 0.75rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-muted-foreground);
+  }
+
+  .card {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-muted-foreground);
+  }
+  .stat-value {
+    margin-top: 0.25rem;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+  }
+  .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-md);
+    background-color: color-mix(in oklab, var(--color-primary) 10%, transparent);
+    color: var(--color-primary);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 150ms, color 150ms, opacity 150ms;
+  }
+  .btn:disabled { opacity: 0.5; pointer-events: none; }
+  .btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+  }
+  .btn-primary:hover { background-color: var(--color-primary-hover); }
+  .btn-outline {
+    border: 1px solid var(--color-border);
+    background-color: var(--color-card);
+    color: var(--color-foreground);
+  }
+  .btn-outline:hover { background-color: var(--color-muted); }
+  .btn-ghost { color: var(--color-muted-foreground); }
+  .btn-ghost:hover {
+    background-color: var(--color-muted);
+    color: var(--color-foreground);
+  }
+  .btn-danger {
+    border: 1px solid color-mix(in oklab, var(--color-destructive) 35%, transparent);
+    color: var(--color-destructive);
+    background-color: transparent;
+  }
+  .btn-danger:hover { background-color: color-mix(in oklab, var(--color-destructive) 10%, transparent); }
+  .btn-sm {
+    min-height: 2rem;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .link {
+    color: var(--color-primary);
+    font-weight: 500;
+  }
+  .link:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .link-danger {
+    color: var(--color-destructive);
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .link-danger:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 9999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    background-color: var(--color-muted);
+    color: var(--color-muted-foreground);
+  }
+  .badge-primary {
+    background-color: color-mix(in oklab, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+  }
+  .badge-success {
+    background-color: color-mix(in oklab, var(--color-success) 13%, transparent);
+    color: var(--color-success);
+  }
+  .badge-warning {
+    background-color: color-mix(in oklab, var(--color-warning) 14%, transparent);
+    color: var(--color-warning);
+  }
+  .badge-danger {
+    background-color: color-mix(in oklab, var(--color-destructive) 12%, transparent);
+    color: var(--color-destructive);
+  }
+  .badge-info {
+    background-color: color-mix(in oklab, var(--color-info) 13%, transparent);
+    color: var(--color-info);
+  }
+
+  .label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .hint {
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: var(--color-muted-foreground);
+  }
+  .input {
+    display: block;
+    width: 100%;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-input);
+    border-radius: var(--radius-md);
+    background-color: var(--color-card);
+    color: var(--color-foreground);
+    font-size: 0.875rem;
+  }
+  .input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 20%, transparent);
+  }
+  textarea.input { line-height: 1.5; }
+  select.input {
+    appearance: none;
+    padding-right: 2rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235f5c55' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.6rem center;
+  }
+  .input-file {
+    display: block;
+    width: 100%;
+    font-size: 0.875rem;
+    color: var(--color-muted-foreground);
+  }
+  .input-file::file-selector-button {
+    margin-right: 1rem;
+    padding: 0.5rem 1rem;
+    border: 0;
+    border-radius: var(--radius-md);
+    background-color: color-mix(in oklab, var(--color-primary) 12%, transparent);
+    color: var(--color-primary);
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .checkbox {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--color-primary);
+  }
+
+  .table {
+    /* relative: los .sr-only de las celdas se posicionan dentro de la tabla
+       y no desbordan la página en móvil. */
+    position: relative;
+    width: 100%;
+    font-size: 0.875rem;
+  }
+  .table thead { background-color: color-mix(in oklab, var(--color-muted) 60%, transparent); }
+  .table th {
+    padding: 0.75rem 1.25rem;
+    text-align: left;
+    font-weight: 500;
+    color: var(--color-muted-foreground);
+    white-space: nowrap;
+  }
+  .table td {
+    padding: 0.75rem 1.25rem;
+    vertical-align: middle;
+  }
+  .table tbody tr { border-top: 1px solid var(--color-border); }
+  .table tbody tr:hover { background-color: color-mix(in oklab, var(--color-muted) 40%, transparent); }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--color-muted-foreground);
+  }
+  .chip:hover { background-color: var(--color-muted); }
+  .chip.is-active {
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+  }
+
+  .alert-error {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    background-color: color-mix(in oklab, var(--color-destructive) 10%, transparent);
+    color: var(--color-destructive);
+    font-size: 0.875rem;
+  }
+
+  .toast {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 100;
+    min-width: 18rem;
+    max-width: calc(100vw - 2rem);
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-card);
+    box-shadow: var(--shadow-lg);
+    transition: opacity 300ms, transform 300ms;
+  }
+  .toast.is-alert { border-color: color-mix(in oklab, var(--color-destructive) 40%, transparent); }
+  .toast.is-leaving {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+  .pagination a,
+  .pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .pagination a:hover { background-color: var(--color-muted); }
+  .pagination .is-current {
+    background-color: var(--color-primary);
+    color: var(--color-primary-foreground);
+  }
+  .pagination .is-gap { color: var(--color-muted-foreground); }
+
+  .brand-title {
+    font-family: var(--font-display);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .thumb {
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background-color: var(--color-muted);
+  }
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .embed-frame {
+    position: relative;
+    padding-top: 56.25%;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background-color: var(--color-muted);
+  }
+  .embed-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}

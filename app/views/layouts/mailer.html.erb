@@ -1,13 +1,65 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <style>
-      /* Email styles need to be inline */
-    </style>
-  </head>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style type="text/css">
+    body { margin: 0; padding: 0; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { border: 0; line-height: 100%; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+    a { color: <%= brand_color %>; }
+    @media only screen and (max-width: 600px) {
+      .container { width: 100% !important; padding: 16px !important; }
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: <%= brand_background %>; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <!-- Wrapper -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: <%= brand_background %>;">
+    <tr>
+      <td align="center" style="padding: 40px 16px;">
 
-  <body>
-    <%= yield %>
-  </body>
+        <!-- Container -->
+        <table role="presentation" class="container" width="560" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="padding: 32px 40px 24px 40px; border-bottom: 1px solid #e2e8f0;">
+              <a href="<%= root_url %>" target="_blank">
+                <img src="<%= email_logo_url %>" width="157" height="40" alt="Fitteam by Ana Gaby Ornelas" style="display: block; width: 157px; height: 40px;">
+              </a>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 32px 40px;">
+              <%= yield %>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 24px 40px; background-color: #f8fafc; border-top: 1px solid #e2e8f0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="font-size: 13px; color: #94a3b8; line-height: 1.6;">
+                    <a href="mailto:<%= contact_email %>" style="color: <%= brand_color %>; text-decoration: none;"><%= contact_email %></a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-top: 16px; font-size: 12px; color: #cbd5e1;">
+                    &copy; <%= Date.current.year %> Fitteam by Ana Gaby Ornelas. Todos los derechos reservados.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
 </html>

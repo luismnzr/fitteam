@@ -1,49 +1,16 @@
-<% if current_user %>
-  <% if current_user.active? %>
-    <% if @workout.cover.attached? %>
-      <div class="workoutView-cover" style="background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('<%= rails_blob_url(@workout.cover) %>');">
-        <div class="workoutView-cover_container">
-          <div class="video-card__cover">
-            <button class="vimeo-launch clases-container__cover button" data-vimeo-id="<%= @workout.video_url %>">
-              <svg width="18" height="18" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 12L0.750001 23.2583L0.750002 0.741669L18 12Z" fill="white"/>
-              </svg>
-              Comenzar workout
-            </button>
-          </div>
-        </div>
-      </div>
-    <% else %>
-      <div class="workoutView-cover">
-        <div class="workoutView-cover_container">
-          <div class="video-card__cover">
-            <button class="vimeo-launch clases-container__cover button" data-vimeo-id="<%= @workout.video_url %>">
-              <svg width="18" height="18" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 12L0.750001 23.2583L0.750002 0.741669L18 12Z" fill="white"/>
-              </svg>
-              Comenzar workout
-            </button>
-          </div>
-        </div>
-      </div>
-    <% end %>
-  <% else %>
-    <div class="workouts_cover">
-      <div class="workouts_cover-container">
-        <div  class="workouts_cover-container_info workouts_cover-container_infoFree">
-          <h3>Necesitas un plan para ver esta clase</h3>
-          <br>
-          <p>
-            Aquí encontrarás una variedad de más de 50 clases. Elige la que más se adapta a lo que buscas.
-          </p>
-          <br>
-          <%= link_to "Contrata un plan", payments_new_path, class: "button" %>
-        </div>
-      </div>  
-      <div class="workouts_cover_image">
+<% if current_user&.can_watch? %>
+  <div class="workoutView-cover" style="<%= workout_cover_style(@workout, overlay: "linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3))") %>">
+    <div class="workoutView-cover_container">
+      <div class="video-card__cover">
+        <button class="vimeo-launch clases-container__cover button" data-vimeo-id="<%= @workout.youtube_id || @workout.video_url %>">
+          <svg width="18" height="18" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 12L0.750001 23.2583L0.750002 0.741669L18 12Z" fill="white"/>
+          </svg>
+          Comenzar workout
+        </button>
       </div>
     </div>
-  <% end %>
+  </div>
 <% else %>
   <div class="workouts_cover">
     <div class="workouts_cover-container">
@@ -56,18 +23,16 @@
         <br>
         <%= link_to "Contrata un plan", payments_new_path, class: "button" %>
       </div>
-    </div> 
+    </div>
     <div class="workouts_cover_image">
-      </div> 
+    </div>
   </div>
 <% end %>
 
 <div class="workoutView-info" >
   <div class="workoutView-info_container" >
-    <% if current_user %>
-      <% if current_user.admin? %>
-        <%= link_to "Editar clase", edit_workout_path(@workout) %>
-      <% end %>
+    <% if current_user&.admin? %>
+      <%= link_to "Editar clase", edit_admin_workout_path(@workout) %>
     <% end %>
     <h2><%= @workout.title %></h2>
     <div class="workoutCard_categories">
@@ -80,29 +45,46 @@
     <br>
     <% if current_user %>
       <% unless current_user.favorite_workouts.exists?(id: @workout.id) %>
-        <%= button_to 'Agregar a favoritas', favorite_workouts_path(workout_id: @workout), data: { turbo_method: :post }, class: 'button' %>
+        <%= button_to 'Agregar a favoritas', favorite_workouts_path(workout_id: @workout), form: { data: { turbo: false } }, class: 'button' %>
       <% else %>
-        <%= button_to 'Quitar de favoritas', favorite_workout_path(@workout), method: :delete, class: 'button button-red' %>
+        <%= button_to 'Quitar de favoritas', favorite_workout_path(@workout), method: :delete, form: { data: { turbo: false } }, class: 'button button-red' %>
       <% end %>
     <% end %>
   </div>
 </div>
 
-<div class="container commentContainer">
-    <div class="columns">
-      <div class="columnFull">
-        <h3>Comentarios</h3>
-        <%- @workout.comments.each do |comment|%>
-          <br>
-          <hr>
-          <br>
-          <p><%= comment.text%></p>
+<div class="container commentContainer" id="comentarios">
+  <div class="columns">
+    <div class="columnFull">
+      <h3>Comentarios</h3>
+      <% if @comments.empty? %>
+        <p class="commentEmpty">Todavía no hay comentarios. ¡Cuéntanos qué te pareció esta clase!</p>
+      <% end %>
+      <% @comments.each do |comment| %>
+        <div class="commentItem">
+          <p class="commentItem-meta"><strong><%= comment.author_name %></strong> · <%= short_date(comment.created_at) %></p>
+          <p class="commentItem-text"><%= comment.text %></p>
+          <% comment.replies.sort_by(&:created_at).each do |reply| %>
+            <div class="commentItem-reply">
+              <p class="commentItem-meta"><strong>Ana Gaby respondió</strong></p>
+              <p class="commentItem-text"><%= reply.text %></p>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+      <% if current_user %>
+        <%= form_with(model: Comment.new, url: workout_comments_path(@workout), class: "commentForm", data: { turbo: false }) do |form| %>
+          <div class="field">
+            <%= form.label :text, "Escribir comentario:" %><br>
+            <%= form.text_area :text, required: true, rows: 3 %>
+          </div>
+          <div class="actions">
+            <%= form.submit "Publicar comentario", class: 'button' %>
+          </div>
         <% end %>
-        <% if current_user %>
-          <%= render "comments/form", comment: @comment%>
-        <% end %>
-      </div>
+      <% end %>
     </div>
+  </div>
 </div>
 
 
@@ -110,7 +92,7 @@
   $('body')
     .on('click', '.vimeo-launch', function () {
       var videoID = $(this).data('vimeo-id'),
-          $video = '<div id="vimeo-pop-container"><div><span class="vimeo-close"></span><iframe src="https://youtube.com/embed/' + videoID + '?autoplay=1" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></div>';
+          $video = '<div id="vimeo-pop-container"><div><span class="vimeo-close"></span><iframe src="https://www.youtube.com/embed/' + videoID + '?autoplay=1&rel=0" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></div>';
       $('body').append($video);
     } )
 

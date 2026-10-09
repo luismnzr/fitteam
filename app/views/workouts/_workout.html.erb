@@ -1,13 +1,8 @@
   <div id="<%= dom_id workout %>" class="workoutCard">
     <div class="workoutCard_cover">
       <%= link_to workout do %>
-        <% if workout.cover.attached? %>
-          <div class="workoutCard_cover_asset" style="background-image: url('<%= rails_blob_url(workout.cover) %>')">
-          </div>
-        <% else %>
-          <div class="workoutCard_cover_asset">
-          </div>
-        <% end %>
+        <div class="workoutCard_cover_asset" style="<%= workout_cover_style(workout) %>">
+        </div>
       <% end %>
     </div>
     <div class="workoutCard_title">

@@ -22,10 +22,6 @@ Rails.application.configure do
 
   # Disable serving static files from `public/`, relying on NGINX/Apache to do so instead.
   # config.public_file_server.enabled = false
-  Rails.application.routes.default_url_options = {
-  host: "anagabyfitteam.com",
-    protocol: "https"
-  }
 
   # Compress CSS using a preprocessor.
   # config.assets.css_compressor = :sass
@@ -33,16 +29,20 @@ Rails.application.configure do
   # Do not fall back to assets pipeline if a precompiled asset is missed.
   config.assets.compile = false
 
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    user_name: 'api',
-    password: '376e26cdc1b0c876078e4fb76ac80c30',
-    address: 'live.smtp.mailtrap.io',
-    host: 'live.smtp.mailtrap.io',
-    port: '587',
-    authentication: :login
-  }
-  # config.action_mailer.default_url_options ={:host => 'udbhayoga.com', :protocol => 'https'}
+  # Tailwind 4 (CSS del admin, ya compilado en app/assets/builds/admin.css)
+  # usa sintaxis que libsass no puede volver a parsear, así que Sprockets no
+  # recomprime el CSS. El SCSS del sitio se sigue comprimiendo con sass.style.
+  config.assets.css_compressor = nil
+  config.sass.style = :compressed
+  config.sass.line_comments = false
+
+  # Correo con Postmark, igual que los proyectos de Eclipse. Los links de los
+  # correos (y de las URLs absolutas) usan APP_HOST.
+  app_host = ENV.fetch("APP_HOST", "anagabyfitteam.com")
+  config.action_mailer.delivery_method = :postmark
+  config.action_mailer.postmark_settings = { api_token: ENV["POSTMARK_API_TOKEN"] }
+  config.action_mailer.default_url_options = { host: app_host, protocol: "https" }
+  Rails.application.routes.default_url_options = { host: app_host, protocol: "https" }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
@@ -51,8 +51,11 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :amazon
+  # Portadas en S3 (Bucketeer o AWS_*) si hay bucket; si no, en disco para que
+  # la app arranque igual. Sin bucket las portadas salen de YouTube (ver
+  # WorkoutsHelper#workout_cover_url).
+  s3_bucket = ENV["BUCKETEER_BUCKET_NAME"].presence || ENV["AWS_BUCKET"].presence
+  config.active_storage.service = s3_bucket ? :amazon : :local
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil

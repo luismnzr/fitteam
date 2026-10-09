@@ -1,0 +1,63 @@
+<% content_for(:page_title) { "Calendario" } %>
+
+<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+  <div class="flex items-center gap-2">
+    <%= link_to admin_calendar_path(month: @month.prev_month.strftime("%Y-%m")), class: "btn btn-outline btn-sm px-2", "aria-label": "Mes anterior" do %>
+      <%= admin_icon("chevron-left") %>
+    <% end %>
+    <h2 class="brand-title text-2xl sm:text-3xl min-w-[11rem] text-center"><%= admin_month_label(@month) %></h2>
+    <%= link_to admin_calendar_path(month: @month.next_month.strftime("%Y-%m")), class: "btn btn-outline btn-sm px-2", "aria-label": "Mes siguiente" do %>
+      <%= admin_icon("chevron-right") %>
+    <% end %>
+    <% unless @month == @today.beginning_of_month %>
+      <%= link_to "Hoy", admin_calendar_path, class: "btn btn-ghost btn-sm" %>
+    <% end %>
+  </div>
+  <div class="flex items-center gap-3">
+    <span class="hidden sm:inline-flex items-center gap-1.5 text-xs text-[var(--color-muted-foreground)]"><span class="badge badge-primary">Estreno</span> en negro en el calendario del sitio</span>
+    <%= link_to new_admin_workout_path, class: "btn btn-primary" do %>
+      <%= admin_icon("plus") %> Nuevo workout
+    <% end %>
+  </div>
+</div>
+
+<div class="card overflow-hidden">
+  <div class="hidden md:grid grid-cols-7 border-b border-[var(--color-border)] bg-[var(--color-muted)]/60">
+    <% %w[Lunes Martes Miércoles Jueves Viernes Sábado Domingo].each do |name| %>
+      <div class="px-3 py-2 text-xs font-medium text-[var(--color-muted-foreground)]"><%= name %></div>
+    <% end %>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-7">
+    <% @days.each do |day| %>
+      <% in_month = day.month == @month.month %>
+      <% workouts = @workouts[day] || [] %>
+      <div class="<%= class_names('min-h-[7.5rem] p-2 border-b md:border-r border-[var(--color-border)] flex flex-col gap-1.5',
+                                  'hidden md:flex' => !in_month,
+                                  'bg-[var(--color-muted)]/30' => !in_month,
+                                  'bg-[var(--color-primary)]/5' => day == @today) %>">
+        <div class="flex items-center justify-between">
+          <span class="<%= class_names('text-xs font-semibold',
+                                       'text-[var(--color-primary)]' => day == @today,
+                                       'text-[var(--color-muted-foreground)]' => day != @today) %>">
+            <span class="md:hidden"><%= admin_day_label(day) %></span>
+            <span class="hidden md:inline"><%= day.day %></span>
+            <% if day == @today %> · Hoy<% end %>
+          </span>
+          <%= link_to new_admin_workout_path(day: day), class: "p-1 rounded-md text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-primary)]",
+                title: "Programar un workout el #{admin_date(day)}", "aria-label": "Programar un workout el #{admin_date(day)}" do %>
+            <%= admin_icon("plus", "h-3.5 w-3.5") %>
+          <% end %>
+        </div>
+        <% workouts.each do |workout| %>
+          <%= link_to edit_admin_workout_path(workout),
+                class: class_names("block rounded-md px-2 py-1.5 text-xs font-medium leading-snug",
+                                   "bg-[var(--color-foreground)] text-[var(--color-background)]" => workout.premiere?,
+                                   "bg-[var(--color-primary)]/10 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/20" => !workout.premiere?) do %>
+            <span class="line-clamp-2"><%= workout.title %></span>
+            <% if workout.premiere? %><span class="block text-[10px] font-semibold uppercase tracking-wide opacity-80 mt-0.5">Estreno</span><% end %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

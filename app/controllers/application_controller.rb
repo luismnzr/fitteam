@@ -3,9 +3,11 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  # Solo datos del perfil. El acceso, la suscripción y el rol de admin no se
+  # aceptan desde los formularios de cuenta (antes cualquiera podía darse
+  # acceso o volverse admin editando su cuenta); los maneja el admin y Stripe.
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:name, :email, :subscription_status, :subscription_ends_at, :stripe_customer_id, :admin])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [ :name ])
+    devise_parameter_sanitizer.permit(:account_update, keys: [ :name ])
   end
 end
-

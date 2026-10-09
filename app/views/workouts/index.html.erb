@@ -5,33 +5,21 @@
     <div class="swiper-wrapper">
       <% @workoutsFeatured.each do |workout| %>
         <div class="swiper-slide">
-          <% if workout.cover.attached? %>
-            <div class="workouts_banner" style="background-image: url('<%= rails_blob_url(workout.cover) %>')">
-              <div class="workouts_banner_container">
-                <h1><%= workout.title %></h1>
-                <br>
-                <p><%= workout.duration %></p>
-                <br>
-                <p>Intensidad: <%= workout.intensity %></p>
-                <br>
+          <div class="workouts_banner" style="<%= workout_cover_style(workout) %>">
+            <div class="workouts_banner_container">
+              <h1><%= workout.title %></h1>
+              <br>
+              <p><%= workout.duration %></p>
+              <br>
+              <p>Intensidad: <%= workout.intensity %></p>
+              <br>
+              <% if workout.material.present? %>
                 <p>Material: <%= workout.material %></p>
                 <br>
-                <%= link_to "Ir a workout", workout, class: "button" %>
-              </div>
+              <% end %>
+              <%= link_to "Ir a workout", workout, class: "button" %>
             </div>
-          <% else %>
-            <div class="workouts_banner">
-              <div class="workouts_banner_container">
-                <h1><%= workout.title %></h1>
-                <br>
-                <p><%= workout.duration %></p>
-                <br>
-                <p>Intensidad: <%= workout.intensity %></p>
-                <br>
-                <%= link_to "Ir a workout", workout, class: "button" %>
-              </div>
-            </div>
-          <% end %>
+          </div>
         </div>
       <% end %>
 

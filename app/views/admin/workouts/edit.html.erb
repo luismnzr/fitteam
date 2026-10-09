@@ -1,0 +1,24 @@
+<% content_for(:page_title) { @workout.title.presence || "Editar workout" } %>
+
+<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+  <%= link_to admin_workouts_path, class: "inline-flex items-center gap-1.5 text-sm text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]" do %>
+    <%= admin_icon("arrow-left", "h-3.5 w-3.5") %> Workouts
+  <% end %>
+  <div class="flex items-center gap-2">
+    <%= link_to workout_path(@workout), class: "btn btn-outline btn-sm", target: "_blank", rel: "noopener" do %>
+      <%= admin_icon("external", "h-3.5 w-3.5") %> Ver en el sitio
+    <% end %>
+    <%= button_to admin_workout_path(@workout), method: :delete, class: "btn btn-danger btn-sm",
+          data: { confirm: "¿Eliminar \"#{@workout.title}\"? Se borran también sus comentarios y se quita de las favoritas. Esta acción no se puede deshacer." } do %>
+      <%= admin_icon("trash", "h-3.5 w-3.5") %> Eliminar
+    <% end %>
+  </div>
+</div>
+
+<p class="text-xs text-[var(--color-muted-foreground)] mb-4">
+  Creado el <%= admin_date(@workout.created_at) %> ·
+  en favoritas de <%= @workout.favorites.count %> ·
+  <%= link_to "#{@workout.comments.roots.count} comentarios", admin_comments_path(status: "all", workout_id: @workout.id), class: "link" %>
+</p>
+
+<%= render "form", workout: @workout %>

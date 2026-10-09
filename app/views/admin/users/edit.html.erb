@@ -1,0 +1,38 @@
+<% content_for(:page_title) { "Editar: #{@user.display_name}" } %>
+
+<%= link_to admin_user_path(@user), class: "inline-flex items-center gap-1.5 text-sm text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] mb-4" do %>
+  <%= admin_icon("arrow-left", "h-3.5 w-3.5") %> Volver
+<% end %>
+
+<div class="max-w-2xl">
+  <%= form_with model: @user, url: admin_user_path(@user), scope: :user, local: true do |f| %>
+    <div class="card p-5 sm:p-6 space-y-5">
+      <%= admin_error_messages(@user) %>
+      <div>
+        <%= f.label :name, "Nombre", class: "label" %>
+        <%= f.text_field :name, class: "input" %>
+      </div>
+      <div>
+        <%= f.label :email, "Correo", class: "label" %>
+        <%= f.email_field :email, class: "input", required: true %>
+        <p class="hint">Es su usuario para iniciar sesión. Cambiarlo aquí no lo cambia en Stripe.</p>
+      </div>
+      <div>
+        <%= f.label :subscription_ends_at, "Acceso hasta", class: "label" %>
+        <%= f.date_field :subscription_ends_at, value: admin_time(@user.subscription_ends_at)&.to_date, class: "input w-auto" %>
+        <p class="hint">Lo maneja Stripe automáticamente. Cámbialo a mano solo para dar acceso de cortesía o quitarlo (déjalo vacío); si tiene una suscripción en Stripe, su siguiente renovación lo vuelve a ajustar.</p>
+      </div>
+      <label class="flex items-start gap-3 cursor-pointer">
+        <%= f.check_box :admin, class: "checkbox mt-0.5", disabled: @user == current_user %>
+        <span>
+          <span class="text-sm font-medium block">Admin</span>
+          <span class="hint block mt-0"><%= @user == current_user ? "No puedes quitarte tu propio rol de admin." : "Puede entrar a este panel y editar todo el contenido." %></span>
+        </span>
+      </label>
+    </div>
+    <div class="flex items-center gap-3 mt-6">
+      <%= f.submit "Guardar cambios", class: "btn btn-primary" %>
+      <%= link_to "Cancelar", admin_user_path(@user), class: "btn btn-ghost" %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,92 @@
+<% content_for(:page_title) { "Comentarios" } %>
+
+<div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+  <div class="flex items-center gap-1">
+    <%= link_to admin_comments_path(status: "unanswered", workout_id: params[:workout_id]), class: class_names("chip", "is-active" => @status == "unanswered") do %>
+      Sin responder <span class="badge <%= @status == 'unanswered' ? 'bg-white/20 text-current' : '' %>"><%= @unanswered_count %></span>
+    <% end %>
+    <%= link_to "Todos", admin_comments_path(status: "all", workout_id: params[:workout_id]), class: class_names("chip", "is-active" => @status == "all") %>
+  </div>
+  <% if @workout %>
+    <p class="text-sm text-[var(--color-muted-foreground)]">
+      Solo de <span class="font-medium text-[var(--color-foreground)]"><%= @workout.title %></span> ·
+      <%= link_to "ver todos", admin_comments_path(status: @status), class: "link" %>
+    </p>
+  <% end %>
+</div>
+
+<% if @comments.any? %>
+  <div class="space-y-4">
+    <% @comments.each do |comment| %>
+      <article class="card">
+        <div class="p-5">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="h-9 w-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] flex items-center justify-center flex-shrink-0 text-xs font-semibold">
+                <%= comment.user ? admin_initials(comment.user) : "M" %>
+              </div>
+              <div class="min-w-0">
+                <p class="text-sm font-medium">
+                  <% if comment.user %>
+                    <%= link_to comment.author_name, admin_user_path(comment.user), class: "hover:text-[var(--color-primary)]" %>
+                  <% else %>
+                    <%= comment.author_name %>
+                  <% end %>
+                </p>
+                <p class="text-xs text-[var(--color-muted-foreground)]">
+                  <%= admin_time_ago(comment.created_at) %> en
+                  <% if comment.workout %>
+                    <%= link_to comment.workout.title, workout_path(comment.workout, anchor: "comentarios"), class: "link", target: "_blank", rel: "noopener" %>
+                  <% else %>
+                    un workout eliminado
+                  <% end %>
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <% if comment.replies.any? %>
+                <span class="badge badge-success">Respondido</span>
+              <% else %>
+                <span class="badge badge-warning">Sin responder</span>
+              <% end %>
+              <%= button_to admin_comment_path(comment), method: :delete, class: "btn btn-ghost btn-sm text-[var(--color-destructive)]",
+                    title: "Eliminar comentario", "aria-label": "Eliminar comentario",
+                    data: { confirm: "¿Eliminar este comentario#{' y sus respuestas' if comment.replies.any?}?" } do %>
+                <%= admin_icon("trash", "h-4 w-4") %>
+              <% end %>
+            </div>
+          </div>
+          <p class="text-sm mt-3 whitespace-pre-line"><%= comment.text %></p>
+
+          <% comment.replies.sort_by(&:created_at).each do |reply| %>
+            <div class="mt-4 ml-4 sm:ml-12 p-3 rounded-lg bg-[var(--color-muted)]/60 flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-xs font-medium text-[var(--color-primary)]">Ana Gaby respondió · <%= admin_time_ago(reply.created_at) %></p>
+                <p class="text-sm mt-1 whitespace-pre-line"><%= reply.text %></p>
+              </div>
+              <%= button_to "Borrar", admin_comment_path(reply), method: :delete, class: "link-danger text-xs",
+                    data: { confirm: "¿Borrar esta respuesta?" } %>
+            </div>
+          <% end %>
+        </div>
+        <% if comment.workout %>
+          <%= form_with url: reply_admin_comment_path(comment), scope: :reply, local: true,
+                class: "px-5 py-4 border-t border-[var(--color-border)] bg-[var(--color-muted)]/30 rounded-b-xl flex flex-wrap items-end gap-3" do |f| %>
+            <div class="flex-1 min-w-[14rem]">
+              <%= f.label :text, "Responder como Ana Gaby", class: "label", for: "reply-#{comment.id}" %>
+              <%= f.text_area :text, rows: 2, class: "input", required: true, id: "reply-#{comment.id}", placeholder: "Escribe tu respuesta…" %>
+            </div>
+            <%= f.submit "Responder", class: "btn btn-primary" %>
+          <% end %>
+        <% end %>
+      </article>
+    <% end %>
+  </div>
+  <div class="mt-6"><%= paginate @comments, theme: "admin" %></div>
+<% else %>
+  <div class="card p-12 text-center">
+    <p class="text-sm text-[var(--color-muted-foreground)]">
+      <%= @status == "unanswered" ? "No hay comentarios pendientes de respuesta. 🎉" : "Todavía no hay comentarios." %>
+    </p>
+  </div>
+<% end %>

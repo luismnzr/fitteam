@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_03_04_021120) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_09_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -47,6 +47,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_04_021120) do
     t.text "text"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.bigint "parent_id"
+    t.index ["parent_id"], name: "index_comments_on_parent_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "favorites", force: :cascade do |t|
@@ -71,9 +75,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_04_021120) do
     t.string "name"
     t.string "stripe_customer_id"
     t.string "subscription_status"
-    t.string "subscription_ends_at"
+    t.datetime "subscription_ends_at"
+    t.string "subscription_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id"
   end
 
   create_table "workouts", force: :cascade do |t|
@@ -92,5 +98,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_03_04_021120) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "comments", "comments", column: "parent_id", on_delete: :cascade
+  add_foreign_key "comments", "users", on_delete: :nullify
   add_foreign_key "favorites", "users"
 end

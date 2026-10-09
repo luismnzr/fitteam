@@ -1,0 +1,72 @@
+<% content_for(:page_title) { "Usuarios" } %>
+
+<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+  <div class="flex items-center gap-1 overflow-x-auto -mx-1 px-1">
+    <%= link_to "Todos", admin_users_path(q: params[:q], sort: params[:sort]), class: class_names("chip", "is-active" => params[:filter].blank?) %>
+    <% Admin::UsersController::FILTERS.each do |key, label| %>
+      <%= link_to label, admin_users_path(filter: key, q: params[:q], sort: params[:sort]), class: class_names("chip", "is-active" => params[:filter] == key) %>
+    <% end %>
+  </div>
+  <p class="text-sm text-[var(--color-muted-foreground)] whitespace-nowrap"><%= number_with_delimiter(@users.total_count) %> usuarios</p>
+</div>
+
+<%= form_with url: admin_users_path, method: :get, local: true, class: "flex flex-wrap gap-3 mb-6" do %>
+  <%= hidden_field_tag :filter, params[:filter] if params[:filter].present? %>
+  <div class="relative flex-1 min-w-[14rem]">
+    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted-foreground)]"><%= admin_icon("search") %></span>
+    <%= search_field_tag :q, params[:q], placeholder: "Buscar por nombre o correo…", class: "input pl-9", "aria-label": "Buscar usuarios" %>
+  </div>
+  <%= select_tag :sort, options_for_select([["Más recientes", ""], ["Nombre A–Z", "name"], ["Acceso hasta", "access"]], params[:sort]),
+        class: "input w-auto", data: { autosubmit: true }, "aria-label": "Ordenar" %>
+  <button type="submit" class="btn btn-outline">Buscar</button>
+<% end %>
+
+<% if @users.any? %>
+  <div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Acceso</th>
+            <th>Acceso hasta</th>
+            <th>Suscripción (Stripe)</th>
+            <th>Favoritas</th>
+            <th>Registro</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @users.each do |user| %>
+            <tr>
+              <td>
+                <div class="flex items-center gap-3 min-w-[15rem]">
+                  <div class="h-8 w-8 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] flex items-center justify-center flex-shrink-0 text-xs font-semibold">
+                    <%= admin_initials(user) %>
+                  </div>
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <%= link_to (user.name.presence || "Sin nombre"), admin_user_path(user), class: "font-medium hover:text-[var(--color-primary)]" %>
+                      <% if user.admin? %><span class="badge badge-info">Admin</span><% end %>
+                    </div>
+                    <p class="text-xs text-[var(--color-muted-foreground)]"><%= user.email %></p>
+                  </div>
+                </div>
+              </td>
+              <td><%= admin_access_badge(user) %></td>
+              <td class="text-[var(--color-muted-foreground)] whitespace-nowrap"><%= admin_date(user.subscription_ends_at) %></td>
+              <td class="text-[var(--color-muted-foreground)] whitespace-nowrap"><%= admin_subscription_status(user) %></td>
+              <td class="text-[var(--color-muted-foreground)]"><%= @favorites[user.id] || 0 %></td>
+              <td class="text-[var(--color-muted-foreground)] whitespace-nowrap"><%= admin_date(user.created_at) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="mt-6"><%= paginate @users, theme: "admin" %></div>
+<% else %>
+  <div class="card p-12 text-center">
+    <p class="text-sm text-[var(--color-muted-foreground)]">No encontramos usuarios con esos filtros.</p>
+    <%= link_to "Limpiar filtros", admin_users_path, class: "link text-sm mt-2 inline-block" %>
+  </div>
+<% end %>

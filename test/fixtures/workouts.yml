@@ -1,19 +1,19 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
-  title: MyString
-  category: MyString
-  duration: MyString
-  video_url: MyString
-  intensity: MyString
-  material: MyString
-  day: 2025-02-06 10:05:43
+  title: Pierna y glúteo
+  category: Lower Body
+  duration: 30min
+  video_url: dQw4w9WgXcQ
+  intensity: Media
+  material: Polainas, Tapete
+  day: <%= Date.current %>
+  color: "#004a37"
 
 two:
-  title: MyString
-  category: MyString
-  duration: MyString
-  video_url: MyString
-  intensity: MyString
-  material: MyString
-  day: 2025-02-06 10:05:43
+  title: Core de acero
+  category: ABS and Core
+  duration: 15min
+  video_url: ScMzIvxBSi4
+  intensity: Alta
+  material: Tapete
+  color: "#111111"
+  strength: true

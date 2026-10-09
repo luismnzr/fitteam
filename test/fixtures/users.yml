@@ -1,11 +1,22 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+# Los emails deben ser únicos (índice único sobre email).
+admin:
+  email: admin@example.com
+  name: Ana Gaby
+  admin: true
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123") %>
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+member:
+  email: member@example.com
+  name: Member Activa
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123") %>
+  subscription_ends_at: <%= 20.days.from_now.utc.to_fs(:db) %>
+  subscription_status: active
+  subscription_id: sub_member
+  stripe_customer_id: cus_member
+
+guest:
+  email: guest@example.com
+  name: Sin Plan
+  encrypted_password: <%= Devise::Encryptor.digest(User, "password123") %>
+  subscription_ends_at: <%= 3.days.ago.utc.to_fs(:db) %>
+  subscription_status: canceled

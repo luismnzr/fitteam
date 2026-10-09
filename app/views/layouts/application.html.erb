@@ -108,7 +108,7 @@
           <% if current_user %>
             <% if current_user.admin? %>
               <%= link_to "Admin", admin_root_path %>
-              <%= link_to "Agregar clase", new_workout_path, class: "button button-header_alpha" %>
+              <%= link_to "Agregar clase", new_admin_workout_path, class: "button button-header_alpha" %>
             <% end %>
           <% end %>
           <a href="javascript:void(0);" class="menu_icon" onclick="openMenu()">

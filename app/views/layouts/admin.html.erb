@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+  <head>
+    <title><%= [content_for(:page_title), "Admin · Fitteam"].compact.join(" — ") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex">
+    <%# El admin no carga Turbo: si se llega desde el sitio, que sea carga completa. %>
+    <meta name="turbo-visit-control" content="reload">
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("admin-theme");
+          var systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (stored === "dark" || (!stored && systemDark)) document.documentElement.classList.add("dark");
+        } catch (_) {}
+      })();
+    </script>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lato:wght@900&display=swap" rel="stylesheet">
+    <%= stylesheet_link_tag "admin", media: "all" %>
+    <%= javascript_include_tag "admin", defer: true %>
+  </head>
+
+  <body class="h-full">
+    <div class="flex min-h-full">
+      <div data-admin-backdrop data-admin-menu-close class="hidden fixed inset-0 z-40 bg-black/50 lg:hidden" aria-hidden="true"></div>
+
+      <aside data-admin-sidebar aria-label="Menú del admin"
+             class="admin-sidebar z-50 flex flex-col w-72 max-w-[85%] lg:w-64 lg:max-w-none border-r border-[var(--color-border)]">
+        <div class="flex items-center justify-between gap-2 h-16 px-5 border-b border-[var(--color-border)]">
+          <%= link_to admin_root_path, class: "flex items-center gap-3 min-w-0" do %>
+            <%= image_tag "fitteam_logo.svg", alt: "Fitteam", class: "h-7 w-auto invert dark:invert-0" %>
+            <span class="badge badge-primary">Admin</span>
+          <% end %>
+          <button type="button" data-admin-menu-close class="lg:hidden p-2 -mr-2 rounded-lg hover:bg-[var(--color-muted)]" aria-label="Cerrar menú">
+            <%= admin_icon("close", "h-5 w-5") %>
+          </button>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1" aria-label="Secciones del admin">
+          <%= admin_nav_link "Panel", admin_root_path, "dashboard" %>
+          <%= admin_nav_link "Workouts", admin_workouts_path, "workouts" %>
+          <%= admin_nav_link "Calendario", admin_calendar_path, "calendar" %>
+          <%= admin_nav_link "Usuarios", admin_users_path, "users" %>
+          <%= admin_nav_link "Comentarios", admin_comments_path, "comments" %>
+
+          <div class="pt-4 mt-4 border-t border-[var(--color-border)] space-y-1">
+            <p class="nav-section">Cobros</p>
+            <a href="https://dashboard.stripe.com" target="_blank" rel="noopener" class="nav-link">
+              <%= admin_icon("credit-card") %><span>Stripe</span>
+              <%= admin_icon("external", "h-3.5 w-3.5 ml-auto") %>
+            </a>
+          </div>
+        </nav>
+
+        <div class="p-4 border-t border-[var(--color-border)] space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-full bg-[var(--color-primary)] text-[var(--color-primary-foreground)] flex items-center justify-center flex-shrink-0 text-xs font-semibold">
+              <%= admin_initials(current_user) %>
+            </div>
+            <div class="text-sm min-w-0 flex-1">
+              <p class="font-medium truncate"><%= current_user.display_name %></p>
+              <p class="text-xs text-[var(--color-muted-foreground)] truncate"><%= current_user.email %></p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 lg:hidden">
+            <%= link_to root_path, class: "btn btn-outline btn-sm flex-1" do %>
+              <%= admin_icon("external", "h-3.5 w-3.5") %> Ver sitio
+            <% end %>
+            <%= button_to "Cerrar sesión", destroy_user_session_path, method: :delete, form_class: "flex-1", class: "btn btn-outline btn-sm w-full" %>
+          </div>
+        </div>
+      </aside>
+
+      <div class="flex flex-col flex-1 min-w-0 lg:pl-64">
+        <header class="sticky top-0 z-30 flex items-center justify-between h-14 sm:h-16 px-4 sm:px-6 gap-3 border-b border-[var(--color-border)] bg-[var(--color-background)]/85 backdrop-blur-lg">
+          <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+            <button type="button" data-admin-menu-open class="lg:hidden p-2 -ml-2 rounded-lg hover:bg-[var(--color-muted)]" aria-label="Abrir menú">
+              <%= admin_icon("menu", "h-5 w-5") %>
+            </button>
+            <h1 class="text-base sm:text-lg font-semibold truncate"><%= content_for(:page_title) || "Panel" %></h1>
+          </div>
+          <div class="flex items-center gap-1 sm:gap-3 flex-shrink-0">
+            <button type="button" data-theme-toggle class="btn-ghost inline-flex items-center justify-center p-2 rounded-lg" aria-label="Cambiar tema claro u oscuro">
+              <svg data-theme-sun class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+              <svg data-theme-moon class="hidden h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
+            <%= link_to root_path, class: "btn-ghost inline-flex items-center gap-1.5 px-2 py-2 rounded-lg text-sm" do %>
+              <%= admin_icon("external", "h-4 w-4") %>
+              <span class="hidden sm:inline">Ver sitio</span>
+            <% end %>
+            <%= button_to "Cerrar sesión", destroy_user_session_path, method: :delete, form_class: "hidden sm:block", class: "btn-ghost px-2 py-2 rounded-lg text-sm cursor-pointer" %>
+          </div>
+        </header>
+
+        <% flash.each do |type, message| %>
+          <% next if message.blank? || !message.is_a?(String) %>
+          <div data-toast role="status" class="toast <%= 'is-alert' if type.to_s == 'alert' %>">
+            <div class="flex items-start justify-between gap-3">
+              <p class="text-sm"><%= message %></p>
+              <button type="button" data-toast-dismiss class="shrink-0 text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)]" aria-label="Cerrar aviso">
+                <%= admin_icon("close", "h-4 w-4") %>
+              </button>
+            </div>
+          </div>
+        <% end %>
+
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
+          <%= yield %>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
