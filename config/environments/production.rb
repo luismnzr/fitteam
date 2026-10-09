@@ -1,4 +1,5 @@
 require "active_support/core_ext/integer/time"
+require_relative "../mail_delivery"
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -36,11 +37,13 @@ Rails.application.configure do
   config.sass.style = :compressed
   config.sass.line_comments = false
 
-  # Correo con Postmark, igual que los proyectos de Eclipse. Los links de los
-  # correos (y de las URLs absolutas) usan APP_HOST.
+  # Correo: Postmark si hay POSTMARK_API_TOKEN; si no, SMTP (Mailtrap) con
+  # SMTP_* (ver config/mail_delivery.rb). Los links de los correos (y de las
+  # URLs absolutas) usan APP_HOST.
   app_host = ENV.fetch("APP_HOST", "anagabyfitteam.com")
-  config.action_mailer.delivery_method = :postmark
-  config.action_mailer.postmark_settings = { api_token: ENV["POSTMARK_API_TOKEN"] }
+  delivery_method, delivery_settings = MailDelivery.settings
+  config.action_mailer.delivery_method = delivery_method
+  config.action_mailer.public_send("#{delivery_method}_settings=", delivery_settings)
   config.action_mailer.default_url_options = { host: app_host, protocol: "https" }
   Rails.application.routes.default_url_options = { host: app_host, protocol: "https" }
 
