@@ -56,4 +56,32 @@ class Admin::UsersTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to admin_user_url(users(:member))
   end
+
+  test "sincronizar con Stripe" do
+    previous = Stripe.api_key
+    Stripe.api_key = "sk_test_123"
+    member = users(:member)
+    canceled = stripe_subscription(id: "sub_member", customer: "cus_member", status: "canceled")
+    with_stripe_subscriptions([ canceled ]) do
+      post sync_stripe_admin_user_url(member)
+    end
+    assert_redirected_to admin_user_url(member)
+    assert_equal "No tiene una suscripción activa en Stripe: le quitamos el acceso.", flash[:notice]
+    assert_not member.reload.active?
+
+    get admin_user_url(member)
+    assert_select "form[action='#{sync_stripe_admin_user_path(member)}']"
+  ensure
+    Stripe.api_key = previous
+  end
+
+  test "sincronizar sin llave de Stripe avisa" do
+    previous = Stripe.api_key
+    Stripe.api_key = nil
+    post sync_stripe_admin_user_url(users(:member))
+    assert_match "STRIPE_SECRET_KEY", flash[:alert]
+    assert users(:member).reload.active?
+  ensure
+    Stripe.api_key = previous
+  end
 end

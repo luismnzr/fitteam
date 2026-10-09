@@ -36,4 +36,27 @@ class CheckoutControllerTest < ActionDispatch::IntegrationTest
     post stripe_billing_portal_url
     assert_redirected_to payments_new_url
   end
+
+  test "al volver del pago da acceso sin esperar al webhook" do
+    user = users(:guest)
+    user.update!(stripe_customer_id: "cus_guest")
+    sign_in user
+    with_stripe_subscriptions([ stripe_subscription(id: "sub_g", customer: "cus_guest") ]) do
+      get stripe_checkout_success_url
+    end
+    assert_redirected_to workouts_url
+    assert_match "ya está activa", flash[:notice]
+    assert user.reload.active?
+  end
+
+  test "si Stripe no responde al volver del pago, el webhook da el acceso" do
+    user = users(:guest)
+    user.update!(stripe_customer_id: "cus_guest")
+    sign_in user
+    Stripe::Subscription.stub(:list, ->(*) { raise Stripe::APIConnectionError, "sin conexión" }) do
+      get stripe_checkout_success_url
+    end
+    assert_redirected_to workouts_url
+    assert_match "se está activando", flash[:notice]
+  end
 end

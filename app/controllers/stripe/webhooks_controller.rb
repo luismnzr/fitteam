@@ -3,10 +3,6 @@
 class Stripe::WebhooksController < ApplicationController
   skip_before_action :verify_authenticity_token
 
-  # Estados con los que la suscripción sigue dando acceso. past_due conserva
-  # el acceso mientras Stripe reintenta el cobro.
-  ACCESS_STATUSES = %w[active trialing past_due].freeze
-
   def create
     secret = ENV["STRIPE_WEBHOOK_KEY"].presence || ENV["STRIPE_WEBHOOK_SECRET"].presence
     if secret.blank?
@@ -25,13 +21,18 @@ class Stripe::WebhooksController < ApplicationController
     case event.type
     when "customer.created"
       link_customer(event.data.object)
-    when "customer.subscription.created", "customer.subscription.updated"
-      sync_subscription(event.data.object)
-    when "customer.subscription.deleted"
-      sync_subscription(event.data.object, deleted: true)
+    when "customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted"
+      # No se usa la suscripción del evento: StripeSync vuelve a leer de
+      # Stripe las de la clienta, así un evento viejo que llega tarde no
+      # devuelve un acceso ya cancelado.
+      StripeSync.sync_customer(event.data.object.customer)
     end
 
     render json: { message: "success" }
+  rescue Stripe::StripeError => e
+    # 500 para que Stripe reintente el evento.
+    Rails.logger.error("[Stripe webhook] #{event&.type}: #{e.class}: #{e.message}")
+    head :internal_server_error
   end
 
   private
@@ -41,37 +42,5 @@ class Stripe::WebhooksController < ApplicationController
 
     user = User.find_by(email: customer.email.downcase)
     user.update(stripe_customer_id: customer.id) if user && user.stripe_customer_id.blank?
-  end
-
-  def sync_subscription(subscription, deleted: false)
-    user = User.find_by(stripe_customer_id: subscription.customer)
-    unless user
-      Rails.logger.info("[Stripe webhook] Sin usuaria para el cliente #{subscription.customer}")
-      return
-    end
-
-    if !deleted && ACCESS_STATUSES.include?(subscription.status)
-      user.update(
-        subscription_id: subscription.id,
-        subscription_status: subscription.status,
-        subscription_ends_at: period_end(subscription) || user.subscription_ends_at
-      )
-    elsif user.subscription_id.blank? || user.subscription_id == subscription.id
-      # Solo la suscripción actual quita el acceso: si se cancela una vieja,
-      # la nueva sigue igual.
-      user.update(
-        subscription_id: (deleted ? nil : subscription.id),
-        subscription_status: (deleted ? "canceled" : subscription.status),
-        subscription_ends_at: [ user.subscription_ends_at, Time.current ].compact.min
-      )
-    end
-  end
-
-  # Desde la API 2025-03-31 el fin del periodo vive en cada item de la
-  # suscripción; en versiones anteriores, en la suscripción.
-  def period_end(subscription)
-    timestamp = subscription["current_period_end"] ||
-                subscription["items"]&.[]("data")&.first&.[]("current_period_end")
-    timestamp ? Time.zone.at(timestamp) : nil
   end
 end

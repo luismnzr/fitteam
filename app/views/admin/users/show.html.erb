@@ -48,7 +48,8 @@
           <a href="<%= url %>" target="_blank" rel="noopener" class="link text-sm inline-flex items-center gap-1"><%= admin_icon("external", "h-3.5 w-3.5") %> Suscripción en Stripe</a>
         <% end %>
       </div>
-      <p class="hint mt-3">Cobros, reembolsos y cancelaciones se hacen en Stripe; el acceso se actualiza solo con el webhook.</p>
+      <%= button_to "Sincronizar con Stripe", sync_stripe_admin_user_path(@user), class: "btn btn-outline btn-sm mt-4" %>
+      <p class="hint mt-3">Cobros, reembolsos y cancelaciones se hacen en Stripe; el acceso se actualiza solo. Si algo no cuadra con Stripe, sincroniza.</p>
     </div>
   </div>
 

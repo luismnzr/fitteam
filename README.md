@@ -57,20 +57,43 @@ borrar y las confirmaciones.
 
 * El acceso a las clases lo decide `users.subscription_ends_at`
   (`User#active?`). Las admins ven las clases aunque no tengan suscripción.
-* El webhook `/stripe/webhooks` lo mantiene al día y **solo acepta eventos
-  firmados** con `STRIPE_WEBHOOK_KEY`. En Stripe, el endpoint debe enviar:
+* `StripeSync` deja el acceso igual a lo que dice Stripe:
+  * `active`, `trialing` y `past_due` dan acceso hasta el fin del periodo
+    (`past_due` lo conserva mientras Stripe reintenta el cobro). Si alguien
+    tiene más de una, manda la que termina más tarde.
+  * `unpaid`, `canceled`, `paused`, etc. quitan el acceso que vino de
+    Stripe.
+  * Un acceso de cortesía (**Admin → Usuarios → Editar → Acceso hasta**) a
+    quien no tiene suscripción activa no se toca. A quien paga, Stripe le
+    pone la fecha: una cortesía para ella se da en Stripe (cupón o días de
+    prueba).
+  * Un cliente de Stripe que paga y que ninguna usuaria tiene guardado (por
+    ejemplo, uno duplicado de antes) se liga a la usuaria de su correo.
+* El webhook `/stripe/webhooks` **solo acepta eventos firmados** con
+  `STRIPE_WEBHOOK_KEY`. En Stripe, el endpoint debe enviar:
   `customer.created`, `customer.subscription.created`,
-  `customer.subscription.updated` y `customer.subscription.deleted`.
-  * `active`, `trialing` y `past_due` dan acceso hasta el fin del periodo.
-  * `unpaid`, `canceled`, `paused`, etc. quitan el acceso.
-  * Cancelar una suscripción vieja no le quita el acceso a la actual
-    (`users.subscription_id`).
+  `customer.subscription.updated` y `customer.subscription.deleted`. Con
+  cada evento de suscripción vuelve a leer de Stripe las suscripciones de
+  la clienta, así no importa el orden en que lleguen. Si Stripe no responde,
+  contesta 500 y Stripe reintenta.
+* Al volver del checkout se lee la suscripción en ese momento, sin esperar
+  al webhook.
+* Para revisar o corregir:
+  * Una usuaria: **Admin → Usuarios → (usuaria) → Sincronizar con Stripe**.
+  * Todas: `heroku run rails stripe:report` muestra quién gana o pierde
+    acceso, a quién se le cambia la fecha, las cortesías y quién paga sin
+    tener cuenta, sin cambiar nada; `heroku run rails stripe:sync` lo
+    aplica. Con una llave de pruebas en producción, `stripe:sync` no hace
+    nada, y si le quitaría el acceso a muchas de golpe (más de 5 y más del
+    30% de las que tienen acceso) se detiene: revisa con `stripe:report` y,
+    si es correcto, corre `heroku run FORCE=1 rails stripe:sync`.
+  * Conviene agregar `rails stripe:sync` como tarea diaria en Heroku
+    Scheduler, por si algún webhook no llega.
 * Los planes que se venden están en `app/models/plan.rb`: nombre, precio que
   se muestra e ID del precio de Stripe. La página de planes y la home los
   pintan desde ahí (`payments/_plans`). El checkout solo acepta esos precios;
   para cambiar un precio, crea el nuevo en Stripe y cambia su ID y su texto
   ahí.
-* Un acceso de cortesía se da en **Admin → Usuarios → Editar → Acceso hasta**.
 
 ## Portadas de workouts (YouTube)
 
@@ -152,7 +175,7 @@ bin/rails test
 
 Los tests cubren el acceso al admin por rol y sus escrituras, que el sitio
 público no tenga rutas de escritura, que el formulario de cuenta no permita
-darse acceso ni volverse admin, el checkout y el webhook de Stripe, y los
-correos y mensajes de Devise en español.
+darse acceso ni volverse admin, el checkout, el webhook y la sincronización
+con Stripe, y los correos y mensajes de Devise en español.
 
 En local los correos no se envían: quedan en el log del servidor.

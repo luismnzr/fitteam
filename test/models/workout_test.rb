@@ -11,7 +11,8 @@ class WorkoutTest < ActiveSupport::TestCase
       "https://www.youtube.com/shorts/dQw4w9WgXcQ" => "dQw4w9WgXcQ",
       "no es un video" => nil
     }.each do |input, expected|
-      assert_equal expected, Workout.new(video_url: input).youtube_id, input
+      id = Workout.new(video_url: input).youtube_id
+      expected ? assert_equal(expected, id, input) : assert_nil(id, input)
     end
   end
 

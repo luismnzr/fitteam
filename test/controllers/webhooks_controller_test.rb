@@ -30,40 +30,25 @@ class WebhooksControllerTest < ActionDispatch::IntegrationTest
   test "una suscripción activa da acceso hasta el fin del periodo" do
     user = users(:guest)
     user.update!(stripe_customer_id: "cus_guest")
-    period_end = 30.days.from_now.to_i
-    deliver event("customer.subscription.created", subscription(id: "sub_new", customer: "cus_guest", current_period_end: period_end))
+    ends_at = 30.days.from_now
+    current = stripe_subscription(id: "sub_new", customer: "cus_guest", ends_at: ends_at)
+    with_stripe_subscriptions([ current ]) do
+      deliver event("customer.subscription.created", subscription(id: "sub_new", customer: "cus_guest"))
+    end
 
     assert_response :success
     user.reload
     assert user.active?
     assert_equal "sub_new", user.subscription_id
     assert_equal "active", user.subscription_status
-    assert_equal period_end, user.subscription_ends_at.to_i
-  end
-
-  test "lee el fin del periodo de los items (API de Stripe 2025-03-31 en adelante)" do
-    period_end = 40.days.from_now.to_i
-    payload = subscription(status: "active").except(:current_period_end).merge(items: { object: "list", data: [ { id: "si_1", current_period_end: period_end } ] })
-    deliver event("customer.subscription.updated", payload)
-    assert_equal period_end, @member.reload.subscription_ends_at.to_i
-  end
-
-  test "pago pendiente conserva el acceso" do
-    deliver event("customer.subscription.updated", subscription(status: "past_due", current_period_end: 25.days.from_now.to_i))
-    @member.reload
-    assert @member.active?
-    assert_equal "past_due", @member.subscription_status
-  end
-
-  test "sin pagar quita el acceso" do
-    deliver event("customer.subscription.updated", subscription(status: "unpaid"))
-    @member.reload
-    assert_not @member.active?
-    assert_equal "unpaid", @member.subscription_status
+    assert_equal ends_at.to_i, user.subscription_ends_at.to_i
   end
 
   test "cancelada quita el acceso" do
-    deliver event("customer.subscription.deleted", subscription(status: "canceled"))
+    canceled = stripe_subscription(id: "sub_member", customer: "cus_member", status: "canceled")
+    with_stripe_subscriptions([ canceled ]) do
+      deliver event("customer.subscription.deleted", subscription(status: "canceled"))
+    end
     @member.reload
     assert_not @member.active?
     assert_equal "canceled", @member.subscription_status
@@ -71,14 +56,40 @@ class WebhooksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "cancelar una suscripción vieja no quita el acceso de la actual" do
-    deliver event("customer.subscription.deleted", subscription(id: "sub_vieja", status: "canceled"))
+    subscriptions = [
+      stripe_subscription(id: "sub_vieja", customer: "cus_member", status: "canceled", created: 1.year.ago),
+      stripe_subscription(id: "sub_member", customer: "cus_member", ends_at: 20.days.from_now)
+    ]
+    with_stripe_subscriptions(subscriptions) do
+      deliver event("customer.subscription.deleted", subscription(id: "sub_vieja", status: "canceled"))
+    end
     @member.reload
     assert @member.active?
     assert_equal "sub_member", @member.subscription_id
   end
 
+  test "un evento viejo que llega tarde no devuelve un acceso cancelado" do
+    canceled = stripe_subscription(id: "sub_member", customer: "cus_member", status: "canceled")
+    with_stripe_subscriptions([ canceled ]) do
+      deliver event("customer.subscription.updated", subscription(status: "active"))
+    end
+    assert_response :success
+    assert_not @member.reload.active?
+  end
+
+  test "si Stripe no responde, pide reintento" do
+    failing = ->(*) { raise Stripe::APIConnectionError, "sin conexión" }
+    Stripe::Subscription.stub(:list, failing) do
+      deliver event("customer.subscription.updated", subscription)
+    end
+    assert_response :internal_server_error
+    assert @member.reload.active?
+  end
+
   test "clientes desconocidos no rompen el webhook" do
-    deliver event("customer.subscription.updated", subscription(customer: "cus_desconocido"))
+    with_stripe_subscriptions([ stripe_subscription(id: "sub_x", customer: "cus_desconocido", status: "canceled") ]) do
+      deliver event("customer.subscription.updated", subscription(customer: "cus_desconocido", status: "canceled"))
+    end
     assert_response :success
   end
 
