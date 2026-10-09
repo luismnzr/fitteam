@@ -12,6 +12,13 @@ class User < ApplicationRecord
 
   after_create_commit :create_stripe_customer
 
+  # Los correos de Devise (restablecer contraseña) salen en segundo plano: si
+  # el servidor de correo rechaza el envío, queda en el log en lugar de
+  # mostrarle una página de error a la usuaria.
+  def send_devise_notification(notification, *args)
+    devise_mailer.send(notification, self, *args).deliver_later
+  end
+
   def active?
     subscription_ends_at.present? && subscription_ends_at.future?
   end

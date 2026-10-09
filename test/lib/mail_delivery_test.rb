@@ -21,4 +21,11 @@ class MailDeliveryTest < ActiveSupport::TestCase
     _, settings = MailDelivery.settings("SMTP_ADDRESS" => "smtp.example.com", "SMTP_PORT" => "2525", "SMTP_USERNAME" => "user", "SMTP_PASSWORD" => "pw")
     assert_equal [ "smtp.example.com", 2525, "user" ], settings.values_at(:address, :port, :user_name)
   end
+
+  test "acepta SMTP_USER_NAME y pone timeouts" do
+    _, settings = MailDelivery.settings("SMTP_USER_NAME" => "otro", "SMTP_PASSWORD" => "pw")
+    assert_equal "otro", settings[:user_name]
+    assert_equal 10, settings[:open_timeout]
+    assert_equal 10, settings[:read_timeout]
+  end
 end

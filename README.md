@@ -106,7 +106,7 @@ existe.
 |---|---|
 | `STRIPE_SECRET_KEY` | API key secreta de Stripe (`sk_live_...`) |
 | `STRIPE_WEBHOOK_KEY` | Signing secret del webhook `/stripe/webhooks` (`whsec_...`). También se acepta `STRIPE_WEBHOOK_SECRET`. Sin ella el webhook responde 503 y Stripe reintenta |
-| `SMTP_PASSWORD` | Token de Mailtrap (sending, `live.smtp.mailtrap.io`). Es el correo mientras no haya `POSTMARK_API_TOKEN`. Opcionales: `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_USERNAME` (por defecto, los de Mailtrap) |
+| `SMTP_PASSWORD` | Token de Mailtrap (sending, `live.smtp.mailtrap.io`). Es el correo mientras no haya `POSTMARK_API_TOKEN`. Opcionales: `SMTP_ADDRESS`, `SMTP_PORT`, `SMTP_USERNAME` (o `SMTP_USER_NAME`) (por defecto, los de Mailtrap) |
 | `POSTMARK_API_TOKEN` | Server API token de Postmark. Si existe, los correos salen por Postmark en lugar de SMTP (el remitente `hola@anagabyfitteam.com` o el dominio deben estar verificados en Postmark) |
 | `APP_HOST` | Dominio público de la app, para los links de los correos. Default: `anagabyfitteam.com` |
 | `SECRET_KEY_BASE` | Lo crea solo el buildpack de Ruby. Sin él (ni `RAILS_MASTER_KEY`) la app no arranca |

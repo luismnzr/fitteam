@@ -18,4 +18,11 @@ class DeviseSpanishTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Correo electrónico ya está registrado"
     assert_includes response.body, "Contraseña debe tener al menos 6 caracteres"
   end
+
+  test "el correo de restablecer contraseña sale en segundo plano (un fallo de SMTP no rompe la página)" do
+    assert_enqueued_emails 1 do
+      post user_password_url, params: { user: { email: "member@example.com" } }
+    end
+    assert_redirected_to new_user_session_url
+  end
 end
