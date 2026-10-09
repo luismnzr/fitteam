@@ -82,6 +82,13 @@ Mientras un workout no la tenga, se usa `hqdefault`, que existe para todos
 los videos. Para cambiar una portada basta con cambiar la miniatura del
 video en YouTube.
 
+Las miniaturas se sirven desde la app (`/workouts/:id/thumbnail/card|cover`,
+`WorkoutThumbnailsController`), nunca desde `i.ytimg.com`: esa URL trae el ID
+del video, y con él cualquiera sin plan podría ver la clase en YouTube. La
+app la descarga, la guarda en caché 7 días y el navegador 30 días. Las
+miniaturas 4:3 (`hqdefault`/`sddefault`) traen barras negras que
+`WorkoutsHelper#workout_media` recorta en cualquier proporción.
+
 Para llenar las de todos los workouts de una vez (después del deploy que
 agrega `thumbnail_url`, o de un restore):
 
@@ -117,9 +124,11 @@ Las migraciones corren solas en cada deploy (release phase del `Procfile`).
   fija. El sitio ya no usa jQuery.
 * El calendario pide a `/workouts.json` solo los workouts con fecha del mes
   visible.
-* Las tarjetas del catálogo usan la miniatura de YouTube de 480px
-  (`Workout#card_image_url`); la de mejor calidad se reserva para banners y
-  la página de cada workout.
+* Las tarjetas del catálogo (`workouts/_workout`) usan la miniatura de
+  480px (`Workout#card_image_url`); la de mejor calidad se reserva para el
+  banner de destacados y la página de cada clase.
+* En la página de cada clase el video se reproduce en la misma página (sin
+  popup) y abajo salen 3 clases más del mismo grupo muscular.
 * Las imágenes de `app/assets/images` están comprimidas (fondos a 2000px
   máximo, días de la semana en WebP). Si agregas una nueva, comprímela antes
   de subirla.

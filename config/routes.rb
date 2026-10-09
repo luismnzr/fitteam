@@ -21,6 +21,8 @@ Rails.application.routes.draw do
   resources :workouts, only: [ :index, :show ] do
     resources :comments, only: [ :create ]
   end
+  get "workouts/:id/thumbnail/:size", to: "workout_thumbnails#show", as: :workout_thumbnail,
+                                       constraints: { size: /card|cover/ }, format: false
 
   resources :favorite_workouts, only: [ :create, :destroy ]
   get "/favorites", to: "workouts#favorites", as: "favorites"

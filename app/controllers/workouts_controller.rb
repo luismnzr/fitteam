@@ -57,6 +57,11 @@ class WorkoutsController < ApplicationController
 
   def show
     @comments = @workout.comments.roots.includes(:user, replies: :user).order(:created_at)
+    @related = if @workout.category_name
+      Workout.where(category: @workout.category).where.not(id: @workout.id).order(created_at: :desc).limit(3)
+    else
+      Workout.none
+    end
   end
 
   private

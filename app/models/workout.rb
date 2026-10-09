@@ -34,7 +34,23 @@ class Workout < ApplicationRecord
   end
 
   def materials
-    material.to_s.split(",").map(&:strip).reject(&:blank?)
+    material.to_s.split(",").map(&:strip).reject { |m| m.blank? || m == "Sin Material" }
+  end
+
+  # "-" era el "sin valor" de los selects viejos.
+  def category_name
+    category unless category.blank? || category == "-"
+  end
+
+  def intensity_name
+    intensity unless intensity.blank? || intensity == "-"
+  end
+
+  # "15min" -> "15 min"; "1 hora" se queda igual.
+  def duration_label
+    return if duration.blank? || duration == "-"
+
+    duration.sub(/\A(\d+)\s*min\z/, '\1 min')
   end
 
   # Acepta el ID de YouTube o cualquier link de YouTube.

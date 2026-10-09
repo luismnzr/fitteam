@@ -27,6 +27,20 @@ class YoutubeThumbnail
     nil
   end
 
+  # Descarga la imagen para servirla desde la app (WorkoutThumbnailsController):
+  # así el ID del video, que va en la URL de la miniatura, no llega al
+  # navegador de quien no tiene plan.
+  def self.download(url)
+    uri = URI(url)
+    response = Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: TIMEOUT, read_timeout: TIMEOUT) do |http|
+      http.get(uri.request_uri)
+    end
+    response.body if response.is_a?(Net::HTTPSuccess) && response["content-type"].to_s.start_with?("image/")
+  rescue StandardError => e
+    Rails.logger.warn("[YouTube] No se pudo descargar #{url}: #{e.class}: #{e.message}")
+    nil
+  end
+
   # YouTube responde 404 (con una imagen gris de 120x90) cuando ese tamaño no
   # existe.
   def self.exists?(url)

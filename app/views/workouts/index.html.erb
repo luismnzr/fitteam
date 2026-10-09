@@ -7,21 +7,24 @@
 <div class="workoutBanner">
   <div class="swiper swiper7">
     <div class="swiper-wrapper">
-      <% @workoutsFeatured.each do |workout| %>
+      <% @workoutsFeatured.each_with_index do |workout, index| %>
         <div class="swiper-slide">
-          <div class="workouts_banner" style="<%= workout_cover_style(workout) %>">
-            <div class="workouts_banner_container">
+          <div class="heroSlide">
+            <%= workout_media(workout, css: "heroSlide-media", lazy: index.positive?) %>
+            <div class="heroSlide-shade"></div>
+            <div class="heroSlide-content">
+              <p class="heroSlide-eyebrow">
+                <% if workout.premiere? %><span class="wBadge wBadge-premiere">Estreno</span><% end %>
+                <span>Del calendario<%= " · #{short_date(workout.day)}" if workout.day %></span>
+              </p>
               <h1><%= workout.title %></h1>
-              <br>
-              <p><%= workout.duration %></p>
-              <br>
-              <p>Intensidad: <%= workout.intensity %></p>
-              <br>
-              <% if workout.material.present? %>
-                <p>Material: <%= workout.material %></p>
-                <br>
+              <% facts = workout_facts(workout) %>
+              <% if facts.any? %>
+                <ul class="wChips wChips-light">
+                  <% facts.each do |fact| %><li><%= fact %></li><% end %>
+                </ul>
               <% end %>
-              <%= link_to "Ir a workout", workout, class: "button" %>
+              <%= link_to workout, class: "button heroSlide-cta" do %><%= site_icon(:play) %> Ver clase<% end %>
             </div>
           </div>
         </div>
@@ -59,7 +62,7 @@
 
   <div class="workoutRow-header">
     <h1>Lower Body</h1>
-    <%= link_to "Ver todas", lowerbody_path, class: "button" %>
+    <%= link_to lowerbody_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
 
   </div>
   <br>
@@ -84,7 +87,7 @@
 
   <div class="workoutRow-header">
     <h1>Upper Body</h1>
-    <%= link_to "Ver todas", upperbody_path, class: "button" %>
+    <%= link_to upperbody_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
 
   </div>
   <br>
@@ -109,7 +112,7 @@
 
   <div class="workoutRow-header">
     <h1>ABS and Core</h1>
-    <%= link_to "Ver todas", abscore_path, class: "button" %>
+    <%= link_to abscore_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
 
   </div>
   <br>
@@ -134,7 +137,7 @@
 
   <div class="workoutRow-header">
     <h1>Glutes and Hips</h1>
-    <%= link_to "Ver todas", gluteships_path, class: "button" %>
+    <%= link_to gluteships_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
 
   </div>
   <br>
@@ -159,7 +162,7 @@
 
   <div class="workoutRow-header">
     <h1>Full Body</h1>
-    <%= link_to "Ver todas", fullbody_path, class: "button" %>
+    <%= link_to fullbody_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
 
   </div>
   <br>
@@ -184,7 +187,7 @@
 
   <div class="workoutRow-header">
     <h1>15/30 min</h1>
-    <%= link_to "Ver todas", short_1530_path, class: "button" %>
+    <%= link_to short_1530_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
 
   </div>
   <br>
@@ -209,7 +212,7 @@
 
   <div class="workoutRow-header">
     <h1>Strength</h1>
-    <%= link_to "Ver todas", strength_path, class: "button" %>
+    <%= link_to strength_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
 
   </div>
   <br>
@@ -273,249 +276,26 @@
 </div>
 
 <script>
-  var swiper1 = new Swiper('.swiper1', {
-      direction: 'horizontal',
-      loop: true,
-      pagination: {
-        el: '.swiper-pagination1',
-        clickable: true,
-      },
-      slidesPerView: 3,
-      spaceBetween: 10,
-      breakpoints: {
-        360: {
-          slidesPerView: 1,
-          spaceBetween: 20
-        },
-        750: {
-          slidesPerView: 2,
-          spaceBetween: 30
-        },
-        990: {
-          slidesPerView: 3,
-          spaceBetween: 40
-        }
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
+  // Banner de destacados.
+  new Swiper(".swiper7", {
+    loop: true,
+    slidesPerView: 1,
+    autoplay: { delay: 6000, disableOnInteraction: true },
+    pagination: { el: ".swiper-pagination7", clickable: true },
+    navigation: { nextEl: ".swiper7 .swiper-button-next", prevEl: ".swiper7 .swiper-button-prev" }
   });
 
-  var swiper2 = new Swiper('.swiper2', {
-      direction: 'horizontal',
-      loop: true,
-      pagination: {
-        el: '.swiper-pagination2',
-        clickable: true,
-      },
-      slidesPerView: 3,
-      spaceBetween: 10,
+  // Filas del catálogo: en celular se asoma la siguiente tarjeta.
+  document.querySelectorAll(".workoutRow .swiper").forEach(function (el) {
+    new Swiper(el, {
+      slidesPerView: 1.15,
+      spaceBetween: 16,
       breakpoints: {
-        360: {
-          slidesPerView: 1,
-          spaceBetween: 20
-        },
-        750: {
-          slidesPerView: 2,
-          spaceBetween: 30
-        },
-        990: {
-          slidesPerView: 3,
-          spaceBetween: 40
-        }
+        750: { slidesPerView: 2.2, spaceBetween: 24 },
+        990: { slidesPerView: 3, spaceBetween: 32 }
       },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-  });
-
-  var swiper3 = new Swiper('.swiper3', {
-      direction: 'horizontal',
-      loop: true,
-      pagination: {
-        el: '.swiper-pagination3',
-        clickable: true,
-      },
-      slidesPerView: 3,
-      spaceBetween: 10,
-      breakpoints: {
-        360: {
-          slidesPerView: 1,
-          spaceBetween: 20
-        },
-        750: {
-          slidesPerView: 2,
-          spaceBetween: 30
-        },
-        990: {
-          slidesPerView: 3,
-          spaceBetween: 40
-        }
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-  });
-
-  var swiper4 = new Swiper('.swiper4', {
-      direction: 'horizontal',
-      loop: true,
-      pagination: {
-        el: '.swiper-pagination4',
-        clickable: true,
-      },
-      slidesPerView: 3,
-      spaceBetween: 10,
-      breakpoints: {
-        360: {
-          slidesPerView: 1,
-          spaceBetween: 20
-        },
-        750: {
-          slidesPerView: 2,
-          spaceBetween: 30
-        },
-        990: {
-          slidesPerView: 3,
-          spaceBetween: 40
-        }
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-  });
-
-  var swiper5 = new Swiper('.swiper5', {
-      direction: 'horizontal',
-      loop: true,
-      pagination: {
-        el: '.swiper-pagination5',
-        clickable: true,
-      },
-      slidesPerView: 3,
-      spaceBetween: 10,
-      breakpoints: {
-        360: {
-          slidesPerView: 1,
-          spaceBetween: 20
-        },
-        750: {
-          slidesPerView: 2,
-          spaceBetween: 30
-        },
-        990: {
-          slidesPerView: 3,
-          spaceBetween: 40
-        }
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-  });
-
-  var swiper6 = new Swiper('.swiper6', {
-      direction: 'horizontal',
-      loop: true,
-      pagination: {
-        el: '.swiper-pagination6',
-        clickable: true,
-      },
-      slidesPerView: 3,
-      spaceBetween: 10,
-      breakpoints: {
-        360: {
-          slidesPerView: 1,
-          spaceBetween: 20
-        },
-        750: {
-          slidesPerView: 2,
-          spaceBetween: 30
-        },
-        990: {
-          slidesPerView: 3,
-          spaceBetween: 40
-        }
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-  });
-
-  var swiper7 = new Swiper('.swiper7', {
-      direction: 'horizontal',
-      loop: true,
-      pagination: {
-        el: '.swiper-pagination7',
-        clickable: true,
-      },
-      slidesPerView: 1,
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-  });
-
-  var swiper8 = new Swiper('.swiper8', {
-      direction: 'horizontal',
-      loop: true,
-      pagination: {
-        el: '.swiper-pagination8',
-        clickable: true,
-      },
-      slidesPerView: 3,
-      spaceBetween: 10,
-      breakpoints: {
-        360: {
-          slidesPerView: 1,
-          spaceBetween: 20
-        },
-        750: {
-          slidesPerView: 2,
-          spaceBetween: 30
-        },
-        990: {
-          slidesPerView: 3,
-          spaceBetween: 40
-        }
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-  });
-
-  var swiper9 = new Swiper('.swiper9', {
-      direction: 'horizontal',
-      loop: true,
-      pagination: {
-        el: '.swiper-pagination9',
-        clickable: true,
-      },
-      slidesPerView: 3,
-      spaceBetween: 10,
-      breakpoints: {
-        360: {
-          slidesPerView: 1,
-          spaceBetween: 20
-        },
-        750: {
-          slidesPerView: 2,
-          spaceBetween: 30
-        },
-        990: {
-          slidesPerView: 3,
-          spaceBetween: 40
-        }
-      },
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
+      pagination: { el: el.querySelector(".swiper-pagination"), clickable: true },
+      navigation: { nextEl: el.querySelector(".swiper-button-next"), prevEl: el.querySelector(".swiper-button-prev") }
+    });
   });
 </script>
