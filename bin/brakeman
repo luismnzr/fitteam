@@ -2,6 +2,8 @@
 require "rubygems"
 require "bundler/setup"
 
-ARGV.unshift("--ensure-latest")
+# --ensure-latest se quitó mientras la app siga en Ruby 3.1: Brakeman 8
+# requiere Ruby 3.2+, así que con 3.1 el CI fallaría siempre. Volver a
+# ponerlo al actualizar Ruby.
 
 load Gem.bin_path("brakeman", "brakeman")

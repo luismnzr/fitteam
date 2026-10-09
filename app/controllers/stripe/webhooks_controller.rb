@@ -1,76 +1,77 @@
+# Webhook de Stripe: mantiene el acceso de cada usuaria al día con su
+# suscripción. Solo acepta eventos firmados con STRIPE_WEBHOOK_KEY.
 class Stripe::WebhooksController < ApplicationController
-    skip_before_action :verify_authenticity_token
+  skip_before_action :verify_authenticity_token
 
-    def create
-        # Replace this endpoint secret with your endpoint's unique secret
-        # If you are testing with the CLI, find the secret by running 'stripe listen'
-        # If you are using an endpoint defined with the API or dashboard, look in your webhook settings
-        # at https://dashboard.stripe.com/webhooks
-        webhook_secret = ENV['STRIPE_WEBHOOK_KEY']
-        payload = request.body.read
-        if !webhook_secret.empty?
-            # Retrieve the event by verifying the signature using the raw body and secret if webhook signing is configured.
-            sig_header = request.env['HTTP_STRIPE_SIGNATURE']
-            event = nil
+  # Estados con los que la suscripción sigue dando acceso. past_due conserva
+  # el acceso mientras Stripe reintenta el cobro.
+  ACCESS_STATUSES = %w[active trialing past_due].freeze
 
-            begin
-            event = Stripe::Webhook.construct_event(
-                payload, sig_header, webhook_secret
-            )
-            rescue JSON::ParserError => e
-            # Invalid payload
-            status 400
-            return
-            rescue Stripe::SignatureVerificationError => e
-            # Invalid signature
-            puts '⚠️  Webhook signature verification failed.'
-            status 400
-            return
-            end
-        else
-            data = JSON.parse(payload, symbolize_names: true)
-            event = Stripe::Event.construct_from(data)
-        end
-        # Get the type of webhook event sent - used to check the status of PaymentIntents.
-        event_type = event['type']
-        data = event['data']
-        data_object = data['object']
-
-        case event.type
-        when 'customer.created'
-            customer = event.data.object
-            user = User.find_by(email: customer.email)
-            user.update(stripe_customer_id: customer.id)
-        when event.type == 'customer.subscription.deleted', 'customer.subscription.updated', 'customer.subscription.created'
-            subscription = event.data.object
-            # debugger
-            user = User.find_by(stripe_customer_id: subscription.customer)
-            user.update(
-                subscription_status: subscription.status,
-                subscription_ends_at: Time.at(subscription.current_period_end).to_datetime
-            )
-        end
-
-        render json: { message: 'success' }
+  def create
+    secret = ENV["STRIPE_WEBHOOK_KEY"].presence || ENV["STRIPE_WEBHOOK_SECRET"].presence
+    if secret.blank?
+      # 503 para que Stripe reintente cuando la variable ya esté puesta.
+      Rails.logger.error("[Stripe webhook] Falta STRIPE_WEBHOOK_KEY; evento rechazado")
+      return head :service_unavailable
     end
 
-    private
-
-    def handle_event(event)
-        case event['type']
-        when 'checkout.session.completed'
-        handle_checkout_session_completed(event['data']['object'])
-        end
+    begin
+      event = Stripe::Webhook.construct_event(request.body.read, request.env["HTTP_STRIPE_SIGNATURE"], secret)
+    rescue JSON::ParserError, Stripe::SignatureVerificationError => e
+      Rails.logger.warn("[Stripe webhook] Rechazado: #{e.class}: #{e.message}")
+      return head :bad_request
     end
 
-    def handle_checkout_session_completed(session)
-        user = User.find_by(email: session.customer_email)
-        subscription = session.subscription
-
-        user.create_subscription(
-        stripe_subscription_id: subscription,
-        plan: session.metadata.plan,
-        status: 'active'
-        )
+    case event.type
+    when "customer.created"
+      link_customer(event.data.object)
+    when "customer.subscription.created", "customer.subscription.updated"
+      sync_subscription(event.data.object)
+    when "customer.subscription.deleted"
+      sync_subscription(event.data.object, deleted: true)
     end
+
+    render json: { message: "success" }
+  end
+
+  private
+
+  def link_customer(customer)
+    return if customer.email.blank?
+
+    user = User.find_by(email: customer.email.downcase)
+    user.update(stripe_customer_id: customer.id) if user && user.stripe_customer_id.blank?
+  end
+
+  def sync_subscription(subscription, deleted: false)
+    user = User.find_by(stripe_customer_id: subscription.customer)
+    unless user
+      Rails.logger.info("[Stripe webhook] Sin usuaria para el cliente #{subscription.customer}")
+      return
+    end
+
+    if !deleted && ACCESS_STATUSES.include?(subscription.status)
+      user.update(
+        subscription_id: subscription.id,
+        subscription_status: subscription.status,
+        subscription_ends_at: period_end(subscription) || user.subscription_ends_at
+      )
+    elsif user.subscription_id.blank? || user.subscription_id == subscription.id
+      # Solo la suscripción actual quita el acceso: si se cancela una vieja,
+      # la nueva sigue igual.
+      user.update(
+        subscription_id: (deleted ? nil : subscription.id),
+        subscription_status: (deleted ? "canceled" : subscription.status),
+        subscription_ends_at: [ user.subscription_ends_at, Time.current ].compact.min
+      )
+    end
+  end
+
+  # Desde la API 2025-03-31 el fin del periodo vive en cada item de la
+  # suscripción; en versiones anteriores, en la suscripción.
+  def period_end(subscription)
+    timestamp = subscription["current_period_end"] ||
+                subscription["items"]&.[]("data")&.first&.[]("current_period_end")
+    timestamp ? Time.zone.at(timestamp) : nil
+  end
 end

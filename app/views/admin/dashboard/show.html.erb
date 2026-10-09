@@ -1,0 +1,180 @@
+<% content_for(:page_title) { "Panel" } %>
+
+<div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+  <div>
+    <h2 class="brand-title text-3xl sm:text-4xl">Hola, <%= current_user.name.presence&.split&.first || "Ana Gaby" %></h2>
+    <p class="text-sm text-[var(--color-muted-foreground)] mt-1">Así va Fitteam este mes.</p>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <%= link_to new_admin_workout_path, class: "btn btn-primary" do %>
+      <%= admin_icon("plus") %> Nuevo workout
+    <% end %>
+    <%= link_to admin_calendar_path, class: "btn btn-outline" do %>
+      <%= admin_icon("calendar") %> Calendario
+    <% end %>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5 mb-6">
+  <% [
+       ["Usuarios con acceso", @with_access, "credit-card", admin_users_path(filter: "with_access")],
+       ["Registros este mes", @new_users_month, "user-plus", admin_users_path],
+       ["Acceso vence en 7 días", @expiring_soon, "fire", admin_users_path(filter: "expiring")],
+       ["Usuarios registrados", @total_users, "users", admin_users_path],
+       ["Workouts en el catálogo", @workouts_count, "workouts", admin_workouts_path],
+       ["Comentarios sin responder (30 días)", @unanswered_comments, "comments", admin_comments_path]
+     ].each do |label, value, icon, path| %>
+    <div class="card p-4 sm:p-5">
+      <div class="flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="stat-label truncate"><%= label %></p>
+          <p class="stat-value">
+            <%= link_to number_with_delimiter(value), path, class: "hover:text-[var(--color-primary)]" %>
+          </p>
+        </div>
+        <div class="stat-icon"><%= admin_icon(icon, "h-5 w-5") %></div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<div class="card mb-6">
+  <div class="card-header">
+    <div>
+      <h3 class="card-title">Esta semana en el calendario</h3>
+      <p class="text-xs text-[var(--color-muted-foreground)] mt-0.5">El workout de cada día sale en la home como "Workout del día".</p>
+    </div>
+    <%= link_to "Ver mes", admin_calendar_path, class: "link text-sm whitespace-nowrap" %>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 divide-y sm:divide-y-0 lg:divide-x divide-[var(--color-border)]">
+    <% @week.each do |day| %>
+      <% workouts = @week_workouts[day] || [] %>
+      <div class="p-4 min-w-0 <%= 'bg-[var(--color-primary)]/5' if day == admin_today %>">
+        <p class="text-xs font-semibold uppercase tracking-wide <%= day == admin_today ? 'text-[var(--color-primary)]' : 'text-[var(--color-muted-foreground)]' %>">
+          <%= day == admin_today ? "Hoy" : admin_day_label(day) %>
+        </p>
+        <% if workouts.any? %>
+          <ul class="mt-2 space-y-2">
+            <% workouts.each do |workout| %>
+              <li>
+                <%= link_to edit_admin_workout_path(workout), class: "flex items-center gap-3 lg:block group" do %>
+                  <%= admin_workout_thumb(workout, css: "h-10 w-16 lg:h-auto lg:w-full lg:aspect-video lg:mb-1.5") %>
+                  <span class="text-sm font-medium leading-snug line-clamp-2 group-hover:text-[var(--color-primary)]"><%= workout.title %></span>
+                <% end %>
+                <% if workout.premiere? %><span class="badge badge-primary mt-1">Estreno</span><% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <%= link_to new_admin_workout_path(day: day), class: "mt-2 flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-[var(--color-border)] py-4 text-xs text-[var(--color-muted-foreground)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]" do %>
+            <%= admin_icon("plus", "h-3.5 w-3.5") %> Programar
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5 mb-6">
+  <% [["Registros nuevos", @signups_chart], ["Workouts guardados en favoritas", @favorites_chart]].each do |title, series| %>
+    <% max_val = [series.map { |d| d[:count] }.max.to_i, 1].max %>
+    <div class="card p-4 sm:p-5">
+      <div class="flex items-baseline justify-between gap-3 mb-4">
+        <h3 class="card-title"><%= title %></h3>
+        <span class="text-xs text-[var(--color-muted-foreground)] whitespace-nowrap">últimos 14 días · <%= series.sum { |d| d[:count] } %> en total</span>
+      </div>
+      <div class="flex items-end gap-1 sm:gap-1.5 h-40" role="img" aria-label="<%= title %>, últimos 14 días">
+        <% series.each do |day| %>
+          <% today = day[:date] == admin_today %>
+          <div class="flex-1 flex flex-col items-center gap-1 min-w-0" title="<%= admin_date(day[:date]) %>: <%= day[:count] %>">
+            <div class="w-full flex flex-col items-center justify-end h-32">
+              <span class="text-[10px] font-medium mb-1 <%= day[:count].zero? ? 'text-transparent' : '' %>"><%= day[:count] %></span>
+              <div class="w-full max-w-[1.75rem] rounded-t-md <%= today ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-primary)]/40' %>"
+                   style="height: <%= [(day[:count].to_f / max_val * 100).round, 3].max %>%"></div>
+            </div>
+            <span class="text-[10px] <%= today ? 'font-semibold text-[var(--color-primary)]' : 'text-[var(--color-muted-foreground)]' %>"><%= day[:date].day %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-5">
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Favoritas del mes</h3>
+      <span class="text-xs text-[var(--color-muted-foreground)]"><%= @favorites_month %> guardados</span>
+    </div>
+    <% if @top_workouts.any? %>
+      <ul class="divide-y divide-[var(--color-border)]">
+        <% @top_workouts.each_with_index do |(workout, count), index| %>
+          <li class="flex items-center gap-3 px-5 py-3">
+            <span class="text-xs font-mono text-[var(--color-muted-foreground)] w-4"><%= index + 1 %></span>
+            <%= admin_workout_thumb(workout, css: "h-10 w-16") %>
+            <div class="min-w-0 flex-1">
+              <%= link_to workout.title, edit_admin_workout_path(workout), class: "text-sm font-medium truncate block hover:text-[var(--color-primary)]" %>
+              <p class="text-xs text-[var(--color-muted-foreground)] truncate"><%= workout.category.presence || "Sin categoría" %></p>
+            </div>
+            <span class="badge badge-primary"><%= admin_icon("heart", "h-3 w-3") %><%= count %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="px-5 py-8 text-sm text-center text-[var(--color-muted-foreground)]">Nadie ha guardado workouts en favoritas este mes.</p>
+    <% end %>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Comentarios recientes</h3>
+      <%= link_to "Ver todos", admin_comments_path, class: "link text-sm" %>
+    </div>
+    <% if @recent_comments.any? %>
+      <ul class="divide-y divide-[var(--color-border)]">
+        <% @recent_comments.each do |comment| %>
+          <li class="px-5 py-3">
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm font-medium truncate"><%= comment.author_name %></p>
+              <% if comment.replies.any? %>
+                <span class="badge badge-success">Respondido</span>
+              <% else %>
+                <span class="badge badge-warning">Sin responder</span>
+              <% end %>
+            </div>
+            <p class="text-sm text-[var(--color-muted-foreground)] line-clamp-2 mt-0.5"><%= comment.text %></p>
+            <p class="text-xs text-[var(--color-muted-foreground)] mt-1"><%= comment.workout&.title %> · <%= admin_time_ago(comment.created_at) %></p>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="px-5 py-8 text-sm text-center text-[var(--color-muted-foreground)]">Sin comentarios todavía.</p>
+    <% end %>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Registros recientes</h3>
+      <%= link_to "Ver usuarios", admin_users_path, class: "link text-sm" %>
+    </div>
+    <ul class="divide-y divide-[var(--color-border)]">
+      <% @recent_users.each do |user| %>
+        <li class="flex items-center gap-3 px-5 py-3">
+          <div class="h-8 w-8 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] flex items-center justify-center flex-shrink-0 text-xs font-semibold">
+            <%= admin_initials(user) %>
+          </div>
+          <div class="min-w-0 flex-1">
+            <%= link_to user.display_name, admin_user_path(user), class: "text-sm font-medium truncate block hover:text-[var(--color-primary)]" %>
+            <p class="text-xs text-[var(--color-muted-foreground)]"><%= admin_time_ago(user.created_at) %></p>
+          </div>
+          <%= admin_access_badge(user) %>
+        </li>
+      <% end %>
+    </ul>
+    <div class="px-5 py-3 border-t border-[var(--color-border)]">
+      <a href="https://dashboard.stripe.com" target="_blank" rel="noopener" class="link text-sm inline-flex items-center gap-1.5">
+        <%= admin_icon("external", "h-3.5 w-3.5") %> Cobros y facturación en Stripe
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,9 @@
+Tu correo cambió
+
+<% if @resource.try(:unconfirmed_email?) -%>
+Hola, te avisamos que el correo de tu cuenta se está cambiando a <%= @resource.unconfirmed_email %>.
+<% else -%>
+Hola, te avisamos que el correo de tu cuenta se cambió a <%= @resource.email %>.
+<% end -%>
+
+Si no fuiste tú, escríbenos a <%= contact_email %>.

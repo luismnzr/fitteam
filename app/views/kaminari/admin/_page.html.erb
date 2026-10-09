@@ -1,0 +1,5 @@
+<% if page.current? -%>
+  <span class="is-current" aria-current="page"><%= page %></span>
+<% else -%>
+  <%= link_to page, url, rel: page.rel %>
+<% end -%>

@@ -1,0 +1,7 @@
+<% content_for(:page_title) { "Nuevo workout" } %>
+
+<%= link_to admin_workouts_path, class: "inline-flex items-center gap-1.5 text-sm text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] mb-4" do %>
+  <%= admin_icon("arrow-left", "h-3.5 w-3.5") %> Workouts
+<% end %>
+
+<%= render "form", workout: @workout %>

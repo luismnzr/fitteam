@@ -1,36 +1,21 @@
-  <div id="<%= dom_id workout %>" class="workoutCard">
-    <div class="workoutCard_cover">
-      <%= link_to workout do %>
-        <% if workout.cover.attached? %>
-          <div class="workoutCard_cover_asset" style="background-image: url('<%= rails_blob_url(workout.cover) %>')">
-          </div>
-        <% else %>
-          <div class="workoutCard_cover_asset">
-          </div>
-        <% end %>
+<article id="<%= dom_id workout %>" class="workoutCard">
+  <%= link_to workout, class: "workoutCard_link" do %>
+    <div class="workoutCard_media">
+      <%= workout_media(workout, size: :card) %>
+      <span class="workoutCard_play"><%= site_icon(:play) %></span>
+      <% if workout.premiere? %><span class="wBadge wBadge-premiere workoutCard_premiere">Estreno</span><% end %>
+      <% if workout.duration_label %><span class="wBadge workoutCard_duration"><%= workout.duration_label %></span><% end %>
+      <% if favorite_workout_ids.include?(workout.id) %>
+        <span class="workoutCard_fav" title="En tus favoritas"><%= site_icon(:heart) %><span class="sr-only">En tus favoritas</span></span>
       <% end %>
     </div>
-    <div class="workoutCard_title">
-      <h5>
-        <%= link_to workout do %>
-          <%= workout.title %>
-        <% end %>
-      </h5>
-
-      <p>
-        <span><%= workout.duration %></span>
-      </p>
-    </div>
-    <div  class="workoutCard_material">
-      <p>
-        Material:
-        <%= workout.material %>
-      </p>
-    </div>
-    <div  class="workoutCard_categories">
-      <p>
-        <%= workout.category %>
-      </p>
-    </div>
-  </div>
-
+    <h3 class="workoutCard_title"><%= workout.title %></h3>
+  <% end %>
+  <% meta = [ workout.category_name, (workout.intensity_name && "Intensidad #{workout.intensity_name.downcase}") ].compact %>
+  <% if meta.any? %>
+    <p class="workoutCard_meta"><%= meta.join(" · ") %></p>
+  <% end %>
+  <% if workout.materials.any? %>
+    <p class="workoutCard_material"><%= site_icon(:dumbbell) %><span><%= workout.materials.join(", ") %></span></p>
+  <% end %>
+</article>

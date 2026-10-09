@@ -1,26 +1,56 @@
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
 
-  after_create :create_stripe_customer
+  has_many :comments, dependent: :nullify
+  has_many :favorites, dependent: :destroy
+  has_many :favorite_workouts, through: :favorites, source: :favorited, source_type: "Workout"
 
-  def create_stripe_customer
-     stripe_customer = Stripe::Customer.create(email: email)
+  # Con acceso al contenido: su suscripción (o el acceso de cortesía que se
+  # da desde el admin) sigue vigente.
+  scope :with_access, -> { where("users.subscription_ends_at > ?", Time.current) }
+  scope :without_access, -> { where("users.subscription_ends_at IS NULL OR users.subscription_ends_at <= ?", Time.current) }
+
+  after_create_commit :create_stripe_customer
+
+  # Los correos de Devise (restablecer contraseña) salen en segundo plano: si
+  # el servidor de correo rechaza el envío, queda en el log en lugar de
+  # mostrarle una página de error a la usuaria.
+  def send_devise_notification(notification, *args)
+    devise_mailer.send(notification, self, *args).deliver_later
   end
 
   def active?
-    return false unless subscription_ends_at.present?
-    subscription_ends_at > Time.zone.now
+    subscription_ends_at.present? && subscription_ends_at.future?
   end
 
-  def admin?
-    admin == true
+  # Las admins ven las clases aunque no tengan suscripción.
+  def can_watch?
+    admin? || active?
   end
 
-  # Only require password if it's a new record or the password is explicitly set
-  validates :password, presence: true, if: -> { new_record? || password.present? }
+  def display_name
+    name.presence || email.split("@").first
+  end
 
-  has_many :comments
+  # Cliente de Stripe para el checkout y el portal de pagos. Normalmente ya
+  # existe desde el registro; si aquel intento falló, se crea aquí.
+  def ensure_stripe_customer!
+    return stripe_customer_id if stripe_customer_id.present?
 
-  has_many :favorites
-  has_many :favorite_workouts, through: :favorites, source: :favorited, source_type: 'Workout'
+    customer = Stripe::Customer.create(email: email, name: name.presence)
+    update_column(:stripe_customer_id, customer.id)
+    customer.id
+  end
+
+  private
+
+  # Un problema con Stripe no debe impedir el registro: el cliente se vuelve a
+  # intentar al elegir un plan (ensure_stripe_customer!).
+  def create_stripe_customer
+    return if Stripe.api_key.blank?
+
+    ensure_stripe_customer!
+  rescue Stripe::StripeError => e
+    Rails.logger.warn("[Stripe] No se pudo crear el cliente de #{email}: #{e.message}")
+  end
 end

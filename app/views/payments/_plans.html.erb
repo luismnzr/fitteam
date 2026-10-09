@@ -1,0 +1,28 @@
+<div class="plans">
+    <div class="plans_header">
+        <div class="plans_header-column"><h1>Conoce nuestros planes, seguro tenemos el plan perfecto para ti</h1></div>
+        <div class="plans_header-column"><p>Todos los planes incluyen 7 días gratis al inicio de su contratación, finalizados estos siete dias comenzará el cobro de tu suscripción con la regularidad que tu elijas</p></div>
+    </div>
+    <div class="plans_columns">
+        <% Plan.all.each_with_index do |plan, index| %>
+            <div class="plans_columns_card">
+                <%= content_tag(index.zero? ? :h3 : :h4, plan.name) %>
+                <br>
+                <p class="plans_columns_card_price">
+                    <%= plan.price %>
+                </p>
+                <br>
+                <% if current_user %>
+                    <%= button_to "Elegir #{plan.name.downcase}", stripe_checkout_path(plan: plan.key), data: { turbo: "false" }, class: "button button-clear" %>
+                <% else %>
+                    <%= link_to "Suscribirme", new_user_session_path, class: "button button-clear" %>
+                <% end %>
+                <br>
+                <p class="plans_columns_card_features">
+                    Acceso a +450 videos<br>
+                    Workout del día
+                </p>
+            </div>
+        <% end %>
+    </div>
+</div>

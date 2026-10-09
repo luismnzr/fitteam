@@ -1,0 +1,25 @@
+# Nombres de campos y mensajes de validación en español para los modelos que
+# se editan en el admin (/admin). La app corre con locale :en, por eso van bajo
+# en: (igual que devise.en.yml).
+en:
+  activerecord:
+    attributes:
+      workout:
+        title: "Título"
+        video_url: "Video de YouTube"
+        category: "Grupo muscular"
+        duration: "Duración"
+        intensity: "Intensidad"
+        material: "Material"
+        day: "Día"
+      comment:
+        text: "Comentario"
+    errors:
+      models:
+        workout: &mensajes
+          blank: "no puede estar en blanco"
+          taken: "ya está en uso"
+          invalid: "tiene un formato inválido"
+          inclusion: "no es una opción válida"
+          required: "no puede estar en blanco"
+        comment: *mensajes

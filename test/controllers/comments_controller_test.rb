@@ -2,47 +2,41 @@ require "test_helper"
 
 class CommentsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @comment = comments(:one)
+    @workout = workouts(:two)
   end
 
-  test "should get index" do
-    get comments_url
-    assert_response :success
+  test "comentar pide sesión" do
+    assert_no_difference("Comment.count") do
+      post workout_comments_url(@workout), params: { comment: { text: "Hola" } }
+    end
+    assert_redirected_to new_user_session_url
   end
 
-  test "should get new" do
-    get new_comment_url
-    assert_response :success
-  end
-
-  test "should create comment" do
+  test "el autor sale de la sesión y no se puede responder como Ana Gaby" do
+    sign_in users(:member)
     assert_difference("Comment.count") do
-      post comments_url, params: { comment: {} }
+      post workout_comments_url(@workout), params: {
+        comment: { text: "¡Gracias!", user_id: users(:admin).id, parent_id: comments(:pending).id }
+      }
     end
-
-    assert_redirected_to comment_url(Comment.last)
+    comment = Comment.order(:id).last
+    assert_equal users(:member), comment.user
+    assert_nil comment.parent_id
+    assert_redirected_to workout_url(@workout, anchor: "comentarios")
   end
 
-  test "should show comment" do
-    get comment_url(@comment)
-    assert_response :success
-  end
-
-  test "should get edit" do
-    get edit_comment_url(@comment)
-    assert_response :success
-  end
-
-  test "should update comment" do
-    patch comment_url(@comment), params: { comment: {} }
-    assert_redirected_to comment_url(@comment)
-  end
-
-  test "should destroy comment" do
-    assert_difference("Comment.count", -1) do
-      delete comment_url(@comment)
+  test "comentario vacío no se guarda" do
+    sign_in users(:member)
+    assert_no_difference("Comment.count") do
+      post workout_comments_url(@workout), params: { comment: { text: " " } }
     end
+    assert_equal "Escribe tu comentario antes de publicarlo.", flash[:alert]
+  end
 
-    assert_redirected_to comments_url
+  test "las rutas viejas de comentarios ya no existen" do
+    sign_in users(:member)
+    delete "/comments/#{comments(:question).id}"
+    assert_response :not_found
+    assert Comment.exists?(comments(:question).id)
   end
 end

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Compila el CSS del admin (Tailwind 4) a app/assets/builds/admin.css.
+#
+#   bin/admin_css           compila una vez (minificado)
+#   bin/admin_css --watch   recompila al guardar mientras editas vistas del admin
+#
+# El resultado se commitea: Heroku no corre este paso, solo sirve el archivo.
+# Córrelo cada vez que cambies clases en app/views/admin, el layout del admin,
+# app/helpers/admin_helper.rb o tools/admin-css/admin.css.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+TOOL_DIR="tools/admin-css"
+
+if [ ! -x "$TOOL_DIR/node_modules/.bin/tailwindcss" ]; then
+  echo "Instalando Tailwind para el admin (solo la primera vez)..."
+  npm ci --prefix "$TOOL_DIR" --no-audit --no-fund
+fi
+
+exec "$TOOL_DIR/node_modules/.bin/tailwindcss" \
+  --input "$TOOL_DIR/admin.css" \
+  --output app/assets/builds/admin.css \
+  --minify "$@"

@@ -1,127 +1,145 @@
-<% if current_user %>
-  <% if current_user.active? %>
-    <% if @workout.cover.attached? %>
-      <div class="workoutView-cover" style="background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('<%= rails_blob_url(@workout.cover) %>');">
-        <div class="workoutView-cover_container">
-          <div class="video-card__cover">
-            <button class="vimeo-launch clases-container__cover button" data-vimeo-id="<%= @workout.video_url %>">
-              <svg width="18" height="18" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 12L0.750001 23.2583L0.750002 0.741669L18 12Z" fill="white"/>
-              </svg>
-              Comenzar workout
-            </button>
-          </div>
-        </div>
-      </div>
+<% content_for :title, "#{@workout.title} · Fitteam" %>
+<% can_watch = current_user&.can_watch? %>
+<% facts = workout_facts(@workout) %>
+
+<div class="classView">
+  <div class="classView-player" id="player">
+    <% if can_watch %>
+      <button type="button" class="classView-start" data-video-id="<%= @workout.youtube_id || @workout.video_url %>" aria-label="Comenzar workout: <%= @workout.title %>">
+        <%= workout_media(@workout, lazy: false) %>
+        <span class="classView-shade"></span>
+        <span class="classView-playButton"><%= site_icon(:play) %> Comenzar workout</span>
+      </button>
     <% else %>
-      <div class="workoutView-cover">
-        <div class="workoutView-cover_container">
-          <div class="video-card__cover">
-            <button class="vimeo-launch clases-container__cover button" data-vimeo-id="<%= @workout.video_url %>">
-              <svg width="18" height="18" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M18 12L0.750001 23.2583L0.750002 0.741669L18 12Z" fill="white"/>
-              </svg>
-              Comenzar workout
-            </button>
-          </div>
+      <%= workout_media(@workout, lazy: false) %>
+      <div class="classView-lock">
+        <span class="classView-lockIcon"><%= site_icon(:lock) %></span>
+        <h2>Esta clase es parte de los planes de Fitteam</h2>
+        <p>Suscríbete para ver esta y todas las clases. Todos los planes incluyen 7 días gratis.</p>
+        <div class="classView-lockActions">
+          <%= link_to "Ver planes", payments_new_path, class: "button" %>
+          <% unless current_user %>
+            <%= link_to "Ya tengo cuenta", new_user_session_path, class: "classView-lockLink" %>
+          <% end %>
         </div>
       </div>
     <% end %>
-  <% else %>
-    <div class="workouts_cover">
-      <div class="workouts_cover-container">
-        <div  class="workouts_cover-container_info workouts_cover-container_infoFree">
-          <h3>Necesitas un plan para ver esta clase</h3>
-          <br>
-          <p>
-            Aquí encontrarás una variedad de más de 50 clases. Elige la que más se adapta a lo que buscas.
-          </p>
-          <br>
-          <%= link_to "Contrata un plan", payments_new_path, class: "button" %>
-        </div>
-      </div>  
-      <div class="workouts_cover_image">
-      </div>
-    </div>
-  <% end %>
-<% else %>
-  <div class="workouts_cover">
-    <div class="workouts_cover-container">
-      <div  class="workouts_cover-container_info workouts_cover-container_infoFree">
-        <h3>Necesitas un plan para ver esta clase</h3>
-        <br>
-        <p>
-          Aquí encontrarás una variedad de más de 50 clases. Elige la que más se adapta a lo que buscas.
-        </p>
-        <br>
-        <%= link_to "Contrata un plan", payments_new_path, class: "button" %>
-      </div>
-    </div> 
-    <div class="workouts_cover_image">
-      </div> 
   </div>
+
+  <div class="classView-info">
+    <div class="classView-head">
+      <div>
+        <% if @workout.premiere? || @workout.category_name %>
+          <p class="classView-eyebrow">
+            <% if @workout.premiere? %><span class="wBadge wBadge-premiere">Estreno</span><% end %>
+            <% if @workout.category_name %>
+              <% if (path = workout_category_path(@workout.category_name)) %>
+                <%= link_to @workout.category_name, path %>
+              <% else %>
+                <span><%= @workout.category_name %></span>
+              <% end %>
+            <% end %>
+          </p>
+        <% end %>
+        <h1><%= @workout.title %></h1>
+      </div>
+      <% if current_user %>
+        <% if favorite_workout_ids.include?(@workout.id) %>
+          <%= button_to favorite_workout_path(@workout), method: :delete, form: { data: { turbo: false }, class: "classView-favForm" }, class: "classView-fav is-active", title: "Quitar de favoritas" do %>
+            <%= site_icon(:heart) %><span>En tus favoritas</span>
+          <% end %>
+        <% else %>
+          <%= button_to favorite_workouts_path(workout_id: @workout), form: { data: { turbo: false }, class: "classView-favForm" }, class: "classView-fav", title: "Agregar a favoritas" do %>
+            <%= site_icon(:heart) %><span>Guardar en favoritas</span>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <ul class="classView-facts">
+      <% if @workout.duration_label %>
+        <li><%= site_icon(:clock) %><span>Duración</span><strong><%= @workout.duration_label %></strong></li>
+      <% end %>
+      <% if @workout.intensity_name %>
+        <li><%= site_icon(:bolt) %><span>Intensidad</span><strong><%= @workout.intensity_name %></strong></li>
+      <% end %>
+      <% if @workout.day %>
+        <li><%= site_icon(:calendar) %><span>En el calendario</span><strong><%= short_date(@workout.day) %></strong></li>
+      <% end %>
+    </ul>
+
+    <% if @workout.materials.any? %>
+      <div class="classView-material">
+        <h2>Material</h2>
+        <ul class="wChips">
+          <% @workout.materials.each do |material| %>
+            <li><%= material %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <% if current_user&.admin? %>
+      <p class="classView-admin"><%= link_to "Editar clase", edit_admin_workout_path(@workout) %></p>
+    <% end %>
+  </div>
+</div>
+
+<% if @related.any? %>
+  <section class="classView-related">
+    <div class="workoutRow-header">
+      <h2>Más clases de <%= @workout.category_name %></h2>
+      <% if (path = workout_category_path(@workout.category_name)) %>
+        <%= link_to path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
+      <% end %>
+    </div>
+    <div class="workoutGrid">
+      <%= render @related %>
+    </div>
+  </section>
 <% end %>
 
-<div class="workoutView-info" >
-  <div class="workoutView-info_container" >
-    <% if current_user %>
-      <% if current_user.admin? %>
-        <%= link_to "Editar clase", edit_workout_path(@workout) %>
-      <% end %>
-    <% end %>
-    <h2><%= @workout.title %></h2>
-    <div class="workoutCard_categories">
-     <p><%= @workout.category %></p>
-    </div>
-    <br>
-    <p>Duración: <span><%= @workout.duration %></span></p>
-    <br>
-    <p>Material: <span><%= @workout.material %></span></p>
-    <br>
-    <% if current_user %>
-      <% unless current_user.favorite_workouts.exists?(id: @workout.id) %>
-        <%= button_to 'Agregar a favoritas', favorite_workouts_path(workout_id: @workout), data: { turbo_method: :post }, class: 'button' %>
-      <% else %>
-        <%= button_to 'Quitar de favoritas', favorite_workout_path(@workout), method: :delete, class: 'button button-red' %>
-      <% end %>
-    <% end %>
-  </div>
-</div>
-
-<div class="container commentContainer">
-    <div class="columns">
-      <div class="columnFull">
-        <h3>Comentarios</h3>
-        <%- @workout.comments.each do |comment|%>
-          <br>
-          <hr>
-          <br>
-          <p><%= comment.text%></p>
-        <% end %>
-        <% if current_user %>
-          <%= render "comments/form", comment: @comment%>
+<section class="classComments" id="comentarios">
+  <h2>Comentarios <% if @comments.any? %><span><%= @comments.size %></span><% end %></h2>
+  <% if @comments.empty? %>
+    <p class="classComments-empty">Todavía no hay comentarios. ¡Cuéntanos qué te pareció esta clase!</p>
+  <% end %>
+  <% @comments.each do |comment| %>
+    <article class="classComment">
+      <span class="classComment-avatar"><%= comment_initials(comment) %></span>
+      <div class="classComment-body">
+        <p class="classComment-meta"><strong><%= comment.author_name %></strong> · <%= short_date(comment.created_at) %></p>
+        <p class="classComment-text"><%= comment.text %></p>
+        <% comment.replies.sort_by(&:created_at).each do |reply| %>
+          <div class="classComment-reply">
+            <p class="classComment-meta"><strong>Ana Gaby respondió</strong> · <%= short_date(reply.created_at) %></p>
+            <p class="classComment-text"><%= reply.text %></p>
+          </div>
         <% end %>
       </div>
-    </div>
-</div>
+    </article>
+  <% end %>
+  <% if current_user %>
+    <%= form_with(model: Comment.new, url: workout_comments_path(@workout), class: "classComments-form", data: { turbo: false }) do |form| %>
+      <%= form.label :text, "Escribe un comentario", class: "sr-only" %>
+      <%= form.text_area :text, required: true, rows: 3, placeholder: "¿Qué te pareció la clase? ¿Tienes alguna duda para Ana Gaby?" %>
+      <%= form.submit "Publicar comentario", class: "button" %>
+    <% end %>
+  <% else %>
+    <p class="classComments-empty"><%= link_to "Inicia sesión", new_user_session_path %> para comentar.</p>
+  <% end %>
+</section>
 
-
-<script type="text/javascript">
-  $('body')
-    .on('click', '.vimeo-launch', function () {
-      var videoID = $(this).data('vimeo-id'),
-          $video = '<div id="vimeo-pop-container"><div><span class="vimeo-close"></span><iframe src="https://youtube.com/embed/' + videoID + '?autoplay=1" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe></div></div>';
-      $('body').append($video);
-    } )
-
-    .on('click', '.vimeo-close', function () {
-      $(this).addClass('closing');
-
-      $('#vimeo-pop-container').delay(700).animate({
-        height: 0,
-        top: '50%'
-      }, 'fast', function () {
-        $('#vimeo-pop-container').remove();
-      });
-    } );
+<script>
+  // Reproduce el video de YouTube en la misma página, en lugar de la portada.
+  document.addEventListener("click", function (event) {
+    var start = event.target.closest(".classView-start");
+    if (!start) return;
+    var iframe = document.createElement("iframe");
+    iframe.src = "https://www.youtube.com/embed/" + encodeURIComponent(start.dataset.videoId) + "?autoplay=1&rel=0&modestbranding=1";
+    iframe.title = start.getAttribute("aria-label");
+    iframe.setAttribute("allow", "autoplay; fullscreen; picture-in-picture; encrypted-media");
+    iframe.setAttribute("allowfullscreen", "");
+    start.replaceWith(iframe);
+  });
 </script>

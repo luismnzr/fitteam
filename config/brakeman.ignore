@@ -1,0 +1,38 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 105,
+      "fingerprint": "53f4e9477f66af3ee567336e01f143092c40c04890c9030726e079f198d64838",
+      "check_name": "PermitAttributes",
+      "message": "Potentially dangerous key allowed for mass assignment",
+      "file": "app/controllers/admin/users_controller.rb",
+      "line": 75,
+      "confidence": "High",
+      "note": "Intencional: solo admins (Admin::BaseController) pueden dar o quitar el rol de admin a otros usuarios; nadie puede quitarse el suyo."
+    },
+    {
+      "warning_type": "Unmaintained Dependency",
+      "warning_code": 120,
+      "fingerprint": "d84924377155b41e094acae7404ec2e521629d86f97b0ff628e3d1b263f8101c",
+      "check_name": "EOLRails",
+      "message": "Support for Rails 7.2.2.1 ended on 2026-08-09",
+      "file": "Gemfile.lock",
+      "line": 218,
+      "confidence": "High",
+      "note": "Pendiente: actualizar a Rails 8 junto con Ruby (PR aparte). Quitar este ignore al actualizar."
+    },
+    {
+      "warning_type": "Unmaintained Dependency",
+      "warning_code": 121,
+      "fingerprint": "edf687f759ec9765bd5db185dbc615c80af77d6e7e19386fc42934e7a80307af",
+      "check_name": "EOLRuby",
+      "message": "Support for Ruby 3.1.6 ended on 2025-03-31",
+      "file": ".ruby-version",
+      "line": 1,
+      "confidence": "High",
+      "note": "Pendiente: actualizar a Ruby 3.4 (PR aparte). Quitar este ignore al actualizar."
+    }
+  ],
+  "brakeman_version": "7.1.1"
+}

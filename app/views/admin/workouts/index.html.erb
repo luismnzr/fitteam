@@ -1,0 +1,96 @@
+<% content_for(:page_title) { "Workouts" } %>
+
+<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+  <div class="flex items-center gap-1 overflow-x-auto -mx-1 px-1">
+    <%= link_to "Todos", admin_workouts_path(q: params[:q], category: params[:category]), class: class_names("chip", "is-active" => params[:filter].blank?) %>
+    <% Admin::WorkoutsController::FILTERS.each do |key, label| %>
+      <%= link_to label, admin_workouts_path(filter: key, q: params[:q], category: params[:category]), class: class_names("chip", "is-active" => params[:filter] == key) %>
+    <% end %>
+  </div>
+  <div class="flex items-center gap-3">
+    <p class="text-sm text-[var(--color-muted-foreground)] whitespace-nowrap"><%= number_with_delimiter(@workouts.total_count) %> workouts</p>
+    <%= link_to new_admin_workout_path, class: "btn btn-primary" do %>
+      <%= admin_icon("plus") %> Nuevo workout
+    <% end %>
+  </div>
+</div>
+
+<%= form_with url: admin_workouts_path, method: :get, local: true, class: "flex flex-wrap gap-3 mb-6" do %>
+  <%= hidden_field_tag :filter, params[:filter] if params[:filter].present? %>
+  <div class="relative flex-1 min-w-[14rem]">
+    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-muted-foreground)]"><%= admin_icon("search") %></span>
+    <%= search_field_tag :q, params[:q], placeholder: "Buscar por título…", class: "input pl-9", "aria-label": "Buscar workouts" %>
+  </div>
+  <%= select_tag :category,
+        options_for_select([["Todos los grupos musculares", ""]] + Workout.options_for(Workout::CATEGORIES, :category), params[:category]),
+        class: "input w-auto min-w-[12rem]", data: { autosubmit: true }, "aria-label": "Filtrar por grupo muscular" %>
+  <%= select_tag :sort, options_for_select([["Más recientes", ""], ["Fecha en calendario", "day"], ["Título A–Z", "title"]], params[:sort]),
+        class: "input w-auto", data: { autosubmit: true }, "aria-label": "Ordenar" %>
+  <button type="submit" class="btn btn-outline">Buscar</button>
+<% end %>
+
+<% if @workouts.any? %>
+  <div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Workout</th>
+            <th>Duración</th>
+            <th>Intensidad</th>
+            <th>En calendario</th>
+            <th title="En favoritas / Comentarios">Actividad</th>
+            <th>Alta</th>
+            <th><span class="sr-only">Acciones</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @workouts.each do |workout| %>
+            <tr>
+              <td>
+                <div class="flex items-center gap-3 min-w-[16rem]">
+                  <%= admin_workout_thumb(workout, css: "h-12 w-20") %>
+                  <div class="min-w-0">
+                    <%= link_to workout.title, edit_admin_workout_path(workout), class: "font-medium hover:text-[var(--color-primary)]" %>
+                    <div class="flex flex-wrap items-center gap-1 mt-0.5">
+                      <span class="text-xs text-[var(--color-muted-foreground)]"><%= admin_value(workout.category, "Sin categoría") %></span>
+                      <% if workout.premiere? %><span class="badge badge-primary">Estreno</span><% end %>
+                      <% if workout.strength? %><span class="badge badge-info">Strength</span><% end %>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="whitespace-nowrap"><%= admin_value(workout.duration) %></td>
+              <td class="whitespace-nowrap text-[var(--color-muted-foreground)]"><%= admin_value(workout.intensity) %></td>
+              <td class="whitespace-nowrap">
+                <% if workout.day %>
+                  <span class="<%= 'font-medium text-[var(--color-primary)]' if workout.day == admin_today %>"><%= workout.day == admin_today ? "Hoy" : admin_day_label(workout.day) %></span>
+                  <% if workout.day.year != admin_today.year %><span class="text-xs text-[var(--color-muted-foreground)]"><%= workout.day.year %></span><% end %>
+                <% else %>
+                  <span class="text-[var(--color-muted-foreground)]">—</span>
+                <% end %>
+              </td>
+              <td class="whitespace-nowrap text-[var(--color-muted-foreground)]">
+                <span class="inline-flex items-center gap-1" title="En favoritas"><%= admin_icon("heart", "h-3.5 w-3.5") %><%= @favorites[workout.id] || 0 %></span>
+                <%= link_to admin_comments_path(status: "all", workout_id: workout.id), class: "inline-flex items-center gap-1 ml-2 hover:text-[var(--color-primary)]", title: "Comentarios" do %>
+                  <%= admin_icon("comments", "h-3.5 w-3.5") %><%= @comments[workout.id] || 0 %>
+                <% end %>
+              </td>
+              <td class="whitespace-nowrap text-[var(--color-muted-foreground)]"><%= admin_date(workout.created_at) %></td>
+              <td class="whitespace-nowrap text-right">
+                <%= link_to "Editar", edit_admin_workout_path(workout), class: "link text-sm" %>
+                <%= link_to "Ver", workout_path(workout), class: "link text-sm ml-3", target: "_blank", rel: "noopener" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="mt-6"><%= paginate @workouts, theme: "admin" %></div>
+<% else %>
+  <div class="card p-12 text-center">
+    <p class="text-sm text-[var(--color-muted-foreground)]">No hay workouts con esos filtros.</p>
+    <%= link_to "Limpiar filtros", admin_workouts_path, class: "link text-sm mt-2 inline-block" %>
+  </div>
+<% end %>

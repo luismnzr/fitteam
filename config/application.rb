@@ -22,7 +22,8 @@ module Fitteam
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
-    # config.time_zone = "Central Time (US & Canada)"
+    # Hora de México: decide qué workout es el "del día" (columna day).
+    config.time_zone = "America/Mexico_City"
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end

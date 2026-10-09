@@ -1,0 +1,98 @@
+<% content_for(:page_title) { @user.display_name } %>
+
+<%= link_to admin_users_path, class: "inline-flex items-center gap-1.5 text-sm text-[var(--color-muted-foreground)] hover:text-[var(--color-foreground)] mb-4" do %>
+  <%= admin_icon("arrow-left", "h-3.5 w-3.5") %> Usuarios
+<% end %>
+
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+  <div class="space-y-5">
+    <div class="card p-5 sm:p-6">
+      <div class="flex items-center gap-4">
+        <div class="h-14 w-14 rounded-full bg-[var(--color-primary)] text-[var(--color-primary-foreground)] flex items-center justify-center text-lg font-semibold flex-shrink-0">
+          <%= admin_initials(@user) %>
+        </div>
+        <div class="min-w-0">
+          <h2 class="text-lg font-semibold truncate"><%= @user.name.presence || "Sin nombre" %></h2>
+          <p class="text-sm text-[var(--color-muted-foreground)] truncate"><%= @user.email %></p>
+          <div class="flex flex-wrap gap-1.5 mt-2">
+            <%= admin_access_badge(@user) %>
+            <% if @user.admin? %><span class="badge badge-info">Admin</span><% end %>
+          </div>
+        </div>
+      </div>
+      <dl class="mt-5 space-y-2 text-sm">
+        <div class="flex justify-between gap-4"><dt class="text-[var(--color-muted-foreground)]">Registro</dt><dd><%= admin_datetime(@user.created_at) %></dd></div>
+        <div class="flex justify-between gap-4"><dt class="text-[var(--color-muted-foreground)]">En favoritas</dt><dd><%= @favorites_count %></dd></div>
+        <div class="flex justify-between gap-4"><dt class="text-[var(--color-muted-foreground)]">Comentarios</dt><dd><%= @comments_count %></dd></div>
+      </dl>
+      <div class="flex flex-wrap gap-2 mt-5">
+        <%= link_to "Editar", edit_admin_user_path(@user), class: "btn btn-outline btn-sm" %>
+        <%= button_to "Enviar correo para nueva contraseña", send_password_reset_admin_user_path(@user), class: "btn btn-ghost btn-sm",
+              data: { confirm: "¿Enviar a #{@user.email} un correo para restablecer su contraseña?" } %>
+      </div>
+    </div>
+
+    <div class="card p-5 sm:p-6">
+      <h3 class="card-title mb-3">Suscripción</h3>
+      <dl class="space-y-2 text-sm">
+        <div class="flex justify-between gap-4"><dt class="text-[var(--color-muted-foreground)]">Acceso hasta</dt><dd><%= admin_datetime(@user.subscription_ends_at) %></dd></div>
+        <div class="flex justify-between gap-4"><dt class="text-[var(--color-muted-foreground)]">Estado (Stripe)</dt><dd><%= admin_subscription_status(@user) %></dd></div>
+        <div class="flex justify-between gap-4"><dt class="text-[var(--color-muted-foreground)]">Cliente</dt><dd class="font-mono text-xs truncate"><%= @user.stripe_customer_id.presence || "—" %></dd></div>
+        <div class="flex justify-between gap-4"><dt class="text-[var(--color-muted-foreground)]">Suscripción</dt><dd class="font-mono text-xs truncate"><%= @user.subscription_id.presence || "—" %></dd></div>
+      </dl>
+      <div class="flex flex-wrap gap-3 mt-4">
+        <% if (url = admin_stripe_customer_url(@user)) %>
+          <a href="<%= url %>" target="_blank" rel="noopener" class="link text-sm inline-flex items-center gap-1"><%= admin_icon("external", "h-3.5 w-3.5") %> Cliente en Stripe</a>
+        <% end %>
+        <% if (url = admin_stripe_subscription_url(@user)) %>
+          <a href="<%= url %>" target="_blank" rel="noopener" class="link text-sm inline-flex items-center gap-1"><%= admin_icon("external", "h-3.5 w-3.5") %> Suscripción en Stripe</a>
+        <% end %>
+      </div>
+      <p class="hint mt-3">Cobros, reembolsos y cancelaciones se hacen en Stripe; el acceso se actualiza solo con el webhook.</p>
+    </div>
+  </div>
+
+  <div class="xl:col-span-2 space-y-5">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Sus favoritas</h3>
+      </div>
+      <% if @favorites.any? %>
+        <ul class="divide-y divide-[var(--color-border)]">
+          <% @favorites.each do |workout| %>
+            <li class="flex items-center gap-3 px-5 py-3">
+              <%= admin_workout_thumb(workout, css: "h-10 w-16") %>
+              <div class="min-w-0 flex-1">
+                <%= link_to workout.title, edit_admin_workout_path(workout), class: "text-sm font-medium hover:text-[var(--color-primary)]" %>
+                <p class="text-xs text-[var(--color-muted-foreground)]"><%= admin_value(workout.category, "Sin categoría") %></p>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="px-5 py-10 text-sm text-center text-[var(--color-muted-foreground)]">Todavía no guarda workouts en favoritas.</p>
+      <% end %>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Sus comentarios</h3>
+      </div>
+      <% if @comments.any? %>
+        <ul class="divide-y divide-[var(--color-border)]">
+          <% @comments.each do |comment| %>
+            <li class="px-5 py-3">
+              <p class="text-sm whitespace-pre-line"><%= comment.text %></p>
+              <p class="text-xs text-[var(--color-muted-foreground)] mt-1">
+                <%= comment.workout ? link_to(comment.workout.title, workout_path(comment.workout), class: "link", target: "_blank", rel: "noopener") : "Workout eliminado" %>
+                · <%= admin_time_ago(comment.created_at) %>
+              </p>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="px-5 py-10 text-sm text-center text-[var(--color-muted-foreground)]">No ha comentado.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

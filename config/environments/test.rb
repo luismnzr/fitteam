@@ -36,6 +36,10 @@ Rails.application.configure do
 
   # Disable caching for Action Mailer templates even if Action Controller
   # caching is enabled.
+  # Igual que en producción: libsass no puede comprimir el CSS del admin
+  # (Tailwind 4), y los tests que pintan el layout del admin lo compilan.
+  config.assets.css_compressor = nil
+
   config.action_mailer.perform_caching = false
 
   # Tell Action Mailer not to deliver emails to the real world.
