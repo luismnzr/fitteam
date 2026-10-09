@@ -33,7 +33,7 @@ module Admin
     end
 
     def show
-      @favorites = @user.favorite_workouts.with_attached_cover.order("favorites.created_at DESC").limit(10)
+      @favorites = @user.favorite_workouts.order("favorites.created_at DESC").limit(10)
       @favorites_count = @user.favorites.count
       @comments = @user.comments.includes(:workout).order(created_at: :desc).limit(5)
       @comments_count = @user.comments.count

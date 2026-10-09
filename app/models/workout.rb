@@ -11,13 +11,15 @@ class Workout < ApplicationRecord
 
   YOUTUBE_ID = %r{(?:youtu\.be/|youtube(?:-nocookie)?\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/|live/|v/))([\w-]{11})}
 
-  has_one_attached :cover
   has_many :comments, dependent: :destroy
   has_many :favorites, as: :favorited, dependent: :destroy
 
   validates :title, presence: true
+  validate :video_url_is_youtube, if: :video_url_changed?
 
   before_validation :normalize_video_url
+  # Otro video, otra miniatura (el admin la vuelve a pedir al guardar).
+  before_save { self.thumbnail_url = nil if video_url_changed? }
 
   scope :premieres, -> { where(color: PREMIERE_COLOR) }
 
@@ -41,13 +43,24 @@ class Workout < ApplicationRecord
     value[YOUTUBE_ID, 1] || value[/\A[\w-]{11}\z/]
   end
 
-  # Miniatura del video (no requiere API). hqdefault existe para todos los
-  # videos; en un recorte 16:9 sus barras negras quedan fuera.
+  # Portada: la mejor miniatura de YouTube que se encontró (thumbnail_url, la
+  # llena YoutubeThumbnail) o, mientras tanto, hqdefault, que existe para
+  # todos los videos.
+  def cover_url
+    thumbnail_url.presence || youtube_thumbnail_url
+  end
+
   def youtube_thumbnail_url
     "https://i.ytimg.com/vi/#{youtube_id}/hqdefault.jpg" if youtube_id
   end
 
   private
+
+  def video_url_is_youtube
+    return if video_url.blank? || youtube_id
+
+    errors.add(:video_url, "no es un link de YouTube válido")
+  end
 
   # Guarda solo el ID, que es lo que usa el reproductor del sitio.
   def normalize_video_url

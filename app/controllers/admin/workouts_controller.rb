@@ -10,7 +10,7 @@ module Admin
     before_action :set_workout, only: [ :edit, :update, :destroy ]
 
     def index
-      scope = Workout.with_attached_cover
+      scope = Workout.all
       scope = scope.where("workouts.title ILIKE ?", "%#{Workout.sanitize_sql_like(params[:q].strip)}%") if params[:q].present?
       scope = scope.where(category: params[:category]) if params[:category].present?
       scope = case params[:filter]
@@ -39,7 +39,8 @@ module Admin
     def create
       @workout = Workout.new(workout_params)
       if @workout.save
-        redirect_to admin_workouts_path, notice: "Workout \"#{@workout.title}\" creado."
+        refresh_thumbnail
+        redirect_to admin_workouts_path, notice: with_thumbnail_note("Workout \"#{@workout.title}\" creado.")
       else
         render :new, status: :unprocessable_entity
       end
@@ -50,11 +51,8 @@ module Admin
 
     def update
       if @workout.update(workout_params)
-        # "Quitar portada" (sin subir otra): vuelve a la miniatura de YouTube.
-        if params.dig(:workout, :remove_cover) == "1" && params.dig(:workout, :cover).blank?
-          @workout.cover.purge_later
-        end
-        redirect_to admin_workouts_path, notice: "Workout \"#{@workout.title}\" actualizado."
+        refresh_thumbnail
+        redirect_to admin_workouts_path, notice: with_thumbnail_note("Workout \"#{@workout.title}\" actualizado.")
       else
         render :edit, status: :unprocessable_entity
       end
@@ -71,9 +69,25 @@ module Admin
       @workout = Workout.find(params[:id])
     end
 
+    # La portada es la miniatura del video de YouTube: se pide cuando cambia
+    # el video o si todavía no la tiene.
+    def refresh_thumbnail
+      return if @workout.thumbnail_url.present? || @workout.youtube_id.blank?
+
+      url = YoutubeThumbnail.fetch(@workout.youtube_id)
+      @workout.update_column(:thumbnail_url, url) if url
+      @thumbnail_missing = url.nil?
+    end
+
+    def with_thumbnail_note(message)
+      return message unless @thumbnail_missing
+
+      "#{message} No pudimos comprobar la miniatura en YouTube; mientras tanto se usa la de calidad media."
+    end
+
     def workout_params
       permitted = params.require(:workout).permit(:title, :category, :duration, :video_url, :intensity,
-                                                  :day, :cover, :strength, :premiere, material: [])
+                                                  :day, :strength, :premiere, material: [])
       permitted[:material] = Array(permitted[:material]).reject(&:blank?).join(", ") if permitted.key?(:material)
       if permitted.key?(:premiere)
         premiere = ActiveModel::Type::Boolean.new.cast(permitted.delete(:premiere))

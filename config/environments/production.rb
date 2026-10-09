@@ -51,11 +51,9 @@ Rails.application.configure do
   # config.action_dispatch.x_sendfile_header = "X-Sendfile" # for Apache
   # config.action_dispatch.x_sendfile_header = "X-Accel-Redirect" # for NGINX
 
-  # Portadas en S3 (Bucketeer o AWS_*) si hay bucket; si no, en disco para que
-  # la app arranque igual. Sin bucket las portadas salen de YouTube (ver
-  # WorkoutsHelper#workout_cover_url).
-  s3_bucket = ENV["BUCKETEER_BUCKET_NAME"].presence || ENV["AWS_BUCKET"].presence
-  config.active_storage.service = s3_bucket ? :amazon : :local
+  # La app no sube archivos: las portadas son miniaturas de YouTube
+  # (YoutubeThumbnail), así que no hace falta un bucket de S3.
+  config.active_storage.service = :local
 
   # Mount Action Cable outside main process or domain.
   # config.action_cable.mount_path = nil

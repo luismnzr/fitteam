@@ -1,13 +1,7 @@
 module WorkoutsHelper
-  # Portada de un workout: la imagen subida si vive en el almacenamiento
-  # actual; si no (sin portada, o subida al bucket anterior), la miniatura de
-  # su video de YouTube.
+  # Portada de un workout: la miniatura de su video de YouTube.
   def workout_cover_url(workout)
-    if workout.cover.attached? && workout.cover.blob.service_name == ActiveStorage::Blob.service.name.to_s
-      rails_blob_url(workout.cover)
-    else
-      workout.youtube_thumbnail_url
-    end
+    workout.cover_url
   end
 
   # style="background-image: …" para las tarjetas y banners del sitio. Debajo

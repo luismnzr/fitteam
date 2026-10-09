@@ -40,8 +40,6 @@ gem "dotenv-rails", groups: [ :development, :test ]
 gem "devise"
 gem "stripe"
 gem "sass-rails"
-# Solo el cliente de S3 (ActiveStorage), no todo el SDK de AWS.
-gem "aws-sdk-s3", require: false
 gem "fullcalendar-rails"
 gem "momentjs-rails"
 # Correo transaccional (Devise y ApplicationMailer), igual que en Eclipse.

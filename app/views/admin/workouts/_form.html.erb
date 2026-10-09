@@ -81,19 +81,13 @@
 
       <div class="card p-5 sm:p-6 space-y-3">
         <span class="label">Portada</span>
-        <% cover_url = workout.cover.attached? && workout.cover.blob.persisted? ? workout_cover_url(workout) : workout.youtube_thumbnail_url %>
-        <div id="cover-preview" class="thumb aspect-video w-full" <%= "data-youtube-cover" unless workout.cover.attached? %>>
-          <%= image_tag(cover_url, alt: "") if cover_url %>
+        <div id="cover-preview" class="thumb aspect-video w-full" data-youtube-cover>
+          <%= image_tag(workout.cover_url, alt: "") if workout.cover_url %>
         </div>
-        <%= f.file_field :cover, accept: "image/*", class: "input-file", data: { preview: "cover-preview" } %>
-        <% if workout.persisted? && workout.cover.attached? %>
-          <label class="flex items-center gap-2 text-sm cursor-pointer">
-            <%= check_box_tag "workout[remove_cover]", "1", false, class: "checkbox" %>
-            Quitar portada y usar la miniatura de YouTube
-          </label>
-        <% end %>
-        <p class="hint">Opcional. Si no subes una, se usa la miniatura del video de YouTube.</p>
-        <%= admin_ephemeral_upload_warning %>
+        <p class="hint">
+          Es la miniatura del video en YouTube y se toma sola al guardar.
+          Para cambiarla, cambia la miniatura del video en YouTube.
+        </p>
       </div>
     </div>
   </div>

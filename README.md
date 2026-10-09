@@ -14,7 +14,7 @@ la navegación del sitio.
 | Sección | Qué se administra |
 |---|---|
 | Panel | Usuarios con acceso, registros, accesos por vencer, la semana del calendario, favoritas del mes, comentarios y registros recientes |
-| Workouts | Catálogo: video de YouTube (link o ID), grupo muscular, duración, intensidad, material, Strength, día en el calendario, Estreno y portada |
+| Workouts | Catálogo: video de YouTube (link o ID; su miniatura es la portada), grupo muscular, duración, intensidad, material, Strength, día en el calendario y Estreno |
 | Calendario | Mes completo con el workout de cada día; "+" en un día crea un workout ya programado |
 | Usuarios | Búsqueda, acceso (Stripe o cortesía con fecha), rol de admin, correo para nueva contraseña, links a Stripe |
 | Comentarios | Bandeja de comentarios sin responder; responder como Ana Gaby o borrar |
@@ -70,12 +70,26 @@ borrar y las confirmaciones.
   precio, crea el nuevo en Stripe y cambia su ID ahí.
 * Un acceso de cortesía se da en **Admin → Usuarios → Editar → Acceso hasta**.
 
-## Portadas de workouts
+## Portadas de workouts (YouTube)
 
-La portada de cada workout es la imagen que se suba en el admin; si no hay,
-se usa la miniatura de su video de YouTube (`i.ytimg.com`, no requiere API
-ni bucket). Una portada subida a un bucket que ya no está configurado (p. ej.
-el de Bucketeer de la app anterior) también cae a la miniatura de YouTube.
+La portada de cada workout es la miniatura de su video de YouTube; ya no se
+suben imágenes. Al guardar un workout en el admin se busca la de mejor
+calidad que exista (`maxresdefault` 1280px → `sddefault` → `hqdefault`) y se
+guarda su URL en `workouts.thumbnail_url` (`YoutubeThumbnail`, sin API key).
+Mientras un workout no la tenga, se usa `hqdefault`, que existe para todos
+los videos. Para cambiar una portada basta con cambiar la miniatura del
+video en YouTube.
+
+Para llenar las de todos los workouts de una vez (después del deploy que
+agrega `thumbnail_url`, o de un restore):
+
+```
+heroku run rails youtube:thumbnails           # las que faltan
+heroku run FORCE=1 rails youtube:thumbnails   # todas
+```
+
+Al final lista los workouts cuyo video no es un link de YouTube o ya no
+existe.
 
 ## Variables de entorno (Heroku)
 
@@ -85,14 +99,10 @@ el de Bucketeer de la app anterior) también cae a la miniatura de YouTube.
 | `STRIPE_WEBHOOK_KEY` | Signing secret del webhook `/stripe/webhooks` (`whsec_...`). También se acepta `STRIPE_WEBHOOK_SECRET`. Sin ella el webhook responde 503 y Stripe reintenta |
 | `POSTMARK_API_TOKEN` | Server API token de Postmark (correos de Devise; el remitente `hola@anagabyfitteam.com` o el dominio deben estar verificados) |
 | `APP_HOST` | Dominio público de la app, para los links de los correos. Default: `anagabyfitteam.com` |
-| `BUCKETEER_BUCKET_NAME`, `BUCKETEER_AWS_ACCESS_KEY_ID`, `BUCKETEER_AWS_SECRET_ACCESS_KEY`, `BUCKETEER_AWS_REGION` | Bucket de S3 para las portadas (add-on Bucketeer) |
-| `AWS_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` | Alternativa a Bucketeer (un bucket propio) |
 | `SECRET_KEY_BASE` | Lo crea solo el buildpack de Ruby. Sin él (ni `RAILS_MASTER_KEY`) la app no arranca |
 
-Sin ningún bucket la app arranca igual, pero guarda las portadas subidas en
-el disco del dyno, que Heroku borra en cada deploy o reinicio (el admin lo
-avisa junto al campo de portada); mientras tanto se usan las miniaturas de
-YouTube.
+La app no sube archivos, así que no necesita bucket de S3 (el add-on
+Bucketeer se puede quitar).
 
 ## Deploy
 

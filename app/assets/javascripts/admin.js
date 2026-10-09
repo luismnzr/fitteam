@@ -88,28 +88,6 @@
     });
   }
 
-  // ── Vista previa de imágenes antes de subirlas ────────────────────────
-  function setupImagePreview() {
-    document.querySelectorAll("input[type=file][data-preview]").forEach(function (input) {
-      var target = document.getElementById(input.dataset.preview);
-      if (!target) return;
-      input.addEventListener("change", function () {
-        var file = input.files && input.files[0];
-        if (!file) return;
-        var img = target.querySelector("img");
-        if (!img) {
-          img = document.createElement("img");
-          target.innerHTML = "";
-          target.appendChild(img);
-        }
-        img.src = URL.createObjectURL(file);
-        target.classList.remove("hidden");
-        // Ya hay portada subida: el video deja de cambiar esta vista previa.
-        target.removeAttribute("data-youtube-cover");
-      });
-    });
-  }
-
   // ── Vista previa del video de YouTube al pegar el link o el ID ────────
   function youtubeId(value) {
     value = (value || "").trim();
@@ -140,7 +118,7 @@
         if (iframe.getAttribute("src") !== src) iframe.setAttribute("src", src);
         frame.classList.remove("hidden");
 
-        // Sin portada subida, la vista previa de la portada es la miniatura.
+        // La portada es la miniatura del video.
         var cover = document.querySelector("[data-youtube-cover]");
         if (cover) {
           var img = cover.querySelector("img");
@@ -163,7 +141,6 @@
     setupTheme();
     setupToasts();
     setupAutosubmit();
-    setupImagePreview();
     setupYoutubePreview();
   });
 })();

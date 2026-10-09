@@ -12,7 +12,6 @@ en:
         intensity: "Intensidad"
         material: "Material"
         day: "Día"
-        cover: "Portada"
       comment:
         text: "Comentario"
     errors:

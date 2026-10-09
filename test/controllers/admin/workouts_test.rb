@@ -20,21 +20,26 @@ class Admin::WorkoutsTest < ActionDispatch::IntegrationTest
   end
 
   test "crear con link de YouTube, material, estreno y fecha" do
-    assert_difference("Workout.count") do
-      post admin_workouts_url, params: { workout: {
-        title: "Glúteo con banda", video_url: "https://www.youtube.com/watch?v=jNQXAC9IVRw&t=10s",
-        category: "Glutes and Hips", duration: "45min", intensity: "Alta",
-        material: [ "", "Band", "Tapete" ], premiere: "1", strength: "1", day: "2026-11-02"
-      } }
+    fetched = nil
+    fake_fetch = ->(id) { fetched = id; "https://i.ytimg.com/vi/#{id}/maxresdefault.jpg" }
+    YoutubeThumbnail.stub(:fetch, fake_fetch) do
+      assert_difference("Workout.count") do
+        post admin_workouts_url, params: { workout: {
+          title: "Glúteo con banda", video_url: "https://www.youtube.com/watch?v=jNQXAC9IVRw&t=10s",
+          category: "Glutes and Hips", duration: "45min", intensity: "Alta",
+          material: [ "", "Band", "Tapete" ], premiere: "1", strength: "1", day: "2026-11-02"
+        } }
+      end
     end
     workout = Workout.order(:id).last
     assert_redirected_to admin_workouts_url
     assert_equal "jNQXAC9IVRw", workout.video_url
+    assert_equal "jNQXAC9IVRw", fetched
+    assert_equal "https://i.ytimg.com/vi/jNQXAC9IVRw/maxresdefault.jpg", workout.cover_url
     assert_equal "Band, Tapete", workout.material
     assert workout.premiere?
     assert workout.strength?
     assert_equal Date.new(2026, 11, 2), workout.day
-    assert_equal "https://i.ytimg.com/vi/jNQXAC9IVRw/hqdefault.jpg", workout.youtube_thumbnail_url
   end
 
   test "sin título no se guarda" do
@@ -45,21 +50,45 @@ class Admin::WorkoutsTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Título no puede estar en blanco"
   end
 
-  test "editar: quitar estreno, subir y quitar portada" do
+  test "un link que no es de YouTube no se guarda" do
+    assert_no_difference("Workout.count") do
+      post admin_workouts_url, params: { workout: { title: "Vimeo", video_url: "https://vimeo.com/123456789" } }
+    end
+    assert_response :unprocessable_entity
+    assert_includes response.body, "Video de YouTube no es un link de YouTube válido"
+  end
+
+  test "editar: quitar estreno y vaciar material sin volver a pedir la miniatura" do
     workout = workouts(:two)
-    patch admin_workout_url(workout), params: { workout: {
-      title: "Core 2.0", premiere: "0", material: [ "" ],
-      cover: fixture_file_upload("cover.jpg", "image/jpeg")
-    } }
+    workout.update_column(:thumbnail_url, "https://i.ytimg.com/vi/ScMzIvxBSi4/maxresdefault.jpg")
+    YoutubeThumbnail.stub(:fetch, ->(_) { flunk "no debería pedir la miniatura" }) do
+      patch admin_workout_url(workout), params: { workout: { title: "Core 2.0", premiere: "0", material: [ "" ] } }
+    end
     assert_redirected_to admin_workouts_url
     workout.reload
     assert_equal "Core 2.0", workout.title
     assert_not workout.premiere?
     assert_equal "", workout.material
-    assert workout.cover.attached?
+    assert_equal "https://i.ytimg.com/vi/ScMzIvxBSi4/maxresdefault.jpg", workout.cover_url
+  end
 
-    patch admin_workout_url(workout), params: { workout: { title: "Core 2.0", remove_cover: "1" } }
-    assert_not workout.reload.cover.attached?
+  test "cambiar el video cambia la portada" do
+    workout = workouts(:two)
+    workout.update_column(:thumbnail_url, "https://i.ytimg.com/vi/ScMzIvxBSi4/maxresdefault.jpg")
+    YoutubeThumbnail.stub(:fetch, ->(id) { "https://i.ytimg.com/vi/#{id}/sddefault.jpg" }) do
+      patch admin_workout_url(workout), params: { workout: { video_url: "https://youtu.be/M7lc1UVf-VE" } }
+    end
+    assert_equal "https://i.ytimg.com/vi/M7lc1UVf-VE/sddefault.jpg", workout.reload.cover_url
+  end
+
+  test "si YouTube no responde se usa hqdefault y se avisa" do
+    YoutubeThumbnail.stub(:fetch, ->(_) { nil }) do
+      post admin_workouts_url, params: { workout: { title: "Sin red", video_url: "jNQXAC9IVRw" } }
+    end
+    workout = Workout.order(:id).last
+    assert_nil workout.thumbnail_url
+    assert_equal "https://i.ytimg.com/vi/jNQXAC9IVRw/hqdefault.jpg", workout.cover_url
+    assert_match "No pudimos comprobar la miniatura", flash[:notice]
   end
 
   test "eliminar borra sus comentarios y favoritas" do

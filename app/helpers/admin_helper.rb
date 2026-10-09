@@ -157,19 +157,11 @@ module AdminHelper
     end
   end
 
-  # Miniatura de un workout: su portada o la imagen del video en YouTube.
+  # Miniatura de un workout: la imagen de su video en YouTube.
   def admin_workout_thumb(workout, css: "h-12 w-20")
     url = workout_cover_url(workout)
     content_tag(:div, class: "thumb #{css}") do
       image_tag(url, alt: "", loading: "lazy") if url
     end
-  end
-
-  # Sin bucket de S3, ActiveStorage guarda en el disco del dyno, que Heroku
-  # borra en cada deploy o reinicio: avisamos junto al campo de portada.
-  def admin_ephemeral_upload_warning
-    return unless Rails.env.production? && ActiveStorage::Blob.service.is_a?(ActiveStorage::Service::DiskService)
-
-    content_tag(:div, "No hay bucket de imágenes configurado: la portada que subas se verá hasta el próximo deploy o reinicio. Mientras tanto se usa la miniatura de YouTube.", class: "alert-error text-sm")
   end
 end
