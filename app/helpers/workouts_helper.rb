@@ -22,20 +22,20 @@ module WorkoutsHelper
     %(<svg class="#{css}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">#{ICONS.fetch(name)}</svg>).html_safe
   end
 
-  # Imagen de un workout que llena su contenedor. Las miniaturas hqdefault y
-  # sddefault de YouTube son 4:3 con barras negras arriba y abajo; con
-  # is-letterboxed la imagen se dibuja 33% más alta que el contenedor, así
-  # las barras quedan siempre fuera sin importar la proporción (tarjeta,
-  # banner o portada vertical en celular).
+  # Imagen de un workout que llena su contenedor.
   #
   # La imagen se sirve desde la app (WorkoutThumbnailsController), nunca desde
-  # i.ytimg.com: esa URL trae el ID del video.
+  # i.ytimg.com: esa URL trae el ID del video. Ahí se recortan las barras
+  # negras de hqdefault y sddefault (4:3). Si el servidor no puede procesar
+  # imágenes, se recortan aquí: con is-letterboxed la imagen se dibuja 33% más
+  # alta que el contenedor y las barras quedan fuera.
   def workout_media(workout, size: :cover, css: nil, lazy: true)
-    url = size == :card ? workout.card_image_url : workout.cover_url
-    letterboxed = url.to_s.match?(%r{/(hq|sd)default\.jpg\z})
+    url = workout.cover_url
+    letterboxed = !YoutubeThumbnail.processing? && url.to_s.match?(%r{/(hq|sd)default\.jpg\z})
     content_tag(:div, class: [ "wMedia", css, ("is-letterboxed" if letterboxed) ].compact.join(" ")) do
       if url
-        src = workout_thumbnail_path(workout, size: size, v: Digest::MD5.hexdigest(url).first(8))
+        version = Digest::MD5.hexdigest("#{url}:#{WorkoutThumbnailsController::VERSION}").first(8)
+        src = workout_thumbnail_path(workout, size: size, v: version)
         image_tag(src, alt: "", loading: (lazy ? "lazy" : nil), decoding: "async", onerror: "this.remove()")
       end
     end

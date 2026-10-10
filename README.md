@@ -108,12 +108,14 @@ video en YouTube.
 Las miniaturas se sirven desde la app (`/workouts/:id/thumbnail/card|cover`,
 `WorkoutThumbnailsController`), nunca desde `i.ytimg.com`: esa URL trae el ID
 del video, y con él cualquiera sin plan podría ver la clase en YouTube. La
-app la descarga, la guarda en caché 7 días y el navegador 30 días. Las
-miniaturas 4:3 (`hqdefault`/`sddefault`) traen barras negras que
-`WorkoutsHelper#workout_media` recorta en cualquier proporción.
+app la descarga, le recorta las barras negras que traen las 4:3
+(`hqdefault`/`sddefault`) y, para las tarjetas, la reduce a 800px (con
+libvips, que viene en el stack de Heroku); la guarda en caché 7 días y el
+navegador 30 días. Si un workout todavía no tiene `thumbnail_url`, se busca
+la primera vez que se pide su miniatura.
 
-Para llenar las de todos los workouts de una vez (después del deploy que
-agrega `thumbnail_url`, o de un restore):
+Para llenar las de todos los workouts de una vez (después de un restore, o
+para no esperar a que cada una se pida):
 
 ```
 heroku run rails youtube:thumbnails           # las que faltan
@@ -148,9 +150,9 @@ Las migraciones corren solas en cada deploy (release phase del `Procfile`).
   fija. El sitio ya no usa jQuery.
 * El calendario pide a `/workouts.json` solo los workouts con fecha del mes
   visible.
-* Las tarjetas del catálogo (`workouts/_workout`) usan la miniatura de
-  480px (`Workout#card_image_url`); la de mejor calidad se reserva para el
-  banner de destacados y la página de cada clase.
+* Las tarjetas del catálogo (`workouts/_workout`) usan la mejor miniatura
+  reducida a 800px; el banner de destacados y la página de cada clase, la
+  completa (hasta 1280px, lo más grande que da YouTube).
 * En la página de cada clase el video se reproduce en la misma página (sin
   popup) y abajo salen 3 clases más del mismo grupo muscular.
 * Las imágenes de `app/assets/images` están comprimidas (fondos a 2000px
