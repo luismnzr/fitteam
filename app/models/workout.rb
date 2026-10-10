@@ -59,18 +59,21 @@ class Workout < ApplicationRecord
     value[YOUTUBE_ID, 1] || value[/\A[\w-]{11}\z/]
   end
 
-  # Portada grande (banners, página del workout, admin): la mejor miniatura de
+  # Portada (tarjetas, banners y página del workout): la mejor miniatura de
   # YouTube que se encontró (thumbnail_url, la llena YoutubeThumbnail) o,
   # mientras tanto, hqdefault, que existe para todos los videos.
+  # WorkoutThumbnailsController la recorta y la reduce para cada tamaño.
   def cover_url
     thumbnail_url.presence || youtube_thumbnail_url
   end
 
-  # Portada de las tarjetas del catálogo: hqdefault (480px) pesa varias veces
-  # menos que maxresdefault y alcanza para una tarjeta. Es 4:3 con barras
-  # negras arriba y abajo; WorkoutsHelper#workout_card_style las recorta.
-  def card_image_url
-    youtube_thumbnail_url || thumbnail_url.presence
+  # Busca y guarda la mejor miniatura si todavía no la tiene.
+  def ensure_thumbnail_url!
+    return thumbnail_url if thumbnail_url.present? || youtube_id.blank?
+
+    url = YoutubeThumbnail.fetch(youtube_id)
+    update_column(:thumbnail_url, url) if url
+    url
   end
 
   # Miniaturas chicas del admin: mqdefault (320px, 16:9, sin barras).

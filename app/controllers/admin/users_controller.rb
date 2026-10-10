@@ -7,7 +7,7 @@ module Admin
       "admins" => "Admins"
     }.freeze
 
-    before_action :set_user, only: [ :show, :edit, :update, :send_password_reset ]
+    before_action :set_user, only: [ :show, :edit, :update, :send_password_reset, :sync_stripe ]
 
     def index
       scope = User.all
@@ -62,7 +62,32 @@ module Admin
       redirect_to admin_user_path(@user), notice: "Enviamos a #{@user.email} un correo para restablecer su contraseña."
     end
 
+    def sync_stripe
+      if Stripe.api_key.blank?
+        return redirect_to admin_user_path(@user), alert: "Falta STRIPE_SECRET_KEY: no se puede consultar Stripe."
+      end
+
+      result = StripeSync.sync_user(@user)
+      redirect_to admin_user_path(@user), notice: sync_message(result)
+    rescue Stripe::StripeError => e
+      redirect_to admin_user_path(@user), alert: "Stripe no respondió (#{e.message}). Intenta de nuevo en unos minutos."
+    end
+
     private
+
+    def sync_message(result)
+      ends_at = helpers.admin_date(result.ends_at_after)
+      message = case result.kind
+      when :not_found then "No encontramos a #{@user.email} en Stripe."
+      when :granted then "Stripe dice que tiene una suscripción activa: ya tiene acceso hasta el #{ends_at}."
+      when :revoked then "No tiene una suscripción activa en Stripe: le quitamos el acceso."
+      when :extended, :shortened then "Su acceso ahora termina el #{ends_at}, como en Stripe."
+      when :courtesy then "No tiene una suscripción activa en Stripe; su acceso hasta el #{ends_at} es de cortesía y se queda igual."
+      else "Ya estaba al día con Stripe."
+      end
+      linked = result.customer_after.present? && result.customer_after != result.customer_before
+      linked ? "#{message} Quedó ligada a su cliente de Stripe." : message
+    end
 
     def set_user
       @user = User.find(params[:id])

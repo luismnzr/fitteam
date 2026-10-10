@@ -41,6 +41,43 @@ class YoutubeThumbnail
     nil
   end
 
+  # Deja la imagen en 16:9 y, con max_width, la reduce. hqdefault y sddefault
+  # son 4:3 con barras negras arriba y abajo: se recortan aquí para no
+  # mandarle al navegador pixeles que no se ven. Sin libvips (o si la imagen
+  # no se puede leer) regresa la original y el sitio recorta las barras con
+  # CSS (WorkoutsHelper#workout_media).
+  def self.render(bytes, max_width: nil)
+    return bytes unless processing?
+
+    image = Vips::Image.new_from_buffer(bytes, "")
+    changed = false
+    if image.width.to_f / image.height < 1.5
+      height = (image.width * 9 / 16.0).round
+      image = image.crop(0, (image.height - height) / 2, image.width, height)
+      changed = true
+    end
+    if max_width && image.width > max_width
+      image = image.resize(max_width.to_f / image.width)
+      changed = true
+    end
+    changed ? image.jpegsave_buffer(Q: 82, strip: true, interlace: true) : bytes
+  rescue Vips::Error => e
+    Rails.logger.warn("[YouTube] No se pudo procesar la miniatura: #{e.message}")
+    bytes
+  end
+
+  def self.processing?
+    return @processing if defined?(@processing)
+
+    @processing = begin
+      require "vips"
+      true
+    rescue LoadError => e
+      Rails.logger.warn("[YouTube] Sin libvips, las miniaturas se sirven como vienen: #{e.message}")
+      false
+    end
+  end
+
   # YouTube responde 404 (con una imagen gris de 120x90) cuando ese tamaño no
   # existe.
   def self.exists?(url)

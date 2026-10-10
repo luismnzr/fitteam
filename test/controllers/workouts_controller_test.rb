@@ -92,7 +92,7 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, workout_thumbnail_path(@workout, size: :card).split("?").first
   end
 
-  test "la miniatura se sirve desde la app: tarjeta ligera, portada grande y caché larga" do
+  test "la miniatura se sirve desde la app, de la mejor que tenga el video, con caché larga" do
     @workout.update_column(:thumbnail_url, "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg")
     requested = []
     YoutubeThumbnail.stub(:download, ->(url) { requested << url; "JPEG-#{url}" }) do
@@ -100,12 +100,24 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
       assert_response :success
       assert_equal "image/jpeg", response.media_type
       assert_match "public", response.headers["Cache-Control"]
-      assert_equal "JPEG-https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg", response.body
+      assert_equal "JPEG-https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", response.body
 
       get workout_thumbnail_url(@workout, size: "cover", v: "1")
       assert_equal "JPEG-https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg", response.body
     end
-    assert_equal 2, requested.size
+    assert_equal [ "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" ] * 2, requested
+  end
+
+  test "si el workout no tiene su mejor miniatura, la busca la primera vez" do
+    @workout.update_column(:thumbnail_url, nil)
+    best = "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg"
+    YoutubeThumbnail.stub(:fetch, ->(_) { best }) do
+      YoutubeThumbnail.stub(:download, ->(url) { "JPEG-#{url}" }) do
+        get workout_thumbnail_url(@workout, size: "cover")
+      end
+    end
+    assert_equal "JPEG-#{best}", response.body
+    assert_equal best, @workout.reload.thumbnail_url
   end
 
   test "si YouTube no da la miniatura responde 404 (el sitio muestra la portada genérica)" do

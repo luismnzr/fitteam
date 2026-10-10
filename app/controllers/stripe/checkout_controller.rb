@@ -20,12 +20,28 @@ class Stripe::CheckoutController < ApplicationController
     redirect_to payments_new_path, alert: "No pudimos abrir el pago. Intenta de nuevo en unos minutos."
   end
 
-  # El acceso lo da el webhook de Stripe (puede tardar unos segundos).
+  # No espera al webhook: lee de Stripe la suscripción recién pagada. Si
+  # Stripe todavía no la tiene, el webhook da el acceso en unos segundos.
   def success
-    redirect_to workouts_path, notice: "¡Gracias! Tu suscripción se está activando; en unos segundos tendrás acceso a todas las clases."
+    refresh_access
+    if user_signed_in? && current_user.active?
+      redirect_to workouts_path, notice: "¡Gracias! Tu suscripción ya está activa: tienes acceso a todas las clases."
+    else
+      redirect_to workouts_path, notice: "¡Gracias! Tu suscripción se está activando; en unos segundos tendrás acceso a todas las clases."
+    end
   end
 
   def cancel
     redirect_to payments_new_path, alert: "El pago no se completó."
+  end
+
+  private
+
+  def refresh_access
+    return unless user_signed_in? && current_user.stripe_customer_id.present?
+
+    StripeSync.sync_user(current_user)
+  rescue Stripe::StripeError => e
+    Rails.logger.warn("[Stripe] No se pudo leer la suscripción de #{current_user.email} al volver del checkout: #{e.message}")
   end
 end

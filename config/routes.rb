@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
     resources :users, only: [ :index, :show, :edit, :update ] do
       post :send_password_reset, on: :member
+      post :sync_stripe, on: :member
     end
 
     resources :comments, only: [ :index, :destroy ] do
