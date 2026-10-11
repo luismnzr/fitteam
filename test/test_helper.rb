@@ -19,12 +19,14 @@ end
 
 # Respuestas falsas de la API de Stripe para StripeSync.
 module StripeStubs
-  def stripe_subscription(id:, customer:, status: "active", ends_at: 30.days.from_now, created: Time.current, email: nil)
+  # invoice: estado de la última factura ("paid", "open"…); reason: motivo de
+  # la cancelación ("cancellation_requested", "payment_failed"…).
+  def stripe_subscription(id:, customer:, status: "active", ends_at: 30.days.from_now, created: Time.current, email: nil, invoice: nil, reason: nil)
     customer = { id: customer, object: "customer", email: email } if email
-    Stripe::Subscription.construct_from(
-      id: id, object: "subscription", customer: customer, status: status,
-      current_period_end: ends_at.to_i, created: created.to_i
-    )
+    attrs = { id: id, object: "subscription", customer: customer, status: status, current_period_end: ends_at.to_i, created: created.to_i }
+    attrs[:latest_invoice] = { id: "in_#{id}", object: "invoice", status: invoice } if invoice
+    attrs[:cancellation_details] = { reason: reason } if reason
+    Stripe::Subscription.construct_from(attrs)
   end
 
   def stripe_list(items)
