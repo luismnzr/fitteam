@@ -41,6 +41,38 @@ class StripeSyncTest < ActiveSupport::TestCase
     assert_nil @member.subscription_id
   end
 
+  test "quien cancela conserva el acceso hasta el fin del periodo que pagó" do
+    ends_at = 12.days.from_now
+    canceled = stripe_subscription(id: "sub_member", customer: "cus_member", status: "canceled", ends_at: ends_at,
+                                   invoice: "paid", reason: "cancellation_requested")
+    result = with_stripe_subscriptions([ canceled ]) { StripeSync.sync_customer("cus_member") }
+
+    @member.reload
+    assert @member.active?
+    assert_equal ends_at.to_i, @member.subscription_ends_at.to_i
+    assert_equal "canceled", @member.subscription_status
+    assert_includes result.user.email, "member"
+  end
+
+  test "cancelada por falta de pago o por disputa no conserva el periodo" do
+    [ { invoice: "open", reason: "payment_failed" }, { invoice: "void", reason: "payment_failed" }, { invoice: "paid", reason: "payment_disputed" } ].each do |details|
+      @member.update!(subscription_id: "sub_member", subscription_ends_at: 20.days.from_now)
+      canceled = stripe_subscription(id: "sub_member", customer: "cus_member", status: "canceled", ends_at: 20.days.from_now, **details)
+      with_stripe_subscriptions([ canceled ]) { StripeSync.sync_customer("cus_member") }
+      assert_not @member.reload.active?, details.inspect
+    end
+  end
+
+  test "una cancelada con su periodo ya terminado no toca una cortesía" do
+    user = User.create!(email: "regalo2@example.com", password: "password123", stripe_customer_id: "cus_regalo",
+                        subscription_ends_at: 90.days.from_now)
+    old = stripe_subscription(id: "sub_2023", customer: "cus_regalo", status: "canceled", ends_at: 2.years.ago, invoice: "paid")
+    with_stripe_subscriptions([ old ]) do
+      assert_equal :courtesy, StripeSync.sync_customer("cus_regalo").kind
+    end
+    assert user.reload.active?
+  end
+
   test "past_due conserva el acceso y unpaid lo quita" do
     with_stripe_subscriptions([ stripe_subscription(id: "sub_member", customer: "cus_member", status: "past_due", ends_at: 25.days.from_now) ]) do
       StripeSync.sync_customer("cus_member")
@@ -152,6 +184,14 @@ class StripeSyncTest < ActiveSupport::TestCase
     with_stripe_subscriptions(subscriptions) { StripeSync.sync_all }
     assert_not @member.reload.active?
     assert @guest.reload.active?
+  end
+
+  test "el reporte lista a quien canceló y conserva el acceso" do
+    canceled = stripe_subscription(id: "sub_member", customer: "cus_member", status: "canceled", ends_at: 12.days.from_now, invoice: "paid")
+    report = with_stripe_subscriptions([ canceled ]) { StripeSync.sync_all(dry_run: true) }
+    assert_equal [ @member ], report.canceled_with_access.map(&:user)
+    assert_empty report.of(:revoked)
+    assert_match "Cancelaron y conservan el acceso hasta el fin de lo que pagaron (1)", report.to_text(dry_run: true, mode: "test")
   end
 
   test "sync_all liga al cliente que paga en lugar del que no y detecta dos clientes pagando" do

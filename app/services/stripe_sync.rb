@@ -1,8 +1,10 @@
 # Deja el acceso de cada usuaria igual a lo que dice Stripe.
 #
 # Para quien paga, Stripe manda: el acceso dura hasta el fin del periodo de
-# su suscripción con acceso (active, trialing o past_due; si tiene más de
-# una, la que termina más tarde). Si no tiene ninguna con acceso:
+# su suscripción con acceso (si tiene más de una, la que termina más tarde).
+# Dan acceso las active, trialing y past_due, y también una cancelada antes
+# de terminar su periodo si ese periodo se pagó: quien cancela conserva lo
+# que pagó. Una cancelada por falta de pago no. Si no tiene ninguna:
 # - si el acceso que tiene salió de Stripe (la suscripción guardada, o una
 #   fecha que coincide con el fin de periodo de alguna de sus suscripciones,
 #   como las que guardaba el webhook anterior), se le quita;
@@ -43,12 +45,18 @@ class StripeSync
       results.select(&:relinked?)
     end
 
+    # Cancelaron, pero conservan el acceso hasta el fin de lo que pagaron.
+    def canceled_with_access
+      results.select { |result| result.subscription&.status == "canceled" && result.ends_at_after&.future? }
+    end
+
     def to_text(dry_run:, mode:)
       out = [ "Stripe (#{mode}): #{subscriptions} suscripciones de #{customers} clientes." ]
       out << (dry_run ? "Simulación: no se cambió nada." : "Cambios aplicados.")
       section(out, "Ganan acceso", of(:granted)) { |r| "#{r.user.email}: sin acceso → hasta #{day(r.ends_at_after)} (#{plan(r.subscription)})" }
       section(out, "Pierden acceso", of(:revoked)) { |r| "#{r.user.email}: hasta #{day(r.ends_at_before)} → sin acceso (#{plan(r.subscription)})" }
       section(out, "Cambia la fecha de fin", of(:extended) + of(:shortened)) { |r| "#{r.user.email}: #{day(r.ends_at_before)} → #{day(r.ends_at_after)} (#{plan(r.subscription)})" }
+      section(out, "Cancelaron y conservan el acceso hasta el fin de lo que pagaron", canceled_with_access) { |r| "#{r.user.email}: hasta #{day(r.ends_at_after)} (#{plan(r.subscription)})" }
       section(out, "Se ligan a otro cliente de Stripe", relinked) { |r| "#{r.user.email}: #{r.customer_before} → #{r.customer_after}" }
       section(out, "Con acceso y sin suscripción en Stripe (cortesía; no se tocan)", of(:courtesy).map(&:user) + unlinked_with_access) { |user| "#{user.email}: hasta #{day(user.subscription_ends_at)}" }
       section(out, "Pagan en Stripe y no tienen cuenta en la app", orphans) { |customer_id, email, subscription| "#{email.presence || "(sin correo)"} · #{customer_id} · #{plan(subscription)}" }
@@ -130,7 +138,7 @@ class StripeSync
     def sync_all(dry_run: false)
       by_customer = {}
       customers = {}
-      Stripe::Subscription.list({ status: "all", limit: 100, expand: [ "data.customer" ] }).auto_paging_each do |subscription|
+      Stripe::Subscription.list({ status: "all", limit: 100, expand: [ "data.customer", "data.latest_invoice" ] }).auto_paging_each do |subscription|
         customer = subscription.customer
         customer_id = customer.is_a?(String) ? customer : customer.id
         customers[customer_id] = customer unless customer.is_a?(String)
@@ -180,8 +188,24 @@ class StripeSync
     end
 
     def best_subscription(subscriptions)
-      subscriptions.select { |subscription| ACCESS_STATUSES.include?(subscription.status) }
+      subscriptions.select { |subscription| grants_access?(subscription) }
                    .max_by { |subscription| period_end(subscription) || Time.zone.at(0) }
+    end
+
+    # Una cancelada da acceso hasta el fin de su periodo si su última factura
+    # se pagó (el periodo está pagado) y no se canceló por una disputa. Si se
+    # canceló porque el cobro de la renovación falló, esa factura no está
+    # pagada y el periodo nuevo no da acceso.
+    def grants_access?(subscription)
+      return true if ACCESS_STATUSES.include?(subscription.status)
+      return false unless subscription.status == "canceled"
+
+      ends_at = period_end(subscription)
+      invoice = subscription[:latest_invoice]
+      reason = subscription[:cancellation_details]&.[](:reason)
+      ends_at.present? && ends_at.future? &&
+        invoice.is_a?(Stripe::StripeObject) && invoice[:status] == "paid" &&
+        reason != "payment_disputed"
     end
 
     private
@@ -253,7 +277,7 @@ class StripeSync
     end
 
     def subscriptions_for(customer_id)
-      Stripe::Subscription.list({ customer: customer_id, status: "all", limit: 100 }).auto_paging_each.to_a
+      Stripe::Subscription.list({ customer: customer_id, status: "all", limit: 100, expand: [ "data.latest_invoice" ] }).auto_paging_each.to_a
     end
 
     def customer_for(user)

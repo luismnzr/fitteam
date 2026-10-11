@@ -75,6 +75,20 @@ class Admin::UsersTest < ActionDispatch::IntegrationTest
     Stripe.api_key = previous
   end
 
+  test "sincronizar a quien canceló pero pagó el periodo" do
+    previous = Stripe.api_key
+    Stripe.api_key = "sk_test_123"
+    member = users(:member)
+    canceled = stripe_subscription(id: "sub_member", customer: "cus_member", status: "canceled", ends_at: 12.days.from_now, invoice: "paid")
+    with_stripe_subscriptions([ canceled ]) do
+      post sync_stripe_admin_user_url(member)
+    end
+    assert_match "Canceló su suscripción: conserva el acceso hasta el", flash[:notice]
+    assert member.reload.active?
+  ensure
+    Stripe.api_key = previous
+  end
+
   test "sincronizar sin llave de Stripe avisa" do
     previous = Stripe.api_key
     Stripe.api_key = nil

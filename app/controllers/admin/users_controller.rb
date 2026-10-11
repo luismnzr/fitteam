@@ -77,13 +77,17 @@ module Admin
 
     def sync_message(result)
       ends_at = helpers.admin_date(result.ends_at_after)
-      message = case result.kind
-      when :not_found then "No encontramos a #{@user.email} en Stripe."
-      when :granted then "Stripe dice que tiene una suscripción activa: ya tiene acceso hasta el #{ends_at}."
-      when :revoked then "No tiene una suscripción activa en Stripe: le quitamos el acceso."
-      when :extended, :shortened then "Su acceso ahora termina el #{ends_at}, como en Stripe."
-      when :courtesy then "No tiene una suscripción activa en Stripe; su acceso hasta el #{ends_at} es de cortesía y se queda igual."
-      else "Ya estaba al día con Stripe."
+      message = if result.subscription&.status == "canceled" && result.ends_at_after&.future?
+        "Canceló su suscripción: conserva el acceso hasta el #{ends_at}, el fin de lo que pagó."
+      else
+        case result.kind
+        when :not_found then "No encontramos a #{@user.email} en Stripe."
+        when :granted then "Stripe dice que tiene una suscripción activa: ya tiene acceso hasta el #{ends_at}."
+        when :revoked then "No tiene una suscripción activa en Stripe: le quitamos el acceso."
+        when :extended, :shortened then "Su acceso ahora termina el #{ends_at}, como en Stripe."
+        when :courtesy then "No tiene una suscripción activa en Stripe; su acceso hasta el #{ends_at} es de cortesía y se queda igual."
+        else "Ya estaba al día con Stripe."
+        end
       end
       linked = result.customer_after.present? && result.customer_after != result.customer_before
       linked ? "#{message} Quedó ligada a su cliente de Stripe." : message

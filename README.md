@@ -61,8 +61,11 @@ borrar y las confirmaciones.
   * `active`, `trialing` y `past_due` dan acceso hasta el fin del periodo
     (`past_due` lo conserva mientras Stripe reintenta el cobro). Si alguien
     tiene más de una, manda la que termina más tarde.
-  * `unpaid`, `canceled`, `paused`, etc. quitan el acceso que vino de
-    Stripe.
+  * Quien cancela conserva el acceso hasta el fin del periodo que pagó,
+    aunque Stripe ya marque la suscripción `canceled` (por ejemplo, si se
+    canceló de inmediato). Si se canceló porque el cobro de la renovación
+    falló (su última factura no está pagada) o por una disputa, no.
+  * `unpaid`, `paused`, etc. quitan el acceso que vino de Stripe.
   * Un acceso de cortesía (**Admin → Usuarios → Editar → Acceso hasta**) a
     quien no tiene suscripción activa no se toca. A quien paga, Stripe le
     pone la fecha: una cortesía para ella se da en Stripe (cupón o días de
