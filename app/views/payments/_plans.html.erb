@@ -7,21 +7,20 @@
         <% Plan.all.each_with_index do |plan, index| %>
             <div class="plans_columns_card">
                 <%= content_tag(index.zero? ? :h3 : :h4, plan.name) %>
-                <br>
                 <p class="plans_columns_card_price">
-                    <%= plan.price %>
+                    <span class="plans_columns_card_amount">$<%= plan.amount %></span>
+                    <% if plan.currency %><span class="plans_columns_card_currency"><%= plan.currency %></span><% end %>
+                    <% if plan.period %><span class="plans_columns_card_period">por <%= plan.period %></span><% end %>
                 </p>
-                <br>
                 <% if current_user %>
                     <%= button_to "Elegir #{plan.name.downcase}", stripe_checkout_path(plan: plan.key), data: { turbo: "false" }, class: "button button-clear" %>
                 <% else %>
                     <%= link_to "Suscribirme", new_user_session_path, class: "button button-clear" %>
                 <% end %>
-                <br>
-                <p class="plans_columns_card_features">
-                    Acceso a +450 videos<br>
-                    Workout del día
-                </p>
+                <ul class="plans_columns_card_features">
+                    <li>Acceso a +450 videos</li>
+                    <li>Workout del día</li>
+                </ul>
             </div>
         <% end %>
     </div>
