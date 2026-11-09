@@ -9,4 +9,10 @@ module ApplicationHelper
     value = value.in_time_zone(TIME_ZONE) if value.respond_to?(:in_time_zone) && !value.is_a?(Date)
     "#{value.day} #{MESES[value.month - 1]} #{value.year}"
   end
+
+  # Liga del header; marca la página en la que estás.
+  def site_nav_link(label, path)
+    current = current_page?(path)
+    link_to label, path, class: class_names("siteHeader-link", "is-active" => current), "aria-current": (current ? "page" : nil)
+  end
 end
