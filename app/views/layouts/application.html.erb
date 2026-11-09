@@ -49,79 +49,81 @@
     <% if alert.present? %>
       <p class="notification"><%= alert %></p>
     <% end %>
-    <header class="header">
-      <div class="header-container">
-        <div class="header-container_logo">
-          <%= link_to root_path do %>
-              <%= image_tag("fitteam_icon.svg", class: "header_icon") %>
-          <% end %>
-        </div>
-        <div class="header-container_actions" id="header_actions">
-          <%= link_to "Explorar clases", workouts_path %>
-          <% if current_user %>
-            <% unless current_user.active? %>
-              <%= link_to "Planes", payments_new_path %>
+    <header class="siteHeader" id="site_header">
+      <div class="siteHeader-container">
+        <%= link_to root_path, class: "siteHeader-logo", "aria-label": "Fitteam, inicio" do %>
+          <%= image_tag("fitteam_icon.svg", alt: "") %>
+        <% end %>
+        <button type="button" class="siteHeader-toggle" aria-label="Menú" aria-expanded="false" aria-controls="site_nav" onclick="toggleMenu(this)">
+          <span></span><span></span>
+        </button>
+        <nav class="siteHeader-nav" id="site_nav">
+          <div class="siteHeader-links">
+            <%= site_nav_link "Explorar clases", workouts_path %>
+            <% if current_user %>
+              <% unless current_user.active? %>
+                <%= site_nav_link "Planes", payments_new_path %>
+              <% end %>
+              <%= site_nav_link "Calendario", calendario_path %>
+              <%= site_nav_link "Favoritas", favorites_path %>
+              <%= site_nav_link "Mi Cuenta", edit_user_registration_path %>
+              <% if current_user.admin? %>
+                <%= site_nav_link "Admin", admin_root_path %>
+              <% end %>
+            <% else %>
+              <%= site_nav_link "Acerca", acerca_path %>
+              <%= site_nav_link "Planes", payments_new_path %>
             <% end %>
-            <%= link_to "Calendario", calendario_path %>
-            <%= link_to "Favoritas", favorites_path %>
-            <%= link_to "Mi Cuenta", edit_user_registration_path %>
-          <% else %>
-            <%= link_to "Acerca", acerca_path %>
-            <%= link_to "Planes", payments_new_path %>
-            <%= link_to "Inicia Sesión", new_user_session_path, class: "button button-header_alpha" %>
+          </div>
+          <% if !current_user %>
+            <%= link_to "Inicia Sesión", new_user_session_path, class: "siteBtn" %>
+          <% elsif current_user.admin? %>
+            <%= link_to "Agregar clase", new_admin_workout_path, class: "siteBtn" %>
           <% end %>
-          <% if current_user %>
-            <% if current_user.admin? %>
-              <%= link_to "Admin", admin_root_path %>
-              <%= link_to "Agregar clase", new_admin_workout_path, class: "button button-header_alpha" %>
-            <% end %>
-          <% end %>
-          <a href="javascript:void(0);" class="menu_icon" onclick="openMenu()">
-              <%= image_tag("menu_icon.svg") %>
-          </a>
-        </div>
+        </nav>
       </div>
     </header>
     <%= yield %>
-    <footer>
-      <div  class="footer-container">
-        <div class="footer-column">
-          <%= link_to root_path do %>
-            <%= image_tag("fitteam_logo.svg", class: "footer_icon") %>
+    <footer class="siteFooter">
+      <div class="siteFooter-container">
+        <div class="siteFooter-brand">
+          <%= link_to root_path, "aria-label": "Fitteam, inicio" do %>
+            <%= image_tag("fitteam_logo.svg", alt: "Fitteam", class: "siteFooter-logo") %>
           <% end %>
+          <p>Workouts para mente, cuerpo y corazón</p>
         </div>
-        <div class="footer-column">
-          <div class="footer-column_list">
+        <nav class="siteFooter-columns" aria-label="Pie de página">
+          <div>
             <h5>Clases</h5>
             <%= link_to "Ver workouts", workouts_path %>
             <%= link_to "Calendario", calendario_path %>
             <%= link_to "Filtros", all_path %>
           </div>
-          <div class="footer-column_list">
+          <div>
             <h5>Acerca</h5>
             <%= link_to "Acerca de", acerca_path %>
-            <% if current_user %>
-            <% else %>
-            <%= link_to "Planes", payments_new_path %>
+            <% unless current_user %>
+              <%= link_to "Planes", payments_new_path %>
             <% end %>
-            <h5>Contacto</h5>
-            <p>anagaby.fitteam@gmail.com</p>
           </div>
-          <div class="footer-column_list">
+          <div>
             <h5>Legal</h5>
             <%= link_to "Términos y Condiciones", terminos_path %>
           </div>
-        </div>
+          <div class="siteFooter-contact">
+            <h5>Contacto</h5>
+            <%= mail_to "anagaby.fitteam@gmail.com" %>
+          </div>
+        </nav>
+      </div>
+      <div class="siteFooter-bottom">
+        <span>© <%= Date.current.year %> Fitteam</span>
       </div>
     </footer>
     <script>
-      function openMenu() {
-        var x = document.getElementById("header_actions");
-        if (x.className === "header-container_actions") {
-          x.className += " responsive";
-        } else {
-          x.className = "header-container_actions";
-        }
+      function toggleMenu(button) {
+        var open = document.getElementById("site_header").classList.toggle("is-open");
+        button.setAttribute("aria-expanded", open);
       }
     </script>
   </body>
