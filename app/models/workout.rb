@@ -18,15 +18,60 @@ class Workout < ApplicationRecord
   validate :video_url_is_youtube, if: :video_url_changed?
 
   before_validation :normalize_video_url
+  before_validation :normalize_options
   # Otro video, otra miniatura (el admin la vuelve a pedir al guardar).
   before_save { self.thumbnail_url = nil if video_url_changed? }
 
   scope :premieres, -> { where(color: PREMIERE_COLOR) }
 
-  # Opciones de un select con los valores fijos más los que ya existan en la
-  # base (para no perder un valor viejo al editar).
-  def self.options_for(values, column)
-    (values + distinct.where.not(column => [ nil, "", "-" ]).pluck(column)).uniq
+  # Cada grupo, duración, intensidad y material existe una sola vez: lo que
+  # llegue escrito de otra forma ("LOWER BODY", "AbS and Core", "45",
+  # "45:00", "60 min", "alta") se guarda como su opción de la lista.
+  def self.canonical_category(value)
+    canonical(value, CATEGORIES)
+  end
+
+  def self.canonical_intensity(value)
+    canonical(value, INTENSITIES, "low" => "Baja", "medio" => "Media", "medium" => "Media", "high" => "Alta")
+  end
+
+  def self.canonical_material(value)
+    canonical(value, MATERIALS)
+  end
+
+  # Minutos de "15min", "15 min", "15", "15:00" (mm:ss), "1 hora", "1h",
+  # "1:00:00" (h:mm:ss); 60 es "1 hora".
+  def self.canonical_duration(value)
+    text = value.to_s.strip.downcase
+    minutes = case text
+    when /\A(\d+)\s*(?:m|min|mins|minutos?)?\z/ then $1.to_i
+    when /\A(\d+):\d{2}\z/ then $1.to_i
+    when /\A(\d+):(\d{2}):\d{2}\z/ then $1.to_i * 60 + $2.to_i
+    when /\A(\d+)\s*(?:h|hr|hrs|horas?)\z/ then $1.to_i * 60
+    end
+    DURATIONS.find { |option| option_minutes(option) == minutes } || value
+  end
+
+  def self.option_minutes(option)
+    option == "1 hora" ? 60 : option.to_i
+  end
+
+  def self.canonical(value, options, aliases = {})
+    key = option_key(value)
+    return value if key.empty?
+
+    options.find { |option| option_key(option) == key } || aliases[key] || value
+  end
+
+  def self.option_key(value)
+    I18n.transliterate(value.to_s).downcase.gsub("&", "and").gsub(/[^a-z0-9]/, "")
+  end
+  private_class_method :canonical, :option_key, :option_minutes
+
+  # Opciones de un select: la lista fija y, solo si este workout trae un valor
+  # que no está en ella, ese valor (para no perderlo al editar).
+  def self.select_options(values, current)
+    current.blank? || current == "-" || values.include?(current) ? values : values + [ current ]
   end
 
   def premiere?
@@ -91,6 +136,15 @@ class Workout < ApplicationRecord
     return if video_url.blank? || youtube_id
 
     errors.add(:video_url, "no es un link de YouTube válido")
+  end
+
+  def normalize_options
+    self.category = self.class.canonical_category(category)
+    self.duration = self.class.canonical_duration(duration)
+    self.intensity = self.class.canonical_intensity(intensity)
+    if material.present?
+      self.material = material.split(",").map { |m| self.class.canonical_material(m.strip) }.reject(&:blank?).uniq.join(", ")
+    end
   end
 
   # Guarda solo el ID, que es lo que usa el reproductor del sitio.

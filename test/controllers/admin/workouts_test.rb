@@ -117,4 +117,14 @@ class Admin::WorkoutsTest < ActionDispatch::IntegrationTest
     get admin_calendar_url(month: "basura")
     assert_response :success
   end
+
+  test "el formulario no repite opciones aunque haya valores viejos mal escritos" do
+    Workout.create!(title: "Viejo", video_url: "dQw4w9WgXcQ").update_columns(category: "LOWER BODY", duration: "60")
+    get edit_admin_workout_url(workouts(:one))
+    assert_response :success
+    assert_select "select#workout_category option", count: Workout::CATEGORIES.size + 1
+    assert_select "select#workout_duration option", count: Workout::DURATIONS.size + 1
+    assert_select "select#workout_intensity option", count: Workout::INTENSITIES.size + 1
+    assert_not_includes response.body, "LOWER BODY"
+  end
 end

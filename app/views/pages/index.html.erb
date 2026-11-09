@@ -1,101 +1,90 @@
-<div class="home_video-wrapper">
-    <%= video_tag "video.mp4", type: "video/mp4", poster: image_path("video_poster.jpg"), autoplay: true, loop: true, muted: true, playsinline: true, class: "home_video" %>
-    <h1>WORKOUT</h1>
-    <br>
-    <p>Para mente, cuerpo y corazón</p>
-    <br>
-    <%= link_to "Comenzar un workout", workouts_path, class: "button" %>
-</div>
-<div class="container embassador-container">
-    <div class="columns">
-        <div class="columnThirdLow">
-            <%= image_tag("embassador_cover.jpg") %>
-        </div>
-        <div class="columnThirdHigh">
-            <div class="embassador-info">
-                <h1>Ana Gaby Ornelas</h1>
-                <br>
-                <p>
-                    Entrenadora personal y grupal, en línea o presencial, todas mis clases te llevan un mismo nivel de exigencia personal. Apasionada y entregada a esto que llamo trabajo, ayudarte a construir tu mejor versión y trabajar diario en ello es mi objetivo principal.
-                    <br><br>
-                    Con certificaciones en diferentes disciplinas he creado mi propio método de entrenamiento que te ayuda a fortalecer y tonificar de una forma muy dinámica y divertida. Te invito a conocerme un poquito más probando lo que prepare especialmente para ti en esta plataforma.
-                </p>
-                <br>
-                <br>
-                <%= image_tag("lululemon.png") %>
-                <p><strong>CITY AMBASSADOR</strong></p>
-            </div>
-        </div>
+<div class="home">
+  <section class="homeHero">
+    <%= video_tag "video.mp4", type: "video/mp4", poster: image_path("video_poster.jpg"), autoplay: true, loop: true, muted: true, playsinline: true, class: "homeHero-video" %>
+    <div class="homeHero-content">
+      <h1>WORKOUT</h1>
+      <p>Para mente, cuerpo y corazón</p>
+      <%= link_to workouts_path, class: "homeBtn homeBtn-primary" do %>
+        Comenzar un workout <%= site_icon(:arrow) %>
+      <% end %>
     </div>
-</div>
-<% @workouts.each do |workout| %>
-    <div class="columns wotdContainer">
-        <div class="columnHalf">
-            <div class="wotdContainer-info">
-                <p>Workout del día</p>
-                <h2><%= workout.title %></h2>
-                <br>
-                <p>Rutina del dia de hoy, realiza tu ejercicio en el horario que mas quieras.</p>
-                <br>
-                <%= link_to "Ir a workout", workout, class: "button button-white" %>
-            </div>
-        </div>
-        <div class="columnHalf">
-            <div class="wotdContainer-cover">
-                <%= workout_media(workout) %>
-            </div>
-        </div>
-    </div>
-<% end %>
-<div class="columns homeTripleColumn">
-    <div class="columnThirdLow">
-        <div class="homeTripleColumn-info">
-            <h4>¡Entrenamiento con rutinas diarias que te ayudarán a lograr tus objetivos!</h4>
-            <br>
-            <p>Inscríbete a mi programa de entrenamiento y podrás entrenar conmigo donde quiera que te encuentres, ya sea en un gimnasio o desde tu casa. Todos los días subo contenido nuevo que te ayudará a mantenerte en forma.</p>
-        </div>
-    </div>
-    <div class="columnThirdLow">
-        <div class="homeTripleColumn-numbers">
-            <div>
-                <h4>+450</h4>
-                <p>Videos</p>
-            </div>
-            <div>
-                <h4>+300</h4>
-                <p>Usuarios</p>
-            </div>
-            <div>
-                <h4>5</h4>
-                <p>Grupos Musculares</p>
-            </div>
-        </div>
-    </div>
-    <div class="columnThirdLow">
-        <div class="homeTripleColumn-cover"></div>
-    </div>
-</div>
-<% unless current_user&.active? %>
-  <%= render "payments/plans" %>
-<% end %>
+  </section>
 
-<div class="prefooter">
-    <div class="prefooter-container">
-        <div  class="prefooter-column">
-            <h2>
-                Workouts para mente, cuerpo y corazón
-            </h2>
+  <section class="homeSection homeReveal">
+    <div class="homeAmbassador">
+      <div class="homeAmbassador-photo">
+        <%= image_tag "embassador_cover.jpg", alt: "Ana Gaby Ornelas" %>
+      </div>
+      <div class="homeAmbassador-info">
+        <h2>Ana Gaby Ornelas</h2>
+        <p>
+          Entrenadora personal y grupal, en línea o presencial, todas mis clases te llevan un mismo nivel de exigencia personal. Apasionada y entregada a esto que llamo trabajo, ayudarte a construir tu mejor versión y trabajar diario en ello es mi objetivo principal.
+        </p>
+        <p>
+          Con certificaciones en diferentes disciplinas he creado mi propio método de entrenamiento que te ayuda a fortalecer y tonificar de una forma muy dinámica y divertida. Te invito a conocerme un poquito más probando lo que prepare especialmente para ti en esta plataforma.
+        </p>
+        <div class="homeAmbassador-badge">
+          <%= image_tag "lululemon.png", alt: "lululemon" %>
+          <span>CITY AMBASSADOR</span>
         </div>
-        <div  class="prefooter-column prefooter-actions">
-            <% if current_user %>
-            <% unless current_user.active? %>
-            <% end %>
-                <%= link_to 'Ir a clases', workouts_path, class: 'button button-white' %>
-                <%= link_to 'Mi cuenta', edit_user_registration_path, class: 'button button-white' %>
-            <% else %>
-            <%= link_to 'Inicia sesión', new_user_session_path, class: 'button button-white' %>
-            <%= link_to 'Crear cuenta', new_user_registration_path, class: 'button button-white' %>
-          <% end %>
-        </div>
+      </div>
     </div>
+  </section>
+
+  <% @workouts.each do |workout| %>
+    <section class="homeSection homeReveal">
+      <%= link_to workout, class: "homeWotd" do %>
+        <div class="homeWotd-info">
+          <span class="homeEyebrow">Workout del día</span>
+          <h2><%= workout.title %></h2>
+          <% if (facts = workout_facts(workout)).any? %>
+            <ul class="wChips wChips-light">
+              <% facts.each do |fact| %><li><%= fact %></li><% end %>
+            </ul>
+          <% end %>
+          <p>Rutina del dia de hoy, realiza tu ejercicio en el horario que mas quieras.</p>
+          <span class="homeBtn homeBtn-light">Ir a workout <%= site_icon(:arrow) %></span>
+        </div>
+        <div class="homeWotd-cover">
+          <%= workout_media(workout, lazy: false) %>
+          <span class="wBadge homeWotd-today">Hoy</span>
+          <span class="homeWotd-play"><%= site_icon(:play) %></span>
+        </div>
+      <% end %>
+    </section>
+  <% end %>
+
+  <section class="homeSection homeReveal">
+    <div class="homeStats">
+      <div class="homeStats-info">
+        <h2>¡Entrenamiento con rutinas diarias que te ayudarán a lograr tus objetivos!</h2>
+        <p>Inscríbete a mi programa de entrenamiento y podrás entrenar conmigo donde quiera que te encuentres, ya sea en un gimnasio o desde tu casa. Todos los días subo contenido nuevo que te ayudará a mantenerte en forma.</p>
+      </div>
+      <dl class="homeStats-numbers">
+        <div><dt>+450</dt><dd>Videos</dd></div>
+        <div><dt>+300</dt><dd>Usuarios</dd></div>
+        <div><dt>5</dt><dd>Grupos Musculares</dd></div>
+      </dl>
+      <div class="homeStats-cover" role="img" aria-label="Entrenamiento en casa"></div>
+    </div>
+  </section>
+
+  <% unless current_user&.active? %>
+    <%= render "payments/plans" %>
+  <% end %>
+
+  <section class="homeSection homeReveal">
+    <div class="homeCta">
+      <h2>Workouts para mente, cuerpo y corazón</h2>
+      <div class="homeCta-actions">
+        <% if current_user %>
+          <%= link_to "Ir a clases", workouts_path, class: "homeBtn homeBtn-light" %>
+          <%= link_to "Mi cuenta", edit_user_registration_path, class: "homeBtn homeBtn-outline" %>
+        <% else %>
+          <%= link_to "Inicia sesión", new_user_session_path, class: "homeBtn homeBtn-light" %>
+          <%= link_to "Crear cuenta", new_user_registration_path, class: "homeBtn homeBtn-outline" %>
+        <% end %>
+      </div>
+    </div>
+  </section>
 </div>

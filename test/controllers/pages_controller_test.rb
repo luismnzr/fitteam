@@ -24,7 +24,8 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get root_url
     Plan.all.each do |plan|
       assert_select "form[action=?]", stripe_checkout_path(plan: plan.key)
-      assert_includes response.body, plan.price
+      assert_select ".plans_columns_card_amount", text: "$#{plan.amount}"
+      assert_select ".plans_columns_card_period", text: "por #{plan.period}"
     end
 
     sign_in users(:member)

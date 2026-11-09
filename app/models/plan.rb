@@ -3,7 +3,12 @@
 # form). El precio que se muestra es solo texto: el cobro real lo define el
 # precio en Stripe, así que si cambia allá hay que cambiarlo aquí también.
 class Plan
-  Item = Struct.new(:key, :name, :price, :price_id, keyword_init: true)
+  Item = Struct.new(:key, :name, :price, :price_id, keyword_init: true) do
+    # "499 mxn / mes" -> "499", "MXN", "mes" (las tarjetas los muestran por separado).
+    def amount = price[/\A\d+/]
+    def currency = price[/\A\d+\s+([a-z]+)/i, 1]&.upcase
+    def period = price.split(" / ", 2)[1]
+  end
 
   ALL = [
     Item.new(key: "mensual", name: "Plan Mensual", price: "499 mxn / mes", price_id: "price_1IzXpjCQy9Hvq1vmGc0LWqMD"),

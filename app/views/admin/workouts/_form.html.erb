@@ -58,16 +58,16 @@
         <h3 class="card-title">Dónde aparece en el catálogo</h3>
         <div>
           <%= f.label :category, "Grupo muscular", class: "label" %>
-          <%= f.select :category, [["Sin categoría", "-"]] + Workout.options_for(Workout::CATEGORIES, :category), {}, class: "input" %>
+          <%= f.select :category, [["Sin categoría", "-"]] + Workout.select_options(Workout::CATEGORIES, workout.category), {}, class: "input" %>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <%= f.label :duration, "Duración", class: "label" %>
-            <%= f.select :duration, [["—", "-"]] + Workout.options_for(Workout::DURATIONS, :duration), {}, class: "input" %>
+            <%= f.select :duration, [["—", "-"]] + Workout.select_options(Workout::DURATIONS, workout.duration), {}, class: "input" %>
           </div>
           <div>
             <%= f.label :intensity, "Intensidad", class: "label" %>
-            <%= f.select :intensity, [["—", "-"]] + Workout.options_for(Workout::INTENSITIES, :intensity), {}, class: "input" %>
+            <%= f.select :intensity, [["—", "-"]] + Workout.select_options(Workout::INTENSITIES, workout.intensity), {}, class: "input" %>
           </div>
         </div>
         <label class="flex items-start gap-3 cursor-pointer">

@@ -22,7 +22,7 @@
     <%= search_field_tag :q, params[:q], placeholder: "Buscar por título…", class: "input pl-9", "aria-label": "Buscar workouts" %>
   </div>
   <%= select_tag :category,
-        options_for_select([["Todos los grupos musculares", ""]] + Workout.options_for(Workout::CATEGORIES, :category), params[:category]),
+        options_for_select([["Todos los grupos musculares", ""]] + Workout::CATEGORIES, params[:category]),
         class: "input w-auto min-w-[12rem]", data: { autosubmit: true }, "aria-label": "Filtrar por grupo muscular" %>
   <%= select_tag :sort, options_for_select([["Más recientes", ""], ["Fecha en calendario", "day"], ["Título A–Z", "title"]], params[:sort]),
         class: "input w-auto", data: { autosubmit: true }, "aria-label": "Ordenar" %>
