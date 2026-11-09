@@ -10,13 +10,17 @@ class WorkoutsController < ApplicationController
     return render_calendar_events if request.format.json?
 
     @workoutsFeatured = Workout.where("day < ?", Date.current).order(day: :desc).limit(4)
-    @workoutLowerBody = Workout.limit(10).where(category: "Lower Body")
-    @workoutAbsCore = Workout.limit(10).where(category: "ABS and Core")
-    @workoutFullBody = Workout.limit(10).where(category: "Full Body")
-    @workoutGlutesHips = Workout.limit(10).where(category: "Glutes and Hips")
-    @workoutUpperBody = Workout.limit(10).where(category: "Upper Body")
-    @workout1530 = Workout.limit(10).where(duration: [ "15min", "30min" ])
-    @workoutStrength = Workout.limit(10).where(strength: true)
+    # Cada fila: las 10 más nuevas, como en su página de "ver todas". Sin
+    # orden, Postgres las regresa en el orden en que estén guardadas, que
+    # cambia cada vez que se actualizan filas.
+    newest = Workout.order(created_at: :desc, id: :desc).limit(10)
+    @workoutLowerBody = newest.where(category: "Lower Body")
+    @workoutAbsCore = newest.where(category: "ABS and Core")
+    @workoutFullBody = newest.where(category: "Full Body")
+    @workoutGlutesHips = newest.where(category: "Glutes and Hips")
+    @workoutUpperBody = newest.where(category: "Upper Body")
+    @workout1530 = newest.where(duration: [ "15min", "30min" ])
+    @workoutStrength = newest.where(strength: true)
   end
 
   def upperbody

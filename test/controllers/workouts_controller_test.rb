@@ -14,6 +14,17 @@ class WorkoutsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, workouts(:two).title
   end
 
+  test "las filas del catálogo muestran las clases más nuevas" do
+    # La vieja se inserta primero: sin orden explícito, Postgres la regresaría.
+    Workout.create!(title: "Clase vieja", category: "Lower Body", duration: "1 hora", created_at: 2.years.ago)
+    10.times { |i| Workout.create!(title: "Clase nueva #{i}", category: "Lower Body", duration: "1 hora") }
+
+    get workouts_url
+    assert_response :success
+    assert_includes response.body, "Clase nueva 9"
+    assert_not_includes response.body, "Clase vieja"
+  end
+
   test "el JSON del calendario no expone el video" do
     get workouts_url(format: :json)
     assert_response :success
