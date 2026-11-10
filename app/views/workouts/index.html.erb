@@ -4,275 +4,121 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.js"></script>
 <% end %>
 
-<div class="workoutBanner">
-  <div class="swiper swiper7">
-    <div class="swiper-wrapper">
-      <% @workoutsFeatured.each_with_index do |workout, index| %>
-        <div class="swiper-slide">
-          <div class="heroSlide">
-            <%= workout_media(workout, css: "heroSlide-media", lazy: index.positive?) %>
-            <div class="heroSlide-shade"></div>
-            <div class="heroSlide-content">
-              <p class="heroSlide-eyebrow">
-                <% if workout.premiere? %><span class="wBadge wBadge-premiere">Estreno</span><% end %>
-                <span>Del calendario<%= " · #{short_date(workout.day)}" if workout.day %></span>
-              </p>
-              <h1><%= workout.title %></h1>
-              <% facts = workout_facts(workout) %>
-              <% if facts.any? %>
-                <ul class="wChips wChips-light">
-                  <% facts.each do |fact| %><li><%= fact %></li><% end %>
-                </ul>
-              <% end %>
-              <%= link_to workout, class: "button heroSlide-cta" do %><%= site_icon(:play) %> Ver clase<% end %>
+<div class="explore">
+  <section class="exploreHero">
+    <div class="swiper swiper7">
+      <div class="swiper-wrapper">
+        <% @workoutsFeatured.each_with_index do |workout, index| %>
+          <div class="swiper-slide">
+            <div class="heroSlide">
+              <%= workout_media(workout, css: "heroSlide-media", lazy: index.positive?) %>
+              <div class="heroSlide-shade"></div>
+              <div class="heroSlide-content">
+                <p class="heroSlide-eyebrow">
+                  <% if workout.premiere? %><span class="wBadge wBadge-premiere">Estreno</span><% end %>
+                  <span>Del calendario<%= " · #{short_date(workout.day)}" if workout.day %></span>
+                </p>
+                <h1><%= workout.title %></h1>
+                <% facts = workout_facts(workout) %>
+                <% if facts.any? %>
+                  <ul class="wChips wChips-light">
+                    <% facts.each do |fact| %><li><%= fact %></li><% end %>
+                  </ul>
+                <% end %>
+                <%= link_to workout, class: "homeBtn homeBtn-primary" do %><%= site_icon(:play) %> Ver clase<% end %>
+              </div>
             </div>
           </div>
-        </div>
-      <% end %>
-
+        <% end %>
+      </div>
+      <div class="swiper-pagination swiper-pagination7"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
     </div>
-    <div class="swiper-pagination swiper-pagination7"></div>
-    <div class="swiper-button-prev"></div>
-    <div class="swiper-button-next"></div>
-  </div>
-</div>
+  </section>
 
-
-<div class="calendarBlock">
-  <div class="calendarBlock-header">
-    <div class="calendarBlock-header-info">
-      <h2>¡Entrenamiento con rutinas diarias!</h2>
-      <br>
-      <p>Entrena diferentes grupos musculares cada dia de la semana, esto te proporciona un entrenamiento completo de todos los músculos de tu cuerpo, no tienes que hacer más ¡Ya esta todo organizado!</p>
+  <section class="exploreSection homeReveal">
+    <div class="exploreWeek-header">
+      <div>
+        <h2>¡Entrenamiento con rutinas diarias!</h2>
+        <p>Entrena diferentes grupos musculares cada dia de la semana, esto te proporciona un entrenamiento completo de todos los músculos de tu cuerpo, no tienes que hacer más ¡Ya esta todo organizado!</p>
+      </div>
+      <%= link_to calendario_path, class: "homeBtn exploreBtn-green" do %><%= site_icon(:calendar) %> Calendario de Clases<% end %>
     </div>
-    <div>
-            <%= link_to "Calendario de Clases", calendario_path, class: "button button-green" %>
+    <div class="exploreWeek-grid">
+      <%= link_to image_tag("lunes.webp", alt: "Lunes: Lower Body", loading: "lazy"), lowerbody_path %>
+      <%= link_to image_tag("martes.webp", alt: "Martes: Upper Body", loading: "lazy"), upperbody_path %>
+      <%= link_to image_tag("miercoles.webp", alt: "Miércoles: Abs and Core", loading: "lazy"), abscore_path %>
+      <%= link_to image_tag("jueves.webp", alt: "Jueves: Glutes and Hips", loading: "lazy"), gluteships_path %>
+      <%= link_to image_tag("viernes.webp", alt: "Viernes: Full Body", loading: "lazy"), fullbody_path %>
     </div>
-  </div>
-  <div class="calendarBlock-grid">
-    <div class="calendarBlock-grid-item"><%= link_to lowerbody_path do %><%= image_tag("lunes.webp", alt: "Lunes: Lower Body", loading: "lazy") %><% end %></div>
-    <div class="calendarBlock-grid-item"><%= link_to upperbody_path do %><%= image_tag("martes.webp", alt: "Martes: Upper Body", loading: "lazy") %><% end %></div>
-    <div class="calendarBlock-grid-item"><%= link_to abscore_path do %><%= image_tag("miercoles.webp", alt: "Miércoles: Abs and Core", loading: "lazy") %><% end %></div>
-    <div class="calendarBlock-grid-item"><%= link_to gluteships_path do %><%= image_tag("jueves.webp", alt: "Jueves: Glutes and Hips", loading: "lazy") %><% end %></div>
-    <div class="calendarBlock-grid-item"><%= link_to fullbody_path do %><%= image_tag("viernes.webp", alt: "Viernes: Full Body", loading: "lazy") %><% end %></div>
-  </div>
-</div>
+  </section>
 
-<div class="workoutRow">
-
-  <div class="workoutRow-header">
-    <h1>Lower Body</h1>
-    <%= link_to lowerbody_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
-
-  </div>
-  <br>
-  <div class="workoutSwiper">
-      <div class="swiper swiper2">
-        <div class="swiper-wrapper">
-          <% @workoutLowerBody.each do |workout| %>
-            <div  class="swiper-slide">
-              <%= render workout %>
-
-            </div>
-          <% end %>
-        </div>
-        <div class="swiper-pagination swiper-pagination2"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
+  <% [
+    [ "Lower Body", @workoutLowerBody, lowerbody_path ],
+    [ "Upper Body", @workoutUpperBody, upperbody_path ],
+    [ "ABS and Core", @workoutAbsCore, abscore_path ],
+    [ "Glutes and Hips", @workoutGlutesHips, gluteships_path ],
+    [ "Full Body", @workoutFullBody, fullbody_path ],
+    [ "15/30 min", @workout1530, short_1530_path ],
+    [ "Strength", @workoutStrength, strength_path ]
+  ].each do |title, workouts, path| %>
+    <% next if workouts.empty? %>
+    <section class="exploreSection exploreRow homeReveal">
+      <div class="exploreRow-header">
+        <h2><%= title %></h2>
+        <%= link_to path, class: "exploreRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
       </div>
-  </div>
-</div>
-
-<div class="workoutRow">
-
-  <div class="workoutRow-header">
-    <h1>Upper Body</h1>
-    <%= link_to upperbody_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
-
-  </div>
-  <br>
-  <div class="workoutSwiper">
-      <div class="swiper swiper6">
-        <div class="swiper-wrapper">
-          <% @workoutUpperBody.each do |workout| %>
-            <div  class="swiper-slide">
-              <%= render workout %>
-
-            </div>
-          <% end %>
+      <div class="exploreRow-swiper">
+        <div class="swiper">
+          <div class="swiper-wrapper">
+            <% workouts.each do |workout| %>
+              <div class="swiper-slide"><%= render workout %></div>
+            <% end %>
+          </div>
+          <div class="swiper-pagination"></div>
         </div>
-        <div class="swiper-pagination swiper-pagination6"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
+        <button type="button" class="exploreRow-nav exploreRow-prev" aria-label="Anteriores"><%= site_icon(:arrow) %></button>
+        <button type="button" class="exploreRow-nav exploreRow-next" aria-label="Siguientes"><%= site_icon(:arrow) %></button>
       </div>
-  </div>
-</div>
+    </section>
+  <% end %>
 
-<div class="workoutRow">
-
-  <div class="workoutRow-header">
-    <h1>ABS and Core</h1>
-    <%= link_to abscore_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
-
-  </div>
-  <br>
-  <div class="workoutSwiper">
-      <div class="swiper swiper3">
-        <div class="swiper-wrapper">
-          <% @workoutAbsCore.each do |workout| %>
-            <div  class="swiper-slide">
-              <%= render workout %>
-
-            </div>
-          <% end %>
+  <section class="exploreSection homeReveal">
+    <div class="exploreFilter">
+      <div class="exploreFilter-header">
+        <div>
+          <h2>Busca un workout a tu medida</h2>
+          <p>Usa los filtros para comenzar a buscar, los filtros que actives se mostrarán abajo</p>
         </div>
-        <div class="swiper-pagination swiper-pagination3"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
+        <%= link_to favorites_path, class: "homeBtn homeBtn-outline" do %><%= site_icon(:heart) %> Ver Mis favoritas<% end %>
       </div>
-  </div>
-</div>
-
-<div class="workoutRow">
-
-  <div class="workoutRow-header">
-    <h1>Glutes and Hips</h1>
-    <%= link_to gluteships_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
-
-  </div>
-  <br>
-  <div class="workoutSwiper">
-      <div class="swiper swiper5">
-        <div class="swiper-wrapper">
-          <% @workoutGlutesHips.each do |workout| %>
-            <div  class="swiper-slide">
-              <%= render workout %>
-
-            </div>
-          <% end %>
-        </div>
-        <div class="swiper-pagination swiper-pagination5"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-      </div>
-  </div>
-</div>
-
-<div class="workoutRow">
-
-  <div class="workoutRow-header">
-    <h1>Full Body</h1>
-    <%= link_to fullbody_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
-
-  </div>
-  <br>
-  <div class="workoutSwiper">
-      <div class="swiper swiper4">
-        <div class="swiper-wrapper">
-          <% @workoutFullBody.each do |workout| %>
-            <div  class="swiper-slide">
-              <%= render workout %>
-
-            </div>
-          <% end %>
-        </div>
-        <div class="swiper-pagination swiper-pagination4"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-      </div>
-  </div>
-</div>
-
-<div class="workoutRow">
-
-  <div class="workoutRow-header">
-    <h1>15/30 min</h1>
-    <%= link_to short_1530_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
-
-  </div>
-  <br>
-  <div class="workoutSwiper">
-      <div class="swiper swiper8">
-        <div class="swiper-wrapper">
-          <% @workout1530.each do |workout| %>
-            <div  class="swiper-slide">
-              <%= render workout %>
-
-            </div>
-          <% end %>
-        </div>
-        <div class="swiper-pagination swiper-pagination8"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-      </div>
-  </div>
-</div>
-
-<div class="workoutRow">
-
-  <div class="workoutRow-header">
-    <h1>Strength</h1>
-    <%= link_to strength_path, class: "workoutRow-more" do %>Ver todas <%= site_icon(:arrow) %><% end %>
-
-  </div>
-  <br>
-  <div class="workoutSwiper">
-      <div class="swiper swiper9">
-        <div class="swiper-wrapper">
-          <% @workoutStrength.each do |workout| %>
-            <div  class="swiper-slide">
-              <%= render workout %>
-
-            </div>
-          <% end %>
-        </div>
-        <div class="swiper-pagination swiper-pagination9"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
-      </div>
-  </div>
-</div>
-
-<div class="filterBox">
-  <div class="filterBox-header">
-    <div>
-      <h2>Busca un workout a tu medida</h2>
-      <p>Usa los filtros para comenzar a buscar, los filtros que actives se mostrarán abajo</p>
-    </div>
-    <div>
-      <%= link_to "Ver Mis favoritas", favorites_path, class: 'button button-clear' %>
-    </div>
-  </div>
-  <form action="/all" method="GET">
-    <div  class="filterBox-search">
-      <div class="filterBox-search_columns">
+      <form action="/all" method="GET" class="exploreFilter-form">
+        <label class="exploreFilter-field">
+          <span>Intensidad</span>
           <select name="intensidad">
-            <option value="">Intensidad</option>
-            <option value="Alta">Alta</option>
-            <option value="Media">Media</option>
-            <option value="Baja">Baja</option>
+            <option value="">Todas</option>
+            <% Workout::INTENSITIES.reverse_each do |value| %><option value="<%= value %>"><%= value %></option><% end %>
           </select>
+        </label>
+        <label class="exploreFilter-field">
+          <span>Grupo muscular</span>
           <select name="categoria">
-            <option value="">Grupo Muscular</option>
-            <option value="Lower Body">Lower Body</option>
-            <option value="ABS and Core">ABS and Core</option>
-            <option value="Full Body">Full Body</option>
-            <option value="Glutes and Hips">Glutes and Hips</option>
-            <option value="Upper Body">Upper Body</option>
+            <option value="">Todos</option>
+            <% Workout::CATEGORIES.each do |value| %><option value="<%= value %>"><%= value %></option><% end %>
           </select>
-          <select  name="duracion">
-            <option value="">Duración</option>
-            <option value="15min">15min</option>
-            <option value="30min">30min</option>
-            <option value="45min">45min</option>
-            <option value="1 hora">1 hora</option>
+        </label>
+        <label class="exploreFilter-field">
+          <span>Duración</span>
+          <select name="duracion">
+            <option value="">Todas</option>
+            <% Workout::DURATIONS.each do |value| %><option value="<%= value %>"><%= value %></option><% end %>
           </select>
-      </div>
-      <div  class="filterBox-search_field">
-        <input type="submit" value="Buscar workout" class="button button-white">
-      </div>
+        </label>
+        <button type="submit" class="homeBtn homeBtn-light">Buscar workout <%= site_icon(:arrow) %></button>
+      </form>
     </div>
-  </form>
+  </section>
 </div>
 
 <script>
@@ -286,16 +132,17 @@
   });
 
   // Filas del catálogo: en celular se asoma la siguiente tarjeta.
-  document.querySelectorAll(".workoutRow .swiper").forEach(function (el) {
-    new Swiper(el, {
+  document.querySelectorAll(".exploreRow-swiper").forEach(function (row) {
+    new Swiper(row.querySelector(".swiper"), {
       slidesPerView: 1.15,
       spaceBetween: 16,
       breakpoints: {
         750: { slidesPerView: 2.2, spaceBetween: 24 },
-        990: { slidesPerView: 3, spaceBetween: 32 }
+        990: { slidesPerView: 3, spaceBetween: 28 },
+        1280: { slidesPerView: 4, spaceBetween: 28 }
       },
-      pagination: { el: el.querySelector(".swiper-pagination"), clickable: true },
-      navigation: { nextEl: el.querySelector(".swiper-button-next"), prevEl: el.querySelector(".swiper-button-prev") }
+      pagination: { el: row.querySelector(".swiper-pagination"), clickable: true },
+      navigation: { nextEl: row.querySelector(".exploreRow-next"), prevEl: row.querySelector(".exploreRow-prev") }
     });
   });
 </script>

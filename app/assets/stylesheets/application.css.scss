@@ -2486,3 +2486,368 @@ $cream: #f9f8f3;
     grid-column: 1 / -1;
   }
 }
+
+// ── Explorar clases (alineado con el home 2026) ─────────────────────
+
+.explore {
+  padding-bottom: clamp(3rem, 7vw, 6rem);
+  h1,
+  h2 {
+    font-family: $display;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+}
+.exploreSection {
+  width: calc(100% - 2.5rem);
+  max-width: 1320px;
+  margin: 0 auto;
+  padding-top: clamp(3rem, 6vw, 5rem);
+}
+
+// Destacados
+.exploreHero {
+  width: calc(100% - 2.5rem);
+  max-width: 1320px;
+  margin: 1.25rem auto 0;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px -34px rgba(17, 17, 17, 0.55);
+  isolation: isolate;
+  .swiper7 {
+    height: clamp(440px, 66vh, 600px);
+  }
+  .heroSlide-content {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0 clamp(1.5rem, 4vw, 3.5rem) clamp(3.25rem, 5vw, 4rem);
+    h1 {
+      font-size: clamp(2.25rem, 5vw, 4rem);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+  }
+  .heroSlide-eyebrow {
+    font-family: $display;
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+  }
+  .swiper-button-prev,
+  .swiper-button-next {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    transition: background 0.2s ease;
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    &:after {
+      font-size: 1rem !important;
+      font-weight: 700;
+    }
+  }
+  // Flechas juntas abajo a la derecha, lejos del texto.
+  .swiper-button-prev,
+  .swiper-button-next {
+    top: auto;
+    bottom: clamp(1.5rem, 3vw, 2.25rem);
+    margin-top: 0;
+  }
+  .swiper-button-prev {
+    left: auto;
+    right: calc(clamp(1.5rem, 3vw, 2.25rem) + 58px);
+  }
+  .swiper-button-next {
+    right: clamp(1.5rem, 3vw, 2.25rem);
+  }
+  .swiper-pagination7 {
+    bottom: 1.5rem !important;
+  }
+}
+
+// Paginación de los carruseles: el punto activo es una píldora.
+.explore .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  transition: width 0.25s ease;
+}
+.explore .swiper-pagination-bullet-active {
+  width: 24px;
+  border-radius: 999px;
+}
+
+// Semana
+.exploreWeek-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  h2 {
+    font-size: clamp(1.9rem, 3.4vw, 2.75rem);
+    line-height: 1.05;
+    margin-bottom: 1rem;
+  }
+  p {
+    max-width: 64ch;
+    color: #3a3833;
+    line-height: 1.7;
+  }
+}
+.exploreBtn-green {
+  background: $green;
+  color: #fff;
+  box-shadow: 0 10px 26px -10px rgba(1, 96, 72, 0.6);
+  &:hover {
+    background: #004a37;
+  }
+}
+.exploreWeek-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+  a {
+    display: block;
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 40px -24px rgba(17, 17, 17, 0.55);
+    }
+  }
+  img {
+    display: block;
+    width: 100%;
+  }
+}
+
+// Filas
+.exploreRow-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  h2 {
+    font-size: clamp(1.6rem, 2.6vw, 2.25rem);
+    line-height: 1.1;
+  }
+}
+.exploreRow-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 40px;
+  padding: 0 1rem;
+  border: 1px solid $line;
+  border-radius: 999px;
+  background: #fff;
+  color: $ink;
+  font-family: $display;
+  font-size: 0.9rem;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  .siteIcon {
+    transition: transform 0.2s ease;
+  }
+  &:hover {
+    background: $plum;
+    border-color: $plum;
+    color: #fff;
+    .siteIcon {
+      transform: translateX(3px);
+    }
+  }
+}
+.exploreRow-swiper {
+  position: relative;
+  .swiper {
+    height: auto;
+    padding-bottom: 2.25rem;
+  }
+  .swiper-pagination {
+    bottom: 0 !important;
+  }
+  .workoutCard {
+    max-width: none;
+  }
+}
+.exploreRow-nav {
+  position: absolute;
+  top: 84px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: $ink;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: 0 10px 26px -8px rgba(17, 17, 17, 0.35);
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+  &:hover {
+    background: $plum;
+    color: #fff;
+  }
+  &.swiper-button-disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+.exploreRow-prev {
+  left: -20px;
+  .siteIcon {
+    transform: rotate(180deg);
+  }
+}
+.exploreRow-next {
+  right: -20px;
+}
+
+// Tarjetas (también en las páginas de cada grupo y en favoritas)
+.workoutCard_media {
+  border-radius: 18px;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.workoutCard_link:hover .workoutCard_media {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 40px -26px rgba(17, 17, 17, 0.6);
+}
+.workoutCard_title {
+  font-family: $display;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+// Filtros
+.exploreFilter {
+  padding: clamp(2rem, 4.5vw, 3.75rem);
+  border-radius: 28px;
+  background: $plum;
+  color: #fff;
+}
+.exploreFilter-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  h2 {
+    font-size: clamp(1.9rem, 3.4vw, 2.75rem);
+    line-height: 1.05;
+    color: #fff;
+    margin-bottom: 0.75rem;
+  }
+  p {
+    opacity: 0.85;
+    line-height: 1.6;
+  }
+}
+.exploreFilter-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 0.75rem;
+  .homeBtn {
+    min-height: 54px;
+  }
+}
+.exploreFilter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  span {
+    font-family: $display;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    max-width: none;
+    height: 54px;
+    margin: 0;
+    padding: 0 3rem 0 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") right 1.2rem center / 1rem no-repeat;
+    color: #fff;
+    font-family: $display;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.18);
+    }
+    &:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+    option {
+      color: $ink;
+    }
+  }
+}
+
+@media only screen and (max-width: 960px) {
+  .exploreFilter-form {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    .homeBtn {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+@media only screen and (max-width: 749px) {
+  .exploreHero {
+    border-radius: 22px;
+    .swiper-button-prev,
+    .swiper-button-next {
+      display: none;
+    }
+  }
+  .exploreWeek-header,
+  .exploreFilter-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  // En celular los días se deslizan de lado.
+  .exploreWeek-grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 44%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    margin: 0 -1.25rem;
+    padding: 0 1.25rem 0.5rem;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    a {
+      scroll-snap-align: start;
+    }
+  }
+  .exploreRow-nav {
+    display: none;
+  }
+  .exploreFilter-form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
